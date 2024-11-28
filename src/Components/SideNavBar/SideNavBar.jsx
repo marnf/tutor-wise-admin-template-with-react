@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { AppstoreOutlined, MailOutlined, MenuOutlined } from '@ant-design/icons';
 import { Menu } from 'antd';
 import { Link } from 'react-router-dom';
-import logo from '../../assets/images/TutorWiseLogo.png'
+import logo from '../../../public/images/TutorwiseLogo.png'
 
 const items = [
   {
@@ -16,7 +16,6 @@ const items = [
     label: <Link to="/userlist">User List</Link>,
   },
   {
-    key: '3',
     icon: <AppstoreOutlined />,
     label: 'Tutor Request',
     children: [
