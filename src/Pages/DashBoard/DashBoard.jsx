@@ -19,12 +19,12 @@ const Dashboard = () => {
 
     const fetchAllData = () => {
         Promise.all([
-            fetch('http://192.168.0.154:8000/api/admin/total-tutor-number/'),
-            fetch('http://192.168.0.154:8000/api/admin/total-student-number/'),
-            fetch('http://192.168.0.154:8000/api/admin/total-pro-tutor-number/'),
-            fetch('http://192.168.0.154:8000/api/admin/total-referrer-number/'),
-            fetch('http://192.168.0.154:8000/api/admin/total-payment-number/'),
-            fetch('http://192.168.0.154:8000/api/admin/active-inactive-user-percentage/'),
+            fetch('https://tutorwise-backend.vercel.app/api/admin/total-tutor-number/'),
+            fetch('https://tutorwise-backend.vercel.app/api/admin/total-student-number/'),
+            fetch('https://tutorwise-backend.vercel.app/api/admin/total-pro-tutor-number/'),
+            fetch('https://tutorwise-backend.vercel.app/api/admin/total-referrer-number/'),
+            fetch('https://tutorwise-backend.vercel.app/api/admin/total-payment-number/'),
+            fetch('https://tutorwise-backend.vercel.app/api/admin/active-inactive-user-percentage/'),
         ])
             .then(responses => Promise.all(responses.map(response => response.json())))
             .then(data => {

@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { AppstoreOutlined, MailOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, MailOutlined, MenuOutlined } from '@ant-design/icons';
 import { Menu } from 'antd';
 import { Link } from 'react-router-dom';
-import { MenuOutlined } from '@ant-design/icons';
+import logo from '../../assets/images/TutorWiseLogo.png'; // ইমেজ ইমপোর্ট করুন
 
 const items = [
   {
@@ -13,7 +13,7 @@ const items = [
   {
     key: '2',
     icon: <MailOutlined />,
-    label: <Link to="/user-list">User List</Link>,
+    label: <Link to="/userlist">User List</Link>,
   },
   {
     key: '3',
@@ -22,6 +22,8 @@ const items = [
     children: [
       { key: '3-1', label: <Link to="/pending-tutor-request">Pending Tutor Request</Link> },
       { key: '3-2', label: <Link to="/approved-tutor-request">Approved Tutor Request</Link> },
+      { key: '3-3', label: <Link to="/pending-higher-tutor-request">Pending Higher Tutor Request</Link> },
+      { key: '3-4', label: <Link to="/approved-higher-tutor-request">Approved Higher Tutor Request</Link> },
     ],
   },
   {
@@ -29,11 +31,47 @@ const items = [
     icon: <AppstoreOutlined />,
     label: 'Tutor List',
     children: [
-      { key: '3-1', label: <Link to="/pending-tutor-request">Pro Tutor</Link> },
-      { key: '3-2', label: <Link to="/approved-tutor-request">Normal Tutor</Link> },
+      { key: '4-1', label: <Link to="/pro-tutor">Pro Tutor</Link> },
+      { key: '4-2', label: <Link to="/normal-tutor">Normal Tutor</Link> },
     ],
   },
-  
+  {
+    key: '5',
+    icon: <AppstoreOutlined />,
+    label: 'Institution',
+    children: [
+      { key: '5-1', label: <Link to="/add-institution">Add Institution</Link> },
+      { key: '5-2', label: <Link to="/institution-list">Institution List</Link> },
+    ],
+  },
+  {
+    key: '6',
+    icon: <AppstoreOutlined />,
+    label: 'FAQ',
+    children: [
+      { key: '6-1', label: <Link to="/add-faq">Add FAQ</Link> },
+      { key: '6-2', label: <Link to="/faq-list">FAQ List</Link> },
+    ],
+  },
+  {
+    key: '7',
+    icon: <AppstoreOutlined />,
+    label: 'Payment',
+    children: [
+      { key: '7-1', label: <Link to="/pro-payment">Pro Payment</Link> },
+      { key: '7-2', label: <Link to="/normal-payment">Normal Payment</Link> },
+    ],
+  },
+  {
+    key: '8',
+    icon: <MailOutlined />,
+    label: <Link to="/review">Review</Link>,
+  },
+  {
+    key: '9',
+    icon: <MailOutlined />,
+    label: <Link to="/testimonial">Testimonial</Link>,
+  },
 ];
 
 const SideNavBar = ({ isSidebarOpen, toggleSidebar }) => {
@@ -62,7 +100,7 @@ const SideNavBar = ({ isSidebarOpen, toggleSidebar }) => {
         }}
       >
         <img 
-          src="/src/image/Logo.jpg" 
+          src={logo} 
           alt="Logo" 
           style={{ width: '150px', height: 'auto' }} 
         />

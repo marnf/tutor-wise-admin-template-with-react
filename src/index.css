@@ -1,8 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import 'datatables.net-dt/css/jquery.dataTables.css';
 
 
-
-@import './assets/css/style.css';
-@import './assets/css/responsive.css';

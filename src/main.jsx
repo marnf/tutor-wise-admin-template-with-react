@@ -12,6 +12,8 @@ import {
 } from "react-router-dom";
 import Home from './Pages/Home/Home.jsx';
 import DashBoard from './Pages/DashBoard/DashBoard.jsx';
+import UserList from './Pages/UserList/UserList.jsx';
+import PendingTutorRequest from './Pages/PendingTutorRequest/PendingTutorRequest.jsx';
 
 
 
@@ -24,6 +26,14 @@ const router = createBrowserRouter([
       {
         path:"/",
         element:<DashBoard></DashBoard>
+      },
+      {
+        path:"/userlist",
+        element:<UserList></UserList>
+      },
+      {
+        path:"/pending-tutor-request",
+        element:<PendingTutorRequest></PendingTutorRequest>
       }
     ]
   },
