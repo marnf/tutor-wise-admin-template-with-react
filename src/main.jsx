@@ -12,23 +12,23 @@ import LoginPage from './Pages/LoginPage/LoginPage.jsx';
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/login",
     element: <LoginPage />,
   },
   {
-    path: "/home",
+    path: "/",
     element: <Home />, // Home component will be used for the dashboard
     children: [
       {
-        path: "/home/",
+        path: "/",
         element: <DashBoard />,
       },
       {
-        path: "/home/userlist",
+        path: "/userlist",
         element: <UserList />,
       },
       {
-        path: "/home/pending-tutor-request",
+        path: "/pending-tutor-request",
         element: <PendingTutorRequest />,
       }
     ]

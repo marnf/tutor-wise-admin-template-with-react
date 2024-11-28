@@ -8,18 +8,18 @@ const items = [
   {
     key: '1',
     icon: <MailOutlined />,
-    label: <Link to="/dashboard">Dashboard</Link>,
+    label: <Link to="/">Dashboard</Link>,
   },
   {
     key: '2',
     icon: <MailOutlined />,
-    label: <Link to="/home/userlist">User List</Link>,
+    label: <Link to="/userlist">User List</Link>,
   },
   {
     icon: <AppstoreOutlined />,
     label: 'Tutor Request',
     children: [
-      { key: '3-1', label: <Link to="/home/pending-tutor-request">Pending Tutor Request</Link> },
+      { key: '3-1', label: <Link to="/pending-tutor-request">Pending Tutor Request</Link> },
       { key: '3-2', label: <Link to="/approved-tutor-request">Approved Tutor Request</Link> },
       { key: '3-3', label: <Link to="/pending-higher-tutor-request">Pending Higher Tutor Request</Link> },
       { key: '3-4', label: <Link to="/approved-higher-tutor-request">Approved Higher Tutor Request</Link> },

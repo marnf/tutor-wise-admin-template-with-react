@@ -12,7 +12,7 @@ const LoginPage = () => {
 
     // Static login credentials
     if (phoneNumber === "01300000000" && password === "1234") {
-      navigate("/home");
+      navigate("/");
     } else {
       alert("Invalid login credentials!");
     }
