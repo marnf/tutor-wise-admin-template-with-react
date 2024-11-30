@@ -241,7 +241,7 @@ const UserList = () => {
 
             </div>
 
-            <DataGrid className=""
+            <DataGrid
                 rows={filteredRows}
                 columns={columns}
                 pageSize={10}
@@ -251,16 +251,14 @@ const UserList = () => {
                     "& .MuiDataGrid-columnHeader": {
                         backgroundColor: "#f0f0f0",
                         fontWeight: "bold",
+                        borderBottom: "2px solid #1976d2", // Column header's bottom border
                     },
                     "& .MuiDataGrid-cell": {
-                        textAlign: "start", // Text align to start
-                        border: "1px solid #e0e0e0", // Cell border
-                        display: "flex", // Add flex for button alignment
-                        alignItems: "center",
-                        justifyContent: "space-between", // Keep buttons aligned
+                        border: "1px solid #e0e0e0", // Border for each cell
                     },
-                    "& .MuiDataGrid-row": {
-                        borderBottom: "1px solid #e0e0e0", // Row bottom border
+                      
+                    "& .MuiDataGrid-cell:focus": {
+                        outline: "none", // Remove default outline on focus
                     },
                 }}
             />

@@ -19,6 +19,7 @@
     "@popperjs/core": "^2.11.8",
     "antd": "^5.22.2",
     "apexcharts": "^4.1.0",
+    "axios": "^1.7.8",
     "bootstrap": "^5.3.3",
     "cdbreact": "^1.5.19",
     "datatables.net": "^2.1.8",

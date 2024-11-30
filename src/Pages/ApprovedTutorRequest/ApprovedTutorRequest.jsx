@@ -1,34 +1,73 @@
 import React, { useState, useEffect } from "react";
+import {
+    Autocomplete,
+    Box,
+    Button,
+    Checkbox,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    FormControlLabel,
+    FormLabel,
+    Grid,
+    MenuItem,
+    Radio,
+    RadioGroup,
+    TextareaAutosize,
+    TextField,
+} from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, TextareaAutosize, Grid, MenuItem, Autocomplete, Radio, RadioGroup, FormControlLabel, FormLabel, Checkbox } from "@mui/material"; 
+
+// Dummy subject options
+const subjectOptions = [
+    "Bangla", "English", "Math", "Physics", "Science", "Chemistry",
+    "Digital Technology", "Life and livelihood", "Healthy Safety",
+    "Religious Studies", "Biology", "Information and Communication Technology",
+    "Agriculture Education", "Geography", "Psychology", "Sports",
+    "Accounting", "Finance & Banking", "Economics", "Statistics",
+    "Production Management & Marketing", "Business Organization and management",
+    "Civic & Good Governance", "History", "History and Social Sciences",
+    "Islamic History", "Sociology", "Social Work", "Logic", "Soil Science",
+    "Arts and crafts", "Art and Culture"
+];
 
 
 const columns = [
     { field: "id", headerName: "ID", flex: 0.5 },
-    { field: "username", headerName: "Name", flex: 1 },
+    { field: "name", headerName: "Name", flex: 1 },
     { field: "phone", headerName: "Phone", flex: 1 },
     { field: "location", headerName: "Location", flex: 1 },
     { field: "details", headerName: "Details", flex: 2 },
+    { field: "subject", headerName: "Subject", flex: 1 },
+    { field: "start_date", headerName: "Start Date", flex: 1 },
+    { field: "class_name", headerName: "Class", flex: 1 },
+    { field: "lesson_type", headerName: "Lesson Type", flex: 1 },
+    { field: "gender", headerName: "Gender", flex: 1 },
+    { field: "budget", headerName: "Budget", flex: 1 },
+    { field: "days_per_week", headerName: "Days/Week", flex: 1 },
+    { field: "start_immediate", headerName: "Start Immediately", flex: 1 },
+    { field: "additional_comment", headerName: "Additional Comment", flex: 2 },
     {
         field: "actions",
         headerName: "Actions",
-        flex: 1,
+        flex: 2,
         renderCell: (params) => (
-            <Box display="flex" justifyContent="center" alignItems="center" width="100%">
+            <Box display="flex" gap={2} justifyContent="center" alignItems="center" width="100%">
                 <Button
                     variant="contained"
                     color="success"
                     size="small"
                     onClick={() => params.row.handleEdit(params.row)}
-                    style={{ marginRight: 8 }} >
-                    Approve
+                >
+                    Edit
                 </Button>
-
                 <Button
                     variant="contained"
                     color="error"
                     size="small"
-                    onClick={() => params.row.handleDelete(params.row)} >
+                    onClick={() => params.row.handleDelete(params.row)}
+                >
                     Delete
                 </Button>
             </Box>
@@ -36,34 +75,23 @@ const columns = [
     },
 ];
 
-const PendingTutorRequest = () => {
+const ApprovedTutorRequest = () => {
     const [rows, setRows] = useState([]);
-    const [filteredRows, setFilteredRows] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
-    const [open, setOpen] = useState(false);  // Modal open state
-    const [editData, setEditData] = useState({});  // State to hold the data for editing
-
-    const subjectOptions = [
-        "Math",
-        "Science",
-        "English",
-        "History",
-        "Geography",
-        "Literature",
-        "Art",
-    ];
+    const [filteredRows, setFilteredRows] = useState([]);
+    const [open, setOpen] = useState(false);
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const [editData, setEditData] = useState({});
+    const [deleteData, setDeleteData] = useState({});
 
     useEffect(() => {
-        fetch("https://tutorwise-backend.vercel.app/api/admin/view-request-tutor/")
+        fetch("https://tutorwise-backend.vercel.app/api/admin/approve-request-tutor-list/")
             .then((res) => res.json())
             .then((data) => {
-                const formattedData = data.map((request) => ({
-                    id: request.id,
-                    username: request.username || "Not Available",
-                    phone: request.phone || "Not Available",
-                    location: request.location || "Not Available",
-                    details: request.details || "No Details",
-                    handleEdit: handleOpenEditModal,
+                const formattedData = data.map((item) => ({
+                    ...item,
+                    start_immediate: item.start_immediate ? "Yes" : "No",
+                    handleEdit: handleEditRequest,
                     handleDelete: handleDeleteRequest,
                 }));
                 setRows(formattedData);
@@ -73,78 +101,98 @@ const PendingTutorRequest = () => {
     }, []);
 
     useEffect(() => {
-        if (searchQuery) {
-            const filtered = rows.filter((row) =>
-                row.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                row.phone.includes(searchQuery) ||
-                row.location.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-            setFilteredRows(filtered);
-        } else {
-            setFilteredRows(rows);
-        }
+        const result = rows.filter((row) =>
+            Object.values(row).join(" ").toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredRows(result);
     }, [searchQuery, rows]);
 
-    const handleOpenEditModal = (row) => {
-        setEditData(row);
+    const handleEditRequest = (row) => {
+        setEditData({
+            ...row,
+            start_immediate: row.start_immediate === "Yes", // Correctly set the start_immediate value
+        });
         setOpen(true);
     };
 
-    const handleClose = () => {
-        setOpen(false);
-        setEditData({});
+    const handleDeleteRequest = (row) => {
+        setDeleteData(row);
+        setOpenDeleteModal(true);
+       
     };
 
-    const handleDeleteRequest = (row) => {
-        // Implement delete logic here
+    const handleDelete = (e) => {
+        e.preventDefault();
+        fetch(`https://tutorwise-backend.vercel.app/api/admin/unapprove-request-tutor/${deleteData.id}/`, {
+            method: "POST", // Using POST as per your requirement
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(editData), // Send the data you want to transfer elsewhere
+        })
+        .then((response) => {
+            if (response.ok) {
+                // Perform the transition logic to move data elsewhere
+                setRows((prevRows) =>
+                    prevRows.filter((row) => row.id !== editData.id) // Removing the item after successful POST
+                
+                );
+                setOpenDeleteModal(false); // Close the modal after operation
+                window.location.reload(); 
+            } else {
+                console.error("Failed to process request.");
+            }
+        })
+        .catch((error) => console.error("Error processing request:", error));
     };
+    
+
+
+
 
     const handleSubmit = (e) => {
-        e.preventDefault(); 
-
-        console.log("Form Data:", editData); 
-
-        fetch(`https://tutorwise-backend.vercel.app/api/admin/request-tutor-add-info/${editData.id}/`, {
+        e.preventDefault();
+        fetch(`https://tutorwise-backend.vercel.app/api/admin/edit-approved-request-tutor/${editData.id}/`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(editData), 
+            body: JSON.stringify(editData),
         })
             .then((response) => {
                 if (response.ok) {
-                    return response.json();
+                    setRows((prevRows) =>
+                        prevRows.map((row) => (row.id === editData.id ? editData : row))
+                    );
+                    setOpen(false);
                 } else {
-                    console.error("Failed to update. Status:", response.status);
-                    return Promise.reject("Failed to update");
+                    console.error("Failed to update.");
                 }
             })
-            .then((updatedData) => {
-                console.log("Successfully updated:", updatedData);
-                window.location.reload(); 
-            })
-            .catch((error) => {
-                console.error("Error updating data:", error);
-            });
+            .catch((error) => console.error("Error updating data:", error));
     };
 
+    const handleClose = () => {
+        setOpen(false);
+    };
 
+    
+    const handleCloseDeleteModal = () => {
+        setOpenDeleteModal(false);
+    };
+
+    
 
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-            <h2 style={{ textAlign: "center", marginBottom: "1rem" }}>Tutor Request List</h2>
-
-            <div className="flex justify-between items-center">
-                <TextField
-                    label="Search Tutor Requests"
-                    variant="outlined"
-                    fullWidth
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    style={{ width: "300px" }}
-                />
-            </div>
-
+            <h2 style={{ textAlign: "center", marginBottom: "1rem" }}>Approved Tutor Request List</h2>
+            <TextField
+                label="Search Tutor Requests"
+                variant="outlined"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{ marginBottom: "1rem", width: "300px" }}
+            />
             <DataGrid
                 rows={filteredRows}
                 columns={columns}
@@ -166,8 +214,7 @@ const PendingTutorRequest = () => {
                     },
                 }}
             />
-
-            {/* Edit Modal */}
+            
             <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
                 <DialogTitle>Edit Tutor Request</DialogTitle>
                 <DialogContent>
@@ -200,9 +247,13 @@ const PendingTutorRequest = () => {
                                     variant="outlined"
                                     fullWidth
                                     value={editData.phone || ""}
-                                    onChange={(e) => setEditData({ ...editData, phone: e.target.value })}
+                                    disabled
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}
                                 />
                             </Grid>
+
                             <Grid item xs={12} sm={6}>
                                 <TextField
                                     label="Start Date"
@@ -225,9 +276,9 @@ const PendingTutorRequest = () => {
                                     value={editData.gender || ""}
                                     onChange={(e) => setEditData({ ...editData, gender: e.target.value })}
                                 >
-                                    <FormControlLabel value="Male" control={<Radio />} label="Male" />
-                                    <FormControlLabel value="Female" control={<Radio />} label="Female" />
-                                    <FormControlLabel value="Others" control={<Radio />} label="Others" />
+                                    <FormControlLabel value="male" control={<Radio />} label="Male" />
+                                    <FormControlLabel value="female" control={<Radio />} label="Female" />
+                                    <FormControlLabel value="others" control={<Radio />} label="Others" />
                                 </RadioGroup>
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -275,17 +326,18 @@ const PendingTutorRequest = () => {
                                 <Autocomplete
                                     freeSolo
                                     options={subjectOptions}
+                                    value={editData.subject || ""}
+                                    onInputChange={(e, newValue) => setEditData({ ...editData, subject: newValue })}
                                     renderInput={(params) => (
                                         <TextField
                                             {...params}
                                             label="Subject"
                                             variant="outlined"
                                             fullWidth
-                                            value={editData.subject || ""}
-                                            onChange={(e) => setEditData({ ...editData, subject: e.target.value })}
                                         />
                                     )}
                                 />
+
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <TextField
@@ -334,13 +386,18 @@ const PendingTutorRequest = () => {
                                 />
                             </Grid>
 
-                            {/* Checkbox */}
+
                             <Grid item xs={12} sm={6}>
                                 <FormControlLabel
                                     control={
                                         <Checkbox
                                             checked={editData.start_immediate || false}
-                                            onChange={(e) => setEditData({ ...editData, start_immediate: e.target.checked })}
+                                            onChange={(e) =>
+                                                setEditData({
+                                                    ...editData,
+                                                    start_immediate: e.target.checked,
+                                                })
+                                            }
                                         />
                                     }
                                     label="Start Immediately"
@@ -351,7 +408,7 @@ const PendingTutorRequest = () => {
                                     <Button onClick={handleClose} variant="outlined" color="secondary">
                                         Cancel
                                     </Button>
-                                    <Button type="submit" variant="contained" color="primary">
+                                    <Button onClick={handleSubmit} type="submit" variant="contained" color="primary">
                                         Submit
                                     </Button>
                                 </DialogActions>
@@ -364,9 +421,23 @@ const PendingTutorRequest = () => {
                 </DialogContent>
             </Dialog>
 
+            <Dialog open={openDeleteModal} onClose={handleCloseDeleteModal}>
+                <DialogTitle>Confirm Deletion</DialogTitle>
+                <DialogContent>
+                    <p>Are you sure you want to delete this tutor request?</p>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDeleteModal}>Cancel</Button>
+                    <Button onClick={handleDelete} color="error">Delete</Button>
+                </DialogActions>
+            </Dialog>
 
         </Box>
     );
 };
 
-export default PendingTutorRequest;
+export default ApprovedTutorRequest;
+
+
+
+

@@ -1,79 +1,101 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AppstoreOutlined, MailOutlined, MenuOutlined } from '@ant-design/icons';
 import { Menu } from 'antd';
-import { Link } from 'react-router-dom';
-import logo from '../../../public/images/TutorwiseLogo.png'
+import { Link, useLocation } from 'react-router-dom';
+import logo from '../../../public/images/TutorwiseLogo.png';
 
 const items = [
   {
-    key: '1',
+    key: '/',
     icon: <MailOutlined />,
     label: <Link to="/">Dashboard</Link>,
   },
   {
-    key: '2',
+    key: '/home/userlist',
     icon: <MailOutlined />,
     label: <Link to="/home/userlist">User List</Link>,
   },
   {
     icon: <AppstoreOutlined />,
     label: 'Tutor Request',
+    key: 'tutor-request', // Unique key for this group
     children: [
-      { key: '3-1', label: <Link to="/pending-tutor-request">Pending Tutor Request</Link> },
-      { key: '3-2', label: <Link to="/approved-tutor-request">Approved Tutor Request</Link> },
-      { key: '3-3', label: <Link to="/pending-higher-tutor-request">Pending Higher Tutor Request</Link> },
-      { key: '3-4', label: <Link to="/approved-higher-tutor-request">Approved Higher Tutor Request</Link> },
+      { key: '/home/pending-tutor-request', label: <Link to="/home/pending-tutor-request">Pending Tutor Request</Link> },
+      { key: '/home/approved-tutor-request', label: <Link to="/home/approved-tutor-request">Approved Tutor Request</Link> },
+      { key: '/home/pending-higher-tutor-request', label: <Link to="/home/pending-higher-tutor-request">Pending Higher Tutor Request</Link> },
+      { key: '/home/approved-higher-tutor-request', label: <Link to="/home/approved-higher-tutor-request">Approved Higher Tutor Request</Link> },
     ],
   },
   {
-    key: '4',
+    key: 'tutor-list',
     icon: <AppstoreOutlined />,
     label: 'Tutor List',
     children: [
-      { key: '4-1', label: <Link to="/pro-tutor">Pro Tutor</Link> },
-      { key: '4-2', label: <Link to="/normal-tutor">Normal Tutor</Link> },
+      { key: '/home/pro-tutor-list', label: <Link to="/home/pro-tutor-list">Pro Tutor</Link> },
+      { key: '/home/tutor-list', label: <Link to="/home/tutor-list"> Tutor</Link> },
     ],
   },
   {
-    key: '5',
+    key: 'institution',
     icon: <AppstoreOutlined />,
     label: 'Institution',
     children: [
-      { key: '5-1', label: <Link to="/add-institution">Add Institution</Link> },
-      { key: '5-2', label: <Link to="/institution-list">Institution List</Link> },
+      { key: '/home/add-institution', label: <Link to="/home/add-institution">Add Institution</Link> },
+      { key: '/home/institution-list', label: <Link to="/home/institution-list">Institution List</Link> },
     ],
   },
   {
-    key: '6',
+    key: 'faq',
     icon: <AppstoreOutlined />,
     label: 'FAQ',
     children: [
-      { key: '6-1', label: <Link to="/add-faq">Add FAQ</Link> },
-      { key: '6-2', label: <Link to="/faq-list">FAQ List</Link> },
+      { key: '/add-faq', label: <Link to="/add-faq">Add FAQ</Link> },
+      { key: '/faq-list', label: <Link to="/faq-list">FAQ List</Link> },
     ],
   },
   {
-    key: '7',
+    key: 'payment',
     icon: <AppstoreOutlined />,
     label: 'Payment',
     children: [
-      { key: '7-1', label: <Link to="/pro-payment">Pro Payment</Link> },
-      { key: '7-2', label: <Link to="/normal-payment">Normal Payment</Link> },
+      { key: '/pro-payment', label: <Link to="/pro-payment">Pro Payment</Link> },
+      { key: '/normal-payment', label: <Link to="/normal-payment">Normal Payment</Link> },
     ],
   },
   {
-    key: '8',
+    key: '/review',
     icon: <MailOutlined />,
     label: <Link to="/review">Review</Link>,
   },
   {
-    key: '9',
+    key: '/testimonial',
     icon: <MailOutlined />,
     label: <Link to="/testimonial">Testimonial</Link>,
   },
 ];
 
 const SideNavBar = ({ isSidebarOpen, toggleSidebar }) => {
+  const location = useLocation();
+  const [openKeys, setOpenKeys] = useState([]);
+
+  // Update openKeys based on the current route
+  useEffect(() => {
+    const path = location.pathname;
+
+    // Match parent group key based on the current path
+    const parentKey = items.find((item) =>
+      item.children?.some((child) => child.key === path)
+    )?.key;
+
+    if (parentKey) {
+      setOpenKeys([parentKey]); // Expand the matched parent group
+    }
+  }, [location.pathname]);
+
+  const handleOpenChange = (keys) => {
+    setOpenKeys(keys); // Update open keys when a user interacts
+  };
+
   return (
     <div
       style={{
@@ -120,7 +142,9 @@ const SideNavBar = ({ isSidebarOpen, toggleSidebar }) => {
       {/* Menu Component */}
       <Menu
         mode="inline"
-        defaultSelectedKeys={['1']}
+        selectedKeys={[location.pathname]} // Highlight the current route
+        openKeys={openKeys} // Expand the required parent group
+        onOpenChange={handleOpenChange} // Update open keys on user interaction
         style={{ width: '100%' }}
         items={items}
       />
