@@ -12,6 +12,7 @@ import {
   TextField,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
+import { MdDelete } from "react-icons/md";
 
 const columns = (handleDeleteClick) => [
   { field: "id", headerName: "ID", flex: 0.5 },
@@ -23,13 +24,14 @@ const columns = (handleDeleteClick) => [
     headerName: "Actions",
     flex: 0.8,
     renderCell: (params) => (
-      <Button
-        variant="contained"
-        color="error"
-        onClick={() => handleDeleteClick(params.row.id)}
-      >
-        Delete
-      </Button>
+      <Box display="flex" justifyContent="end" className="mt-3">
+        <MdDelete title="Delete"
+          size={25}
+          color="red"
+          className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+          onClick={() => handleDeleteClick(params.row.id)}
+        />
+      </Box>
     ),
   },
 ];
@@ -113,17 +115,20 @@ const FaqList = () => {
 
   return (
     <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-      <h2 style={{ textAlign: "center", marginBottom: "1rem" }}>FAQ List</h2>
+      <h2 className="text-center font-bold h3">FAQ List</h2>
 
       {/* Search Bar */}
-      <TextField
-        label="Search"
-        variant="outlined"
-        fullWidth
-        value={searchQuery}
-        onChange={handleSearch}
-        sx={{ marginBottom: "1rem", width:"300px" }}
-      />
+      <Box display="flex" justifyContent="flex-end" >
+        <TextField
+          label="Search"
+          variant="outlined"
+          fullWidth
+          value={searchQuery}
+          onChange={handleSearch}
+          size="small"
+          sx={{ marginBottom: "1rem", width: "300px" }}
+        />
+      </Box>
 
       <DataGrid
         rows={filteredRows} // Use filteredRows instead of rows
@@ -135,9 +140,13 @@ const FaqList = () => {
           "& .MuiDataGrid-columnHeader": {
             backgroundColor: "#f0f0f0",
             fontWeight: "bold",
+            borderBottom: "2px solid #1976d2",
           },
           "& .MuiDataGrid-cell": {
             border: "1px solid #e0e0e0",
+          },
+          "& .MuiDataGrid-cell:focus": {
+            outline: "none",
           },
         }}
       />

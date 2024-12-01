@@ -18,6 +18,8 @@ import {
     TextField,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
+import { FaUserEdit } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
 
 // Dummy subject options
 const subjectOptions = [
@@ -53,24 +55,24 @@ const columns = [
         headerName: "Actions",
         flex: 2,
         renderCell: (params) => (
-            <Box display="flex" gap={2} justifyContent="center" alignItems="center" width="100%">
-                <Button
-                    variant="contained"
-                    color="success"
-                    size="small"
-                    onClick={() => params.row.handleEdit(params.row)}
-                >
-                    Edit
-                </Button>
-                <Button
-                    variant="contained"
-                    color="error"
-                    size="small"
+
+
+            <Box display="flex" justifyContent="end" className="mt-3" gap={1}>
+
+                <FaUserEdit title="Edit"
+                    size={25}
+                    color="black"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                    onClick={() => params.row.handleEdit(params.row)} />
+
+                <MdDelete title="Delete"
+                    size={25}
+                    color="red"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => params.row.handleDelete(params.row)}
-                >
-                    Delete
-                </Button>
+                />
             </Box>
+
         ),
     },
 ];
@@ -118,7 +120,7 @@ const ApprovedTutorRequest = () => {
     const handleDeleteRequest = (row) => {
         setDeleteData(row);
         setOpenDeleteModal(true);
-       
+
     };
 
     const handleDelete = (e) => {
@@ -130,22 +132,22 @@ const ApprovedTutorRequest = () => {
             },
             body: JSON.stringify(editData), // Send the data you want to transfer elsewhere
         })
-        .then((response) => {
-            if (response.ok) {
-                // Perform the transition logic to move data elsewhere
-                setRows((prevRows) =>
-                    prevRows.filter((row) => row.id !== editData.id) // Removing the item after successful POST
-                
-                );
-                setOpenDeleteModal(false); // Close the modal after operation
-                window.location.reload(); 
-            } else {
-                console.error("Failed to process request.");
-            }
-        })
-        .catch((error) => console.error("Error processing request:", error));
+            .then((response) => {
+                if (response.ok) {
+                    // Perform the transition logic to move data elsewhere
+                    setRows((prevRows) =>
+                        prevRows.filter((row) => row.id !== editData.id) // Removing the item after successful POST
+
+                    );
+                    setOpenDeleteModal(false); // Close the modal after operation
+                    window.location.reload();
+                } else {
+                    console.error("Failed to process request.");
+                }
+            })
+            .catch((error) => console.error("Error processing request:", error));
     };
-    
+
 
 
 
@@ -176,23 +178,26 @@ const ApprovedTutorRequest = () => {
         setOpen(false);
     };
 
-    
+
     const handleCloseDeleteModal = () => {
         setOpenDeleteModal(false);
     };
 
-    
+
 
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-            <h2 style={{ textAlign: "center", marginBottom: "1rem" }}>Approved Tutor Request List</h2>
-            <TextField
-                label="Search Tutor Requests"
-                variant="outlined"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{ marginBottom: "1rem", width: "300px" }}
-            />
+            <h2 className="text-center font-bold h3">Approved Tutor Request List</h2>
+            <div className="flex justify-end">
+                <TextField
+                    label="Search Tutor Requests"
+                    variant="outlined"
+                    value={searchQuery}
+                    size="small"
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    style={{ marginBottom: "1rem", width: "300px" }}
+                />
+            </div>
             <DataGrid
                 rows={filteredRows}
                 columns={columns}
@@ -208,13 +213,13 @@ const ApprovedTutorRequest = () => {
                     "& .MuiDataGrid-cell": {
                         border: "1px solid #e0e0e0", // Border for each cell
                     },
-                      
+
                     "& .MuiDataGrid-cell:focus": {
                         outline: "none", // Remove default outline on focus
                     },
                 }}
             />
-            
+
             <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
                 <DialogTitle>Edit Tutor Request</DialogTitle>
                 <DialogContent>

@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Box, Button, Modal, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
+import { BiSolidSelectMultiple } from "react-icons/bi";
+import { FaUserEdit } from "react-icons/fa";
+
+
 
 const columns = (handleEditClick, handleApproveClick) => [
     { field: "id", headerName: "ID", flex: 0.5 },
@@ -13,21 +17,20 @@ const columns = (handleEditClick, handleApproveClick) => [
         headerName: "Actions",
         flex: 1,
         renderCell: (params) => (
-            <Box display="flex" gap={1}>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => handleEditClick(params.row)}
-                >
-                    Edit
-                </Button>
-                <Button
-                    variant="contained"
-                    color="success"
-                    onClick={() => handleApproveClick(params.row.id)}
-                >
-                    Approve
-                </Button>
+            <Box display="flex" justifyContent="end" className="mt-3" gap={1}>
+
+                <FaUserEdit title="Edit"
+                    size={25}
+                    color="black"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                    onClick={() => handleEditClick(params.row)} />
+
+                <BiSolidSelectMultiple title="Approve"
+                    size={25}
+                    color="green"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                    onClick={() => handleApproveClick(params.row.id)} />
+
             </Box>
         ),
     },
@@ -37,6 +40,7 @@ const Review = () => {
     const [rows, setRows] = useState([]);
     const [selectedReview, setSelectedReview] = useState(null);
     const [openModal, setOpenModal] = useState(false);
+    const [searchText, setSearchText] = useState("");
     const [openApproveModal, setOpenApproveModal] = useState(false);
     const [approveId, setApproveId] = useState(null);
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
@@ -50,6 +54,20 @@ const Review = () => {
             })
             .catch((error) => console.error("Error fetching reviews:", error));
     }, []);
+
+    const handleSearch = (event) => {
+        const value = event.target.value.toLowerCase();
+        setSearchText(value);
+        const filtered = rows.filter(
+            (row) =>
+                row.id.toLowerCase().includes(value) ||
+                row.tutor_name.toLowerCase().includes(value) ||
+                row.message.toLowerCase().includes(value) ||
+                row.rating.toLowerCase().includes(value) ||
+                row.name.toLowerCase().includes(value)
+        );
+        setFilteredRows(filtered);
+    };
 
     // Handle edit button click
     const handleEditClick = (review) => {
@@ -131,7 +149,21 @@ const Review = () => {
 
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-            <h2 style={{ textAlign: "center", marginBottom: "1rem" }}>Review List</h2>
+            <h2 className="text-center font-bold h3" >Review List</h2>
+
+            {/* Search Box */}
+            <Box display="flex" justifyContent="flex-end" mb={2}>
+                <TextField
+                    placeholder="Search..."
+                    value={searchText}
+                    onChange={handleSearch}
+                    variant="outlined"
+                    size="small"
+                    sx={{ width: "300px" }}
+                />
+            </Box>
+
+
             <DataGrid
                 rows={rows}
                 columns={columns(handleEditClick, handleApproveClick)}
@@ -147,7 +179,7 @@ const Review = () => {
                     "& .MuiDataGrid-cell": {
                         border: "1px solid #e0e0e0", // Border for each cell
                     },
-                   
+
                     "& .MuiDataGrid-cell:focus": {
                         outline: "none", // Remove default outline on focus
                     },

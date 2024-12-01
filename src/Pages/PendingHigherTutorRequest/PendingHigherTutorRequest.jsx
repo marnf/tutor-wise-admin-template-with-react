@@ -12,6 +12,8 @@ import {
     Autocomplete, // Import Grid component
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
+import { FaUserEdit } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
 
 
 // Dummy subject options
@@ -57,25 +59,23 @@ const columns = [
     {
         field: "actions",
         headerName: "Actions",
-        flex: 2,
+        flex: 1,
         renderCell: (params) => (
-            <Box display="flex" gap={2} justifyContent="center" alignItems="center" width="100%">
-                <Button
-                    variant="contained"
-                    color="success"
-                    size="small"
-                    onClick={() => params.row.handleEdit(params.row)}
-                >
-                    Edit
-                </Button>
-                <Button
-                    variant="contained"
-                    color="error"
-                    size="small"
+
+            <Box display="flex" justifyContent="end" className="mt-3" gap={1}>
+
+                <FaUserEdit title="Edit"
+                    size={25}
+                    color="black"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                    onClick={() => params.row.handleEdit(params.row)} />
+
+                <MdDelete title="Delete"
+                    size={25}
+                    color="red"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => params.row.handleDelete(params.row)}
-                >
-                    Delete
-                </Button>
+                />
             </Box>
         ),
     },
@@ -120,7 +120,7 @@ const PendingHigherTutorRequest = () => {
     };
 
     const handleDeleteRequest = (row) => {
-       // Store the row data to be deleted
+        // Store the row data to be deleted
         setOpenDeleteModal(true); // Open the delete modal
     };
 
@@ -196,14 +196,17 @@ const PendingHigherTutorRequest = () => {
 
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-            <h2 style={{ textAlign: "center", marginBottom: "1rem" }}>Pending Higher Tutor Requests</h2>
-            <TextField
+            <h2 className="text-center font-bold h3">Pending Higher Tutor Requests</h2>
+           <div className="flex justify-end">
+           <TextField
                 label="Search Requests"
                 variant="outlined"
                 value={searchQuery}
+                size="small"
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{ marginBottom: "1rem", width: "300px" }}
             />
+           </div>
             <DataGrid
                 rows={filteredRows}
                 columns={columns}
@@ -219,7 +222,7 @@ const PendingHigherTutorRequest = () => {
                     "& .MuiDataGrid-cell": {
                         border: "1px solid #e0e0e0", // Border for each cell
                     },
-                   
+
                     "& .MuiDataGrid-cell:focus": {
                         outline: "none", // Remove default outline on focus
                     },

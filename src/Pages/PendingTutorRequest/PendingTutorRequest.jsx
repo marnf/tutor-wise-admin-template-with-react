@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { Modal } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, TextareaAutosize, Grid, MenuItem, Autocomplete, Radio, RadioGroup, FormControlLabel, FormLabel, Checkbox } from "@mui/material"; 
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, TextareaAutosize, Grid, MenuItem, Autocomplete, Radio, RadioGroup, FormControlLabel, FormLabel, Checkbox } from "@mui/material";
+import { MdDelete } from "react-icons/md";
+import { FaUserEdit } from "react-icons/fa";
+import { BiSolidSelectMultiple } from "react-icons/bi";
 
 
 const columns = [
@@ -14,24 +18,24 @@ const columns = [
         headerName: "Actions",
         flex: 1,
         renderCell: (params) => (
-            <Box display="flex" justifyContent="center" alignItems="center" width="100%">
-                <Button
-                    variant="contained"
-                    color="success"
-                    size="small"
-                    onClick={() => params.row.handleEdit(params.row)}
-                    style={{ marginRight: 8 }} >
-                    Approve
-                </Button>
 
-                <Button
-                    variant="contained"
-                    color="error"
-                    size="small"
-                    onClick={() => params.row.handleDelete(params.row)} >
-                    Delete
-                </Button>
+
+            <Box display="flex" justifyContent="end" className="mt-3" gap={1}>
+
+                <BiSolidSelectMultiple title="Edit"
+                    size={25}
+                    color="green"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                    onClick={() => params.row.handleEdit(params.row)} />
+
+                <MdDelete title="Delete"
+                    size={25}
+                    color="red"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                    onClick={() => params.row.handleDelete(params.row.id)} />
+
             </Box>
+
         ),
     },
 ];
@@ -41,6 +45,7 @@ const PendingTutorRequest = () => {
     const [filteredRows, setFilteredRows] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [open, setOpen] = useState(false);  // Modal open state
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);  // Modal open state
     const [editData, setEditData] = useState({});  // State to hold the data for editing
 
     const subjectOptions = [
@@ -64,7 +69,7 @@ const PendingTutorRequest = () => {
                     location: request.location || "Not Available",
                     details: request.details || "No Details",
                     handleEdit: handleOpenEditModal,
-                    handleDelete: handleDeleteRequest,
+                    handleDelete: handleOpenDeleteModal,
                 }));
                 setRows(formattedData);
                 setFilteredRows(formattedData);
@@ -77,7 +82,8 @@ const PendingTutorRequest = () => {
             const filtered = rows.filter((row) =>
                 row.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 row.phone.includes(searchQuery) ||
-                row.location.toLowerCase().includes(searchQuery.toLowerCase())
+                row.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                row.details.toLowerCase().includes(searchQuery.toLowerCase())
             );
             setFilteredRows(filtered);
         } else {
@@ -95,21 +101,25 @@ const PendingTutorRequest = () => {
         setEditData({});
     };
 
-    const handleDeleteRequest = (row) => {
-        // Implement delete logic here
+    const handleOpenDeleteModal = (id) => {
+        setOpenDeleteModal(true)
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault(); 
+    const handleDeleteConfirm = (id) => {
 
-        console.log("Form Data:", editData); 
+    }
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        console.log("Form Data:", editData);
 
         fetch(`https://tutorwise-backend.vercel.app/api/admin/request-tutor-add-info/${editData.id}/`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(editData), 
+            body: JSON.stringify(editData),
         })
             .then((response) => {
                 if (response.ok) {
@@ -121,7 +131,7 @@ const PendingTutorRequest = () => {
             })
             .then((updatedData) => {
                 console.log("Successfully updated:", updatedData);
-                window.location.reload(); 
+                window.location.reload();
             })
             .catch((error) => {
                 console.error("Error updating data:", error);
@@ -132,14 +142,15 @@ const PendingTutorRequest = () => {
 
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-            <h2 style={{ textAlign: "center", marginBottom: "1rem" }}>Tutor Request List</h2>
+            <h2 className="text-center font-bold h3">Tutor Request List</h2>
 
-            <div className="flex justify-between items-center">
+            <div className="flex justify-end mb-2">
                 <TextField
                     label="Search Tutor Requests"
                     variant="outlined"
                     fullWidth
                     value={searchQuery}
+                    size="small"
                     onChange={(e) => setSearchQuery(e.target.value)}
                     style={{ width: "300px" }}
                 />
@@ -160,7 +171,7 @@ const PendingTutorRequest = () => {
                     "& .MuiDataGrid-cell": {
                         border: "1px solid #e0e0e0", // Border for each cell
                     },
-                   
+
                     "& .MuiDataGrid-cell:focus": {
                         outline: "none", // Remove default outline on focus
                     },
@@ -357,13 +368,30 @@ const PendingTutorRequest = () => {
                                 </DialogActions>
                             </Grid>
 
-                            {/* Buttons */}
 
                         </Grid>
                     </form>
                 </DialogContent>
             </Dialog>
 
+
+            <Modal
+                open={openDeleteModal}
+                onClose={() => setOpenDeleteModal(false)}
+                aria-labelledby="delete-confirmation-modal"
+            >
+                <Box sx={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", p: 3, backgroundColor: "#fff", borderRadius: "12px" }}>
+                    <h4 className="py-5">Are you sure you want to delete this review?</h4>
+                    <div className=" flex justify-center">
+                        <Button variant="contained" color="error" onClick={handleDeleteConfirm}>
+                            Delete
+                        </Button>
+                        <Button variant="outlined" onClick={() => setOpenDeleteModal(false)} sx={{ marginLeft: "1rem" }}>
+                            Cancel
+                        </Button>
+                    </div>
+                </Box>
+            </Modal>
 
         </Box>
     );

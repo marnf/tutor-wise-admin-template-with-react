@@ -50,9 +50,9 @@ const ProPayment = () => {
     // Filtering rows based on search query
     const handleSearch = (event) => {
         setSearchQuery(event.target.value);
-        const filteredData = rows.filter((row) => 
-            row.name.toLowerCase().includes(event.target.value.toLowerCase()) || 
-            row.email.toLowerCase().includes(event.target.value.toLowerCase()) || 
+        const filteredData = rows.filter((row) =>
+            row.name.toLowerCase().includes(event.target.value.toLowerCase()) ||
+            row.email.toLowerCase().includes(event.target.value.toLowerCase()) ||
             row.transaction_id.toLowerCase().includes(event.target.value.toLowerCase())
         );
         setFilteredRows(filteredData);
@@ -60,17 +60,20 @@ const ProPayment = () => {
 
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-            <h2 style={{ textAlign: "center", marginBottom: "1rem" }}>FAQ List</h2>
+            <h2 className="text-center font-bold h3">Pro Payment</h2>
 
             {/* Search Bar */}
-            <TextField
-                label="Search"
-                variant="outlined"
-                fullWidth
-                value={searchQuery}
-                onChange={handleSearch}
-                sx={{ marginBottom: "1rem", width:"300px" }}
-            />
+            <div className="flex justify-end">
+                <TextField
+                    label="Search"
+                    variant="outlined"
+                    fullWidth
+                    size="small"
+                    value={searchQuery}
+                    onChange={handleSearch}
+                    sx={{ marginBottom: "1rem", width: "300px" }}
+                />
+            </div>
 
             <DataGrid
                 rows={filteredRows}
@@ -87,7 +90,7 @@ const ProPayment = () => {
                     "& .MuiDataGrid-cell": {
                         border: "1px solid #e0e0e0", // Border for each cell
                     },
-                   
+
                     "& .MuiDataGrid-cell:focus": {
                         outline: "none", // Remove default outline on focus
                     },

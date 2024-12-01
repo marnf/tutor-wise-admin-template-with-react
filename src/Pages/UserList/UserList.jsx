@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { Box, Button, Modal, TextField } from "@mui/material";
 import Select from "react-select";  // Import react-select
+import { BiSolidSelectMultiple } from "react-icons/bi";
+import { MdDelete } from "react-icons/md";
+import { IoIosAddCircle } from "react-icons/io";
 
 const columns = [
     { field: "id", headerName: "ID", flex: 0.5 },
@@ -14,25 +17,25 @@ const columns = [
         headerName: "Actions",
         flex: 1,
         renderCell: (params) => (
-            <Box display="flex" justifyContent="center" alignItems="center" width="100%">
-                <Button
-                    variant="contained"
-                    color="success"
-                    size="small"
-                    onClick={() => params.row.handleEdit(params.row)}
-                    style={{ marginRight: 8 }}
-                >
-                    Edit
-                </Button>
-                <Button
-                    variant="contained"
-                    color="error"
-                    size="small"
-                    onClick={() => params.row.handleDelete(params.row)}
-                >
-                    Delete
-                </Button>
+
+
+
+            <Box display="flex" justifyContent="end" className="mt-3" gap={1}>
+
+                <BiSolidSelectMultiple title="Edit"
+                    size={25}
+                    color="green"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                    onClick={() => params.row.handleEdit(params.row)} />
+
+                <MdDelete title="Delete"
+                    size={25}
+                    color="red"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                    onClick={() => params.row.handleDelete(params.row)} />
+
             </Box>
+
         ),
     },
 ];
@@ -219,25 +222,30 @@ const UserList = () => {
 
 
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-            <h2 style={{ textAlign: "center", marginBottom: "1rem" }}>User List</h2>
+            <h2 className="text-center font-bold h3">User List</h2>
 
             <div className="flex justify-between items-center">
+
+                <button
+                    className="transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110duration-300 my-2 p-2 rounded flex items-center border"
+                    onClick={handleCreateUser}>
+                     <p className="text-blue-500 flex items-center"> <IoIosAddCircle size={25} color="blue"  /> Create User </p>
+                </button>
+
+                <IoIosAddCircle  />
+
                 {/* Search Bar */}
                 <TextField
                     label="Search Users"
                     variant="outlined"
                     fullWidth
+                    size="small"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     style={{ width: "300px" }}
                 />
 
 
-                <button
-                    className="transition ease-in-out delay-150 bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500 duration-300 my-2 p-3 rounded"
-                    onClick={handleCreateUser}>
-                    Create User
-                </button>
 
             </div>
 
@@ -256,7 +264,7 @@ const UserList = () => {
                     "& .MuiDataGrid-cell": {
                         border: "1px solid #e0e0e0", // Border for each cell
                     },
-                   
+
                     "& .MuiDataGrid-cell:focus": {
                         outline: "none", // Remove default outline on focus
                     },

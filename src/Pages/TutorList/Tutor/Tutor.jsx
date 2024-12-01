@@ -62,14 +62,16 @@ const Tutor = () => {
 
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-            <h2 style={{ textAlign: "center", marginBottom: "1rem" }}>Pro Tutors</h2>
-            <TextField
-                label="Search Tutors"
-                variant="outlined"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{ marginBottom: "1rem", width: "300px" }}
-            />
+            <h2 className="text-center font-bold h3">Tutors</h2>
+            <div className="flex justify-end">
+                <TextField
+                    label="Search Tutors"
+                    variant="outlined"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    style={{ marginBottom: "1rem", width: "300px" }}
+                />
+            </div>
             <DataGrid
                 rows={filteredRows}
                 columns={columns}
@@ -85,7 +87,7 @@ const Tutor = () => {
                     "& .MuiDataGrid-cell": {
                         border: "1px solid #e0e0e0", // Border for each cell
                     },
-                   
+
                     "& .MuiDataGrid-cell:focus": {
                         outline: "none", // Remove default outline on focus
                     },
