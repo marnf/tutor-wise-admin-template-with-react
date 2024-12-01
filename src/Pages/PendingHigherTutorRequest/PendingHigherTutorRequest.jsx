@@ -219,7 +219,7 @@ const PendingHigherTutorRequest = () => {
                     "& .MuiDataGrid-cell": {
                         border: "1px solid #e0e0e0", // Border for each cell
                     },
-                      
+                   
                     "& .MuiDataGrid-cell:focus": {
                         outline: "none", // Remove default outline on focus
                     },

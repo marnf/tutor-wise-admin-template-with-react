@@ -16,6 +16,12 @@ import Protutor from './Pages/TutorList/ProTutor/Protutor.jsx';
 import Tutor from './Pages/TutorList/Tutor/Tutor.jsx';
 import AddInstitution from './Pages/Institution/AddInstitution/AddInstitution.jsx'
 import InstitutionList from './Pages/Institution/InstitutionList/InstitutionList.jsx';
+import AddFaq from './Pages/FAQ/AddFaq/AddFaq.jsx';
+import FaqList from './Pages/FAQ/FaqList/FaqList.jsx';
+import ProPayment from './Pages/Payment/ProPayment/ProPayment.jsx';
+import Payment from './Pages/Payment/Payment/Payment.jsx';
+import Review from './Pages/Review/Review.jsx';
+import Testimonial from './Pages/Testimonial/Testimonial.jsx';
 
 const router = createBrowserRouter([
   {
@@ -65,6 +71,30 @@ const router = createBrowserRouter([
       {
         path: "/home/institution-list",
         element: <InstitutionList></InstitutionList>
+      },
+      {
+        path: "/home/add-faq",
+        element: <AddFaq></AddFaq>
+      },
+      {
+        path: "/home/faq-list",
+        element: <FaqList></FaqList>
+      },
+      {
+        path: "/home/pro-payment",
+        element: <ProPayment></ProPayment>
+      },
+      {
+        path: "/home/payment",
+        element: <Payment></Payment>
+      },
+      {
+        path: "/home/review",
+        element: <Review></Review>
+      },
+      {
+        path: "/home/testimonial",
+        element: <Testimonial></Testimonial>
       },
     ]
   },

@@ -49,8 +49,8 @@ const items = [
     icon: <AppstoreOutlined />,
     label: 'FAQ',
     children: [
-      { key: '/add-faq', label: <Link to="/add-faq">Add FAQ</Link> },
-      { key: '/faq-list', label: <Link to="/faq-list">FAQ List</Link> },
+      { key: '/home/add-faq', label: <Link to="/home/add-faq">Add FAQ</Link> },
+      { key: '/home/faq-list', label: <Link to="/home/faq-list">FAQ List</Link> },
     ],
   },
   {
@@ -58,19 +58,19 @@ const items = [
     icon: <AppstoreOutlined />,
     label: 'Payment',
     children: [
-      { key: '/pro-payment', label: <Link to="/pro-payment">Pro Payment</Link> },
-      { key: '/normal-payment', label: <Link to="/normal-payment">Normal Payment</Link> },
+      { key: '/home/pro-payment', label: <Link to="/home/pro-payment">Pro Payment</Link> },
+      { key: '/home/payment', label: <Link to="/home/payment">Payment</Link> },
     ],
   },
   {
-    key: '/review',
+    key: '/home/review',
     icon: <MailOutlined />,
-    label: <Link to="/review">Review</Link>,
+    label: <Link to="/home/review">Review</Link>,
   },
   {
-    key: '/testimonial',
+    key: '/home/testimonial',
     icon: <MailOutlined />,
-    label: <Link to="/testimonial">Testimonial</Link>,
+    label: <Link to="/home/testimonial">Testimonial</Link>,
   },
 ];
 

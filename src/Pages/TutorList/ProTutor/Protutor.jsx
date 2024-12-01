@@ -30,12 +30,13 @@ const Protutor = () => {
 
     // Fetch data from the API
     useEffect(() => {
+        const BASE_URL = "https://tutorwise-backend.vercel.app";
         fetch("https://tutorwise-backend.vercel.app/api/admin/pro-tutor-list/")
             .then((res) => res.json())
             .then((data) => {
                 const formattedData = data.map((item) => ({
                     id: item.tutor_personal_info.id,
-                    profile_picture: item.tutor_personal_info.profile_picture,
+                    profile_picture: item.tutor_personal_info.profile_picture ? `${BASE_URL}${item.tutor_personal_info.profile_picture}` : null,
                     full_name: item.tutor_personal_info.full_name,
                     division: item.tutor_personal_info.division,
                     location: `${item.tutor_personal_info.district}, ${item.tutor_personal_info.location}`,

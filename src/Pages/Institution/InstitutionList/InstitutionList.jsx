@@ -166,9 +166,14 @@ const InstitutionList = () => {
                     "& .MuiDataGrid-columnHeader": {
                         backgroundColor: "#f0f0f0",
                         fontWeight: "bold",
+                        borderBottom: "2px solid #1976d2", // Column header's bottom border
                     },
                     "& .MuiDataGrid-cell": {
-                        border: "1px solid #e0e0e0",
+                        border: "1px solid #e0e0e0", // Border for each cell
+                    },
+                   
+                    "& .MuiDataGrid-cell:focus": {
+                        outline: "none", // Remove default outline on focus
                     },
                 }}
             />
