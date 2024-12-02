@@ -115,6 +115,7 @@ const Dashboard = () => {
                     title="Inactive User"
                     value={inactiveUserData ? inactiveUserData.inactive_user : '0'}
                     percentage={chartPercentages.inactiveUser}
+
                 />
             </div>
         </div>
@@ -137,6 +138,8 @@ const Card = ({ title, value, percentage }) => {
                 </div>
             </div>
         </div>
+
+        
     );
 };
 

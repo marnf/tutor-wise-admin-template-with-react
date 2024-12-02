@@ -6,9 +6,9 @@ import logo from '../../../public/images/TutorwiseLogo.png';
 
 const items = [
   {
-    key: '/',
+    key: '/home',
     icon: <MailOutlined />,
-    label: <Link to="/">Dashboard</Link>,
+    label: <Link to="/home">Dashboard</Link>,
   },
   {
     key: '/home/userlist',

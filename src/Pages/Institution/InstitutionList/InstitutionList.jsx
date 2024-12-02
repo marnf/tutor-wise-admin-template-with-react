@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Modal, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert } from "@mui/material";
+import { Box, Button, Modal, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, CircularProgress } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { FaUserEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
@@ -55,9 +55,11 @@ const InstitutionList = () => {
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [deleteId, setDeleteId] = useState(null);
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         const BASE_URL = "https://tutorwise-backend.vercel.app";
+        setLoading(true);
         fetch(`${BASE_URL}/api/admin/view-institution/`)
             .then((res) => res.json())
             .then((data) => {
@@ -67,9 +69,11 @@ const InstitutionList = () => {
                     name: item.name,
                 }));
                 setRows(formattedData);
-                setFilteredRows(formattedData); // Initialize filteredRows
+                setFilteredRows(formattedData);
+                setLoading(false) 
             })
-            .catch((error) => console.error("Error fetching data:", error));
+            .catch((error) => console.error("Error fetching data:", error))
+            
     }, []);
 
     // Handle edit button click
@@ -175,10 +179,12 @@ const InstitutionList = () => {
     };
 
     return (
+
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
+
             <h2 className="text-center font-bold h3">Institution List</h2>
 
-            <Box className ="flex justify-end mb-2">
+            <Box className="flex justify-end mb-2">
                 <TextField
                     placeholder="Search..."
                     value={searchText}
@@ -189,28 +195,37 @@ const InstitutionList = () => {
                 />
             </Box>
 
+            {loading ? (
+                <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+                   <p>Loading...</p>
+                </Box>
+            ) : (
+                <DataGrid
+                    rows={filteredRows} // Use filteredRows here
+                    columns={columns(handleEditClick, handleDeleteClick)}
+                    pageSize={10}
+                    rowsPerPageOptions={[5, 10, 20]}
+                    disableSelectionOnClick
+                    sx={{
+                        "& .MuiDataGrid-columnHeader": {
+                            backgroundColor: "#f0f0f0",
+                            fontWeight: "bold",
+                            borderBottom: "2px solid #1976d2", // Column header's bottom border
+                        },
+                        "& .MuiDataGrid-cell": {
+                            border: "1px solid #e0e0e0", // Border for each cell
+                        },
 
-            <DataGrid
-                rows={filteredRows} // Use filteredRows here
-                columns={columns(handleEditClick, handleDeleteClick)}
-                pageSize={10}
-                rowsPerPageOptions={[5, 10, 20]}
-                disableSelectionOnClick
-                sx={{
-                    "& .MuiDataGrid-columnHeader": {
-                        backgroundColor: "#f0f0f0",
-                        fontWeight: "bold",
-                        borderBottom: "2px solid #1976d2", // Column header's bottom border
-                    },
-                    "& .MuiDataGrid-cell": {
-                        border: "1px solid #e0e0e0", // Border for each cell
-                    },
+                        "& .MuiDataGrid-cell:focus": {
+                            outline: "none", // Remove default outline on focus
+                        },
+                    }}
+                />
+            )
+            }
 
-                    "& .MuiDataGrid-cell:focus": {
-                        outline: "none", // Remove default outline on focus
-                    },
-                }}
-            />
+
+
 
             {/* Modal for editing institution */}
             <Modal
@@ -326,6 +341,7 @@ const InstitutionList = () => {
             </Snackbar>
         </Box>
     );
-};
+}
+
 
 export default InstitutionList;

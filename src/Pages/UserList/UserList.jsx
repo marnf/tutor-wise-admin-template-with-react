@@ -4,7 +4,10 @@ import { Box, Button, Modal, TextField } from "@mui/material";
 import Select from "react-select";  // Import react-select
 import { BiSolidSelectMultiple } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
-import { IoIosAddCircle } from "react-icons/io";
+import { GoPlus } from "react-icons/go";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { GiCycle } from "react-icons/gi";
+
 
 const columns = [
     { field: "id", headerName: "ID", flex: 0.5 },
@@ -49,7 +52,29 @@ const UserList = () => {
     const [rolesOptions, setRolesOptions] = useState([]);  // State for roles options
     const [openDeleteModal, setOpenDeleteModal] = useState(false); // Delete confirmation modal state
     const [openCreateModal, setOpenCreateModal] = useState(false); // Create modal state
+    const [originalRolesOptions, setOriginalRolesOptions] = useState([]); // Keep original list
+    const [password, setPassword] = useState("");  // Password state
+    const [showPassword, setShowPassword] = useState(false);
+    const [loading , setLoading] =useState(false);
 
+
+
+    // Function to generate random password
+    const generatePassword = () => {
+        const length = 8;
+        const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let password = "";
+        for (let i = 0; i < length; i++) {
+            password += charset.charAt(Math.floor(Math.random() * charset.length));
+        }
+        setPassword(password);
+    };
+
+    // password visible or not
+
+    const togglePasswordVisibility = () => {
+        setShowPassword((prevState) => !prevState);
+    };
 
     // Fetch Data for Users
     useEffect(() => {
@@ -87,6 +112,7 @@ const UserList = () => {
     }, [searchQuery, rows]);
 
     // Fetch Roles Options for Select
+
     useEffect(() => {
         fetch("https://tutorwise-backend.vercel.app/api/admin/view-role/")
             .then((res) => res.json())
@@ -96,9 +122,27 @@ const UserList = () => {
                     label: role.role_name,
                 }));
                 setRolesOptions(options);
+                setOriginalRolesOptions(options); // Save original list
             })
             .catch((error) => console.error("Error fetching roles options:", error));
     }, []);
+
+    // Handle Role Selection Change
+    const handleRolesChange = (selectedOptions) => {
+        // Update currentRow rolesName state
+        setCurrentRow({
+            ...currentRow,
+            rolesName: selectedOptions.map((option) => option.label),
+        });
+
+        // Update available rolesOptions by adding removed options back
+        const selectedValues = selectedOptions.map((option) => option.label);
+        const updatedOptions = originalRolesOptions.filter(
+            (option) => !selectedValues.includes(option.label)
+        );
+
+        setRolesOptions(updatedOptions);
+    };
 
     // Open Modal
     const handleOpenModal = (row) => {
@@ -226,13 +270,15 @@ const UserList = () => {
 
             <div className="flex justify-between items-center">
 
-                <button
-                    className="transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110duration-300 my-2 p-2 rounded flex items-center border"
+                <button className=" bg-green-600 hover:bg-green-700 text-white transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-110 duration-300 my-2 p-2 rounded flex items-center border"
                     onClick={handleCreateUser}>
-                     <p className="text-blue-500 flex items-center"> <IoIosAddCircle size={25} color="blue"  /> Create User </p>
+                    <div className="flex justify-center items-center gap-1">
+                        <GoPlus size={25} />
+                        <p>Create User</p>
+                    </div>
                 </button>
 
-                <IoIosAddCircle  />
+
 
                 {/* Search Bar */}
                 <TextField
@@ -250,6 +296,7 @@ const UserList = () => {
             </div>
 
             <DataGrid
+            
                 rows={filteredRows}
                 columns={columns}
                 pageSize={10}
@@ -271,15 +318,16 @@ const UserList = () => {
                 }}
             />
 
-            {/* create modal */}
+
 
             {/* Create User Modal */}
             <Modal open={openCreateModal} onClose={handleCloseCreateModal}>
-                <Box sx={{ ...modalStyle, width: 600 }}>
+                <Box sx={{ ...modalStyle, width: 700 }}> {/* Modal width increased */}
                     <form onSubmit={handleCreateSubmit} className="p-3">
                         <h2 className="text-center mb-4" style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Create User</h2>
 
-                        <div className="mb-4">
+                        {/* User Type */}
+                        <div className="mb-2">
                             <label htmlFor="userType" className="form-label">User Type:</label>
                             <select
                                 id="userType"
@@ -293,60 +341,135 @@ const UserList = () => {
                             </select>
                         </div>
 
-                        <div className="mb-4">
+                        {/* Access */}
+                        <div className="mb-2">
                             <label htmlFor="rolesName" className="form-label">Access:</label>
                             <Select
                                 isMulti
                                 name="rolesName"
                                 options={rolesOptions}
-                                value={currentRow?.rolesName?.map(role => ({ value: role, label: role })) || []}
-                                onChange={(selectedOptions) =>
-                                    setCurrentRow({
-                                        ...currentRow,
-                                        rolesName: selectedOptions.map(option => option.label),
-                                    })
-                                }
+                                value={currentRow?.rolesName?.map((role) => ({
+                                    value: role,
+                                    label: role,
+                                })) || []}
+                                onChange={handleRolesChange}
+                                closeMenuOnSelect={false}
                                 className="basic-multi-select"
                                 classNamePrefix="select"
                             />
                         </div>
 
-                        <div className="mb-4">
-                            <label htmlFor="username" className="form-label">Username:</label>
-                            <input
-                                type="text"
-                                id="username"
-                                className="form-control"
-                                value={currentRow?.username || ""}
-                                onChange={(e) => setCurrentRow({ ...currentRow, username: e.target.value })}
-                                required
-                            />
+                        {/* Username and Phone */}
+                        <div className="row mb-2">
+                            <div className="col-md-6">
+                                <label htmlFor="username" className="form-label">Username:</label>
+                                <input
+                                    type="text"
+                                    id="username"
+                                    style={{ height: '37px', padding: '5px 10px', fontSize: '14px' }}
+                                    className="form-control"
+                                    value={currentRow?.username || ""}
+                                    onChange={(e) => setCurrentRow({ ...currentRow, username: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            <div className="col-md-6">
+                                <label htmlFor="phone" className="form-label">Phone:</label>
+                                <input
+                                    type="text"
+                                    id="phone"
+                                    style={{ height: '37px', padding: '5px 10px', fontSize: '14px' }}
+                                    className="form-control"
+                                    value={currentRow?.phone || ""}
+                                    onChange={(e) => setCurrentRow({ ...currentRow, phone: e.target.value })}
+                                    required
+                                />
+                            </div>
                         </div>
 
-                        <div className="mb-4">
-                            <label htmlFor="phone" className="form-label">Phone:</label>
-                            <input
-                                type="text"
-                                id="phone"
-                                className="form-control"
-                                value={currentRow?.phone || ""}
-                                onChange={(e) => setCurrentRow({ ...currentRow, phone: e.target.value })}
-                                required
-                            />
+                        {/* Email and Password */}
+                        <div className="row mb-4">
+                            <div className="col-md-6">
+                                <label htmlFor="email" className="form-label">Email:</label>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    style={{ height: '37px', padding: '5px 10px', fontSize: '14px' }}
+                                    className="form-control"
+                                    value={currentRow?.email || ""}
+                                    onChange={(e) => setCurrentRow({ ...currentRow, email: e.target.value })}
+                                    required
+                                />
+                            </div>
+
+                            <div className="col-md-6 flex flex-row items-center gap-2">
+                                <div className="col-md-4 w-75 input-group " aria-describedby="basic-addon1">
+                                    <label htmlFor="password" className="form-label">Password:</label>
+                                    <div className="flex flex-row" style={{ position: 'relative', width: '100%' }}>
+                                        <input
+                                            type={showPassword ? "text" : "password"}
+                                            value={password}
+                                            id="password"
+                                            style={{
+                                                height: '37px',
+                                                padding: '5px 10px',
+                                                fontSize: '14px',
+                                                flexGrow: 1,  // Ensures the input takes up all available space
+                                                paddingRight: '40px',  // Space for the icons
+                                            }}
+                                            className="form-control"
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            required
+                                        />
+                                        {/* Password Visibility Toggle Button */}
+                                        <div className="cursor-pointer mt-1"
+                                            onClick={togglePasswordVisibility}
+                                            style={{
+                                                position: 'absolute',
+                                                right: '10px',  // Position visibility toggle button inside the input field
+                                                top: '50%',
+                                                transform: 'translateY(-50%)',
+                                                background: 'transparent',
+                                                border: 'none',
+                                            }}
+                                        >
+                                            {showPassword ? <FaEyeSlash size={15} /> : <FaEye size={15} />}
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+
+                                {/* Password Generator Button outside the input field */}
+                                <div className="input-group-prepend w-25" id="basic-addon1">
+                                    <Button
+                                        onClick={generatePassword}
+                                        style={{
+                                            marginTop: '10px',  // Adjust as needed for spacing
+                                            background: 'success',
+                                            border: '1px solid #ccc',
+                                            padding: '7px 15px',
+
+                                        }}
+                                    >
+                                        <GiCycle size={20} />
+                                    </Button>
+                                </div>
+
+
+                            </div>
+
                         </div>
 
-                        <div className="mb-4">
-                            <label htmlFor="password" className="form-label">Password:</label>
-                            <input
-                                type="password"
-                                id="password"
-                                className="form-control"
-                                value={currentRow?.password || ""}
-                                onChange={(e) => setCurrentRow({ ...currentRow, password: e.target.value })}
-                                required
-                            />
-                        </div>
 
+
+
+
+
+
+
+                        {/* Submit Button */}
                         <div className="text-center">
                             <Button variant="contained" color="primary" type="submit">
                                 Create User
@@ -355,6 +478,7 @@ const UserList = () => {
                     </form>
                 </Box>
             </Modal>
+
 
 
             {/* Edit Modal */}
@@ -381,14 +505,13 @@ const UserList = () => {
                             <Select
                                 isMulti
                                 name="rolesName"
-                                options={rolesOptions}  // Dynamic options
-                                value={currentRow?.rolesName.map(role => ({ value: role, label: role })) || []}  // Map to objects for react-select
-                                onChange={(selectedOptions) =>
-                                    setCurrentRow({
-                                        ...currentRow,
-                                        rolesName: selectedOptions.map(option => option.label)  // Save as string array
-                                    })
-                                }
+                                options={rolesOptions}
+                                value={currentRow?.rolesName?.map((role) => ({
+                                    value: role,
+                                    label: role,
+                                })) || []}
+                                onChange={handleRolesChange}
+                                closeMenuOnSelect={false}
                                 className="basic-multi-select"
                                 classNamePrefix="select"
                             />
@@ -400,6 +523,7 @@ const UserList = () => {
                                 type="text"
                                 id="username"
                                 className="form-control"
+
                                 value={currentRow?.username || ""}
                                 onChange={(e) => setCurrentRow({ ...currentRow, username: e.target.value })}
                             />
