@@ -8,12 +8,14 @@ const Dashboard = () => {
     const [referrerData, setReferrerData] = useState(null);
     const [paymentData, setPaymentData] = useState(null);
     const [inactiveUserData, setInactiveUserData] = useState(null);
+    const [activeUserData, setActiveUserData] = useState(null);
     const [chartPercentages, setChartPercentages] = useState({
         totalStudent: 0,
         proTutor: 0,
         referrer: 0,
         payment: 0,
         inactiveUser: 0,
+        activeUser: 0,
     });
 
     // API Data Fetching
@@ -45,6 +47,13 @@ const Dashboard = () => {
                 animatePercentage("payment", response.data.apply_limit_percentage);
             })
             .catch((error) => console.error('Error fetching Payment data:', error));
+
+        axios.get('https://tutorwise-backend.vercel.app/api/admin/active-inactive-user-percentage/')
+            .then((response) => {
+                setActiveUserData(response.data);
+                animatePercentage("activeUser", response.data.active_percentage);
+            })
+            .catch((error) => console.error('Error fetching Active User data:', error));
 
         axios.get('https://tutorwise-backend.vercel.app/api/admin/active-inactive-user-percentage/')
             .then((response) => {
@@ -94,6 +103,13 @@ const Dashboard = () => {
                     value={paymentData ? paymentData.total_payment_number : '0'}
                     percentage={chartPercentages.payment}
                 />
+                {/* active User Card */}
+                <Card
+                    title="Active User"
+                    value={activeUserData ? activeUserData.active_user : '0'}
+                    percentage={chartPercentages.activeUser}
+                />
+
                 {/* Inactive User Card */}
                 <Card
                     title="Inactive User"
