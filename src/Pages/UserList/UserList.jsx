@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { Box, Button, Modal, TextField } from "@mui/material";
+import { Alert, Box, Button, Modal, TextField } from "@mui/material";
 import Select from "react-select";  // Import react-select
 import { BiSolidSelectMultiple } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
 import { GoPlus } from "react-icons/go";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { GiCycle } from "react-icons/gi";
+import { Snackbar } from '@mui/material';
+
 
 
 const columns = [
@@ -55,23 +57,27 @@ const UserList = () => {
     const [originalRolesOptions, setOriginalRolesOptions] = useState([]); // Keep original list
     const [password, setPassword] = useState("");  // Password state
     const [showPassword, setShowPassword] = useState(false);
-    const [loading , setLoading] =useState(false);
+    const [loading, setLoading] = useState(false);
+    const [openCreateRoleModal, setOpenCreateRoleModal] = useState(false);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [selectedOptions , setSelectedOptions]= useState('')
 
 
 
     // Function to generate random password
     const generatePassword = () => {
-        const length = 8;
+        const length = 12;
         const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        let password = "";
+        let generatedPassword = '';
         for (let i = 0; i < length; i++) {
-            password += charset.charAt(Math.floor(Math.random() * charset.length));
+            generatedPassword += charset.charAt(Math.floor(Math.random() * charset.length));
         }
-        setPassword(password);
+        setPassword(generatedPassword);
     };
 
     // password visible or not
-
     const togglePasswordVisibility = () => {
         setShowPassword((prevState) => !prevState);
     };
@@ -111,9 +117,25 @@ const UserList = () => {
         }
     }, [searchQuery, rows]);
 
-    // Fetch Roles Options for Select
 
+    // Fetch Roles Options for Select
     useEffect(() => {
+        fetch("https://tutorwise-backend.vercel.app/api/admin/view-role/")
+            .then((res) => res.json())
+            .then((data) => {
+                const options = data.map((role) => ({
+                    value: role.id,
+                    label: role.role_name,
+                }));
+
+                setRolesOptions(options);
+                setOriginalRolesOptions(options); // Save original list
+            })
+            .catch((error) => console.error("Error fetching roles options:", error));
+    }, []);
+
+
+    const fetchRoles = () => {
         fetch("https://tutorwise-backend.vercel.app/api/admin/view-role/")
             .then((res) => res.json())
             .then((data) => {
@@ -125,14 +147,23 @@ const UserList = () => {
                 setOriginalRolesOptions(options); // Save original list
             })
             .catch((error) => console.error("Error fetching roles options:", error));
-    }, []);
+    }
 
     // Handle Role Selection Change
     const handleRolesChange = (selectedOptions) => {
-        // Update currentRow rolesName state
+
+        setSelectedOptions(selectedOptions)
+
+        const selectedIds = selectedOptions.map((option) => option.value); // Collect selected IDs
+        const selectedNames = selectedOptions.map((option) => option.label); // Collect selected Names
+
+
         setCurrentRow({
             ...currentRow,
-            rolesName: selectedOptions.map((option) => option.label),
+
+            role_ids: selectedIds,  // Sending IDs for submission
+            rolesName: selectedNames, // Displaying Names in input
+            rolesName: selectedOptions.map((option) => option.label), // This updates the display names
         });
 
         // Update available rolesOptions by adding removed options back
@@ -148,7 +179,7 @@ const UserList = () => {
     const handleOpenModal = (row) => {
         setCurrentRow({
             ...row,
-            rolesName: row.rolesName ? row.rolesName.split(", ") : []  // Convert string to array for react-select
+            rolesName: row.rolesName ? row.rolesName.split(", ") : []
         });
         setOpenModal(true);
     };
@@ -158,14 +189,30 @@ const UserList = () => {
         setOpenCreateModal(true);
     };
 
+    const handleCreateRole = () => {
+        setOpenCreateRoleModal(true)
+    }
+
     // Close Create User Modal
     const handleCloseCreateModal = () => {
         setOpenCreateModal(false);
     };
 
+    const handleCloseCreateRoleModal = () => {
+        setOpenCreateRoleModal(false);
+    };
+
+    const handleCloseSnackbar = () => {
+        setOpenErrorSnackbar(false);
+    };
+
+    const handleCloseErrorSnackbar = () => {
+        setOpenErrorSnackbar(false);
+    };
+
     // Close Modal
     const handleCloseModal = () => {
-        setOpenModal(false);
+        setOpenModal(false)
         setCurrentRow(null);
     };
 
@@ -178,22 +225,86 @@ const UserList = () => {
         setOpenDeleteModal(true);  // Open delete confirmation modal
     };
 
+    // handle create role modal
+    const handleCreateRoleSubmit = (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+        const jsonData = Object.fromEntries(formData.entries());
+        console.log(jsonData)
+
+        fetch("https://tutorwise-backend.vercel.app/api/admin/create-role/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(jsonData),
+        })
+            .then((response) => {
+                if (response.ok) {
+                    setSnackbarMessage("Role created successfully!");
+                    setOpenSnackbar(true);
+                    setOpenCreateRoleModal(false)
+                    fetchRoles();
+
+                } else {
+                    setSnackbarMessage("failed!");
+                    setOpenErrorSnackbar(true);
+                    setOpenCreateRoleModal(false)
+                }
+            })
+            .catch((error) => {
+                console.error("Error submitting form:", error);
+
+            });
+    }
+
 
     // Handle Create User Form Submission
     const handleCreateSubmit = (event) => {
         event.preventDefault();
 
+
+
+
+
+
+    // Convert role names to IDs (if required)
+    const roleIds = currentRow?.role_ids?.map((role) => {
+        if (typeof role === "string") {
+            // Find the corresponding id from originalRolesOptions
+            const matchedOption = originalRolesOptions.find((option) => option.label === role);
+            return matchedOption ? matchedOption.value : role; // Return id if found, else return the role as is
+        }
+        return role; // Already an ID
+    }) || [];
+
+    // Prepare new user data
+    const newUser = {
+        username: currentRow?.username || "",
+        email: currentRow?.email || "",
+        password: password || "",
+        phone: currentRow?.phone || "",
+        user_type: currentRow?.userType || "admin",
+        role_ids: roleIds, // Send IDs
+    };
+
+    console.log(newUser);
+
         // Prepare new user data
-        const newUser = {
-            username: currentRow?.username || "",
-            phone: currentRow?.phone || "",
-            user_type: currentRow?.userType || "admin",
-            password: currentRow?.password || "", // Password field value
-            roles_name: currentRow?.rolesName || [],
-        };
+        // const newUser = {
+        //     username: currentRow?.username || "",
+        //     email: currentRow?.email || "",
+        //     password: password || "", // ensure to send the password correctly
+        //     phone: currentRow?.phone || "",
+        //     user_type: currentRow?.userType || "admin",
+        //     role_ids: currentRow?.role_ids || [],
+        // };
+
+        // console.log(newUser)
 
         // API POST request to create a new user
-        fetch("https://tutorwise-backend.vercel.app/api/admin/create-user/", {
+        fetch("https://192.168.0.154/api/admin/account/create-user/", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -205,9 +316,15 @@ const UserList = () => {
                 // Update the rows state with new user
                 setRows([...rows, { ...newUser, id: data.id }]);
                 setFilteredRows([...filteredRows, { ...newUser, id: data.id }]);
-                handleCloseCreateModal();
+                setOpenCreateModal(false)
+                setSnackbarMessage("User created successfully!");
+                setOpenSnackbar(true);
             })
-            .catch((error) => console.error("Error creating user:", error));
+            .catch((error) => {
+                console.error("Error creating user:", error);
+                setSnackbarMessage("Oops! Sorry, something went wrong.");
+                setOpenErrorSnackbar(true); // Open error snackbar
+            });
     };
 
 
@@ -222,8 +339,12 @@ const UserList = () => {
                 setRows(rows.filter(row => row.id !== currentRow.id));
                 setFilteredRows(filteredRows.filter(row => row.id !== currentRow.id));
                 setOpenDeleteModal(false);  // Close delete confirmation modal
+                setSnackbarMessage("user deleted successfully!");
+                setOpenSnackbar(true);
             })
             .catch((error) => console.error("Error deleting user:", error));
+        setSnackbarMessage("sorry, something wrong!");
+        setOpenErrorSnackbar(true);
     };
 
     // Cancel Delete
@@ -256,10 +377,14 @@ const UserList = () => {
                 // Update the user in the rows state
                 setRows(rows.map(row => row.id === currentRow.id ? { ...row, ...updatedData } : row));
                 setFilteredRows(filteredRows.map(row => row.id === currentRow.id ? { ...row, ...updatedData } : row));
-                handleCloseModal();
-                window.location.reload();
+
+                setSnackbarMessage("data submitted successfully!");
+                setOpenSnackbar(true);
             })
             .catch((error) => console.error("Error updating user:", error));
+
+        setSnackbarMessage("failed to submit!");
+        setOpenErrorSnackbar(true);
     };
 
     return (
@@ -270,13 +395,25 @@ const UserList = () => {
 
             <div className="flex justify-between items-center">
 
-                <button className=" bg-green-600 hover:bg-green-700 text-white transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-110 duration-300 my-2 p-2 rounded flex items-center border"
-                    onClick={handleCreateUser}>
-                    <div className="flex justify-center items-center gap-1">
-                        <GoPlus size={25} />
-                        <p>Create User</p>
-                    </div>
-                </button>
+                <div className="flex items-center gap-2">
+                    <button className=" bg-green-600 hover:bg-green-700 text-white transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-110 duration-300 my-2 p-1 px-2 rounded flex items-center border"
+                        onClick={handleCreateUser}>
+                        <div className="flex justify-center items-center gap-1">
+                            <GoPlus size={20} />
+                            <p className="text-sm">Create User</p>
+                        </div>
+                    </button>
+
+
+                    <button className=" bg-blue-500 hover:bg-blue-700 text-white transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-110 duration-300 my-2 p-1 px-2 rounded flex items-center border"
+                        onClick={handleCreateRole}
+                    >
+                        <div className="flex justify-center items-center gap-1">
+                            <GoPlus size={20} />
+                            <p className="text-sm"> Create Role</p>
+                        </div>
+                    </button>
+                </div>
 
 
 
@@ -296,7 +433,7 @@ const UserList = () => {
             </div>
 
             <DataGrid
-            
+
                 rows={filteredRows}
                 columns={columns}
                 pageSize={10}
@@ -322,7 +459,7 @@ const UserList = () => {
 
             {/* Create User Modal */}
             <Modal open={openCreateModal} onClose={handleCloseCreateModal}>
-                <Box sx={{ ...modalStyle, width: 700 }}> {/* Modal width increased */}
+                <Box sx={{ ...modalStyle }}> {/* Modal width increased */}
                     <form onSubmit={handleCreateSubmit} className="p-3">
                         <h2 className="text-center mb-4" style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Create User</h2>
 
@@ -332,6 +469,7 @@ const UserList = () => {
                             <select
                                 id="userType"
                                 className="form-select"
+                                name="user_type"
                                 value={currentRow?.userType || "admin"}
                                 onChange={(e) => setCurrentRow({ ...currentRow, userType: e.target.value })}
                                 required
@@ -345,18 +483,21 @@ const UserList = () => {
                         <div className="mb-2">
                             <label htmlFor="rolesName" className="form-label">Access:</label>
                             <Select
+
                                 isMulti
-                                name="rolesName"
+                                name="role_ids"
                                 options={rolesOptions}
                                 value={currentRow?.rolesName?.map((role) => ({
                                     value: role,
                                     label: role,
                                 })) || []}
+
                                 onChange={handleRolesChange}
                                 closeMenuOnSelect={false}
                                 className="basic-multi-select"
                                 classNamePrefix="select"
                             />
+
                         </div>
 
                         {/* Username and Phone */}
@@ -366,6 +507,7 @@ const UserList = () => {
                                 <input
                                     type="text"
                                     id="username"
+                                    name="username"
                                     style={{ height: '37px', padding: '5px 10px', fontSize: '14px' }}
                                     className="form-control"
                                     value={currentRow?.username || ""}
@@ -378,6 +520,7 @@ const UserList = () => {
                                 <input
                                     type="text"
                                     id="phone"
+                                    name="phone"
                                     style={{ height: '37px', padding: '5px 10px', fontSize: '14px' }}
                                     className="form-control"
                                     value={currentRow?.phone || ""}
@@ -393,6 +536,7 @@ const UserList = () => {
                                 <label htmlFor="email" className="form-label">Email:</label>
                                 <input
                                     type="email"
+                                    name="email"
                                     id="email"
                                     style={{ height: '37px', padding: '5px 10px', fontSize: '14px' }}
                                     className="form-control"
@@ -403,7 +547,7 @@ const UserList = () => {
                             </div>
 
                             <div className="col-md-6 flex flex-row items-center gap-2">
-                                <div className="col-md-4 w-75 input-group " aria-describedby="basic-addon1">
+                                <div className="col-md-4 w-75 input-group" aria-describedby="basic-addon1">
                                     <label htmlFor="password" className="form-label">Password:</label>
                                     <div className="flex flex-row" style={{ position: 'relative', width: '100%' }}>
                                         <input
@@ -414,19 +558,19 @@ const UserList = () => {
                                                 height: '37px',
                                                 padding: '5px 10px',
                                                 fontSize: '14px',
-                                                flexGrow: 1,  // Ensures the input takes up all available space
-                                                paddingRight: '40px',  // Space for the icons
+                                                flexGrow: 1,
+                                                paddingRight: '40px',
                                             }}
                                             className="form-control"
                                             onChange={(e) => setPassword(e.target.value)}
                                             required
                                         />
-                                        {/* Password Visibility Toggle Button */}
-                                        <div className="cursor-pointer mt-1"
+                                        <div
+                                            className="cursor-pointer mt-1"
                                             onClick={togglePasswordVisibility}
                                             style={{
                                                 position: 'absolute',
-                                                right: '10px',  // Position visibility toggle button inside the input field
+                                                right: '10px',
                                                 top: '50%',
                                                 transform: 'translateY(-50%)',
                                                 background: 'transparent',
@@ -436,38 +580,23 @@ const UserList = () => {
                                             {showPassword ? <FaEyeSlash size={15} /> : <FaEye size={15} />}
                                         </div>
                                     </div>
-
-
-
                                 </div>
-
-                                {/* Password Generator Button outside the input field */}
                                 <div className="input-group-prepend w-25" id="basic-addon1">
                                     <Button
                                         onClick={generatePassword}
                                         style={{
-                                            marginTop: '10px',  // Adjust as needed for spacing
+                                            marginTop: '10px',
                                             background: 'success',
                                             border: '1px solid #ccc',
                                             padding: '7px 15px',
-
                                         }}
                                     >
                                         <GiCycle size={20} />
                                     </Button>
                                 </div>
-
-
                             </div>
 
                         </div>
-
-
-
-
-
-
-
 
                         {/* Submit Button */}
                         <div className="text-center">
@@ -479,6 +608,73 @@ const UserList = () => {
                 </Box>
             </Modal>
 
+
+            <Modal open={openCreateRoleModal} onClose={handleCloseCreateRoleModal}>
+                <Box
+                    sx={{
+                        ...modalStyle, bgcolor: 'background.paper',
+                        borderRadius: '8px', boxShadow: 24, p: 4,
+                    }}>
+                    <form onSubmit={handleCreateRoleSubmit} className="p-3">
+                        <h2 className="text-center mb-4" style={{
+                            fontSize: '1.8rem', fontWeight: 'bold', color: '#1976d2',
+                            borderBottom: '2px solid #1976d2', paddingBottom: '8px',
+                        }} >
+                            Create Role
+                        </h2>
+
+                        {/* Role Name Input */}
+                        <div className="mb-4">
+                            <label htmlFor="role_name" style={{
+                                display: 'block', marginBottom: '8px', fontWeight: '500',
+                                fontSize: '1rem', color: '#333',
+                            }}>
+                                Role Name
+                            </label>
+                            <input type="text" name="role_name" id="role_name" className="w-100"
+                                style={{
+                                    padding: '10px 12px', fontSize: '1rem', borderRadius: '4px', border: '1px solid #ccc',
+                                    width: '100%',
+                                }} placeholder="Enter role name" required
+                            />
+                        </div>
+
+
+                        {/* Description Input */}
+                        <div className="mb-4">
+                            <label htmlFor="desc" style={{
+                                display: 'block', marginBottom: '8px', fontWeight: '500',
+                                fontSize: '1rem', color: '#333',
+                            }}>
+                                Description
+                            </label>
+                            <input type="text" name="desc" id="desc" className="w-100"
+                                style={{
+                                    padding: '10px 12px', fontSize: '1rem', borderRadius: '4px', border: '1px solid #ccc',
+                                    width: '100%',
+                                }} placeholder="Enter Description" required
+                            />
+                        </div>
+
+                        {/* Submit Button */}
+                        <div className="text-center">
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                type="submit"
+                                style={{
+                                    padding: '10px 20px',
+                                    fontSize: '1rem',
+                                    textTransform: 'none',
+                                    borderRadius: '6px',
+                                }}
+                            >
+                                Create Role
+                            </Button>
+                        </div>
+                    </form>
+                </Box>
+            </Modal>
 
 
             {/* Edit Modal */}
@@ -506,10 +702,11 @@ const UserList = () => {
                                 isMulti
                                 name="rolesName"
                                 options={rolesOptions}
-                                value={currentRow?.rolesName?.map((role) => ({
-                                    value: role,
-                                    label: role,
-                                })) || []}
+                                value={currentRow?.rolesName?.map((role) => {
+
+                                    const ooo = rolesOptions.find((option) => option.value === role);
+                                    return { value: role?.value, label: role?.label }
+                                }) || []}
                                 onChange={handleRolesChange}
                                 closeMenuOnSelect={false}
                                 className="basic-multi-select"
@@ -559,6 +756,29 @@ const UserList = () => {
                     </div>
                 </Box>
             </Modal>
+
+            {/* Snackbar component */}
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={6000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert onClose={handleCloseSnackbar} severity="success">
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
+
+            <Snackbar
+                open={openErrorSnackbar}
+                autoHideDuration={6000}
+                onClose={handleCloseErrorSnackbar}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert onClose={handleCloseErrorSnackbar} severity="error">
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 };
