@@ -9,20 +9,18 @@ class RadialBar extends Component {
       options: {
         plotOptions: {
           radialBar: {
-            startAngle: 0, // Start angle from the top (upward)
-            endAngle: 360, // End angle to complete the circle
-
+            startAngle: 0,
+            endAngle: 360,
             track: {
               background: "#f2f2f2",
               strokeWidth: "97%"
             },
             dataLabels: {
               show: true,
-              
               value: {
                 show: true,
                 fontSize: "15px",
-                offsetY:-1,
+                offsetY: -1
               },
               total: {
                 show: true,
@@ -33,15 +31,14 @@ class RadialBar extends Component {
           }
         }
       },
-      series: [0] // initial value
+      series: [0]
     };
   }
 
-  // componentDidUpdate will update the series when percentage prop changes
   componentDidUpdate(prevProps) {
     if (prevProps.percentage !== this.props.percentage) {
       this.setState({
-        series: [this.props.percentage] // update series with new percentage
+        series: [this.props.percentage]
       });
     }
   }
@@ -53,7 +50,7 @@ class RadialBar extends Component {
           options={this.state.options}
           series={this.state.series}
           type="radialBar"
-          width="150"
+          width={this.props.size || "150"} // ডিফল্ট 150px
         />
       </div>
     );

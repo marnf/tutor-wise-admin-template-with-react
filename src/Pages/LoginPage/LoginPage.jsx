@@ -3,18 +3,44 @@ import { useNavigate } from "react-router-dom";
 import './LoginPage.css';
 
 const LoginPage = () => {
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [gmail, setGmail] = useState("");  // 'gmail' নামক state ব্যবহার
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");  // Error state to display error messages
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Static login credentials
-    if (phoneNumber === "01300000000" && password === "1234") {
-      navigate("/home");
-    } else {
-      alert("Invalid login credentials!");
+    // API রিকোয়েস্ট পাঠানো
+    try {
+      const response = await fetch("http://192.168.0.154:8000/api/account/admin/login/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          gmail: gmail,  // এখানে 'gmail' নাম দিয়ে পাঠানো হচ্ছে
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        
+        localStorage.setItem("user", JSON.stringify({
+          user_id: data.user_id,
+          user_type: data.user_type,
+          roles: data.roles,
+          token: data.token,
+        }));
+        navigate("/home");  // হোম পেজে রিডিরেক্ট করুন
+      } else {
+        // API থেকে আসা ভুল লগিন মেসেজ
+        setError(data.message || "Invalid email or password!");
+      }
+    } catch (error) {
+      setError("An error occurred. Please try again.");
     }
   };
 
@@ -24,13 +50,14 @@ const LoginPage = () => {
         <h1 className="login-header">Welcome to Tutor Wise Admin Panel</h1>
         <form onSubmit={handleSubmit} className="login-form">
           <div className="input-group">
-            <label htmlFor="phoneNumber">Phone Number</label>
+            <label htmlFor="gmail">Email</label>
             <input
-              type="text"
-              id="phoneNumber"
-              placeholder="Enter your phone number"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
+              type="email"  // এখানে ইমেল ইনপুট ব্যবহার
+              id="gmail"
+              name="gmail"
+              placeholder="Enter your email"
+              value={gmail}
+              onChange={(e) => setGmail(e.target.value)}
               required
             />
           </div>
@@ -44,6 +71,7 @@ const LoginPage = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            {error && <p style={{ color: 'red', fontSize: '12px', marginTop: '5px' }}>{error}</p>} {/* Inline CSS for error message */}
           </div>
           <button type="submit" className="login-btn">Login</button>
         </form>

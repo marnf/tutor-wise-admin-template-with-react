@@ -9,7 +9,9 @@ import {
     TextField,
     Grid,
     MenuItem,
-    Autocomplete, // Import Grid component
+    Autocomplete,
+    Snackbar,
+    Alert, // Import Grid component
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { MdDelete } from "react-icons/md";
@@ -89,6 +91,12 @@ const ApprovedHigherTutorRequest = () => {
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [editData, setEditData] = useState({});
     const [formData, setFormData] = useState({}); // Initialize formData state
+
+    // Snackbar state
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+    const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // 'success' or 'error'
+
 
     useEffect(() => {
         fetch("https://tutorwise-backend.vercel.app/api/admin/view-approve-reqeust-list/")
@@ -425,6 +433,17 @@ const ApprovedHigherTutorRequest = () => {
                     <Button onClick={handleDelete} color="error">Delete</Button>
                 </DialogActions>
             </Dialog>
+
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={6000}
+                onClose={() => setOpenSnackbar(false)}
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            >
+                <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity} sx={{ width: "100%" }}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
 
         </Box>
     );

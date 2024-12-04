@@ -9,7 +9,9 @@ import {
     TextField,
     Grid,
     MenuItem,
-    Autocomplete, // Import Grid component
+    Autocomplete,
+    Snackbar,
+    Alert, // Import Grid component
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { FaUserEdit } from "react-icons/fa";
@@ -89,6 +91,12 @@ const PendingHigherTutorRequest = () => {
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [editData, setEditData] = useState({});
     const [formData, setFormData] = useState({}); // Initialize formData state
+
+     // Snackbar state
+     const [openSnackbar, setOpenSnackbar] = useState(false);
+     const [snackbarMessage, setSnackbarMessage] = useState("");
+     const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // 'success' or 'error'
+ 
 
     useEffect(() => {
         fetch("https://tutorwise-backend.vercel.app/api/admin/view-hire-request-tutor/")
@@ -197,16 +205,16 @@ const PendingHigherTutorRequest = () => {
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
             <h2 className="text-center font-bold h3">Pending Higher Tutor Requests</h2>
-           <div className="flex justify-end">
-           <TextField
-                label="Search Requests"
-                variant="outlined"
-                value={searchQuery}
-                size="small"
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{ marginBottom: "1rem", width: "300px" }}
-            />
-           </div>
+            <div className="flex justify-end">
+                <TextField
+                    label="Search Requests"
+                    variant="outlined"
+                    value={searchQuery}
+                    size="small"
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    style={{ marginBottom: "1rem", width: "300px" }}
+                />
+            </div>
             <DataGrid
                 rows={filteredRows}
                 columns={columns}
@@ -425,6 +433,17 @@ const PendingHigherTutorRequest = () => {
                     <Button onClick={handleDelete} color="error">Delete</Button>
                 </DialogActions>
             </Dialog>
+
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={6000}
+                onClose={() => setOpenSnackbar(false)}
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            >
+                <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity} sx={{ width: "100%" }}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
 
         </Box>
     );

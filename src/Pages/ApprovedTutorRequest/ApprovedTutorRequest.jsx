@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
+    Alert,
     Autocomplete,
     Box,
     Button,
@@ -14,6 +15,7 @@ import {
     MenuItem,
     Radio,
     RadioGroup,
+    Snackbar,
     TextareaAutosize,
     TextField,
 } from "@mui/material";
@@ -85,6 +87,11 @@ const ApprovedTutorRequest = () => {
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [editData, setEditData] = useState({});
     const [deleteData, setDeleteData] = useState({});
+    // Snackbar state
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+    const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // 'success' or 'error'
+
 
     useEffect(() => {
         fetch("https://tutorwise-backend.vercel.app/api/admin/approve-request-tutor-list/")
@@ -126,26 +133,31 @@ const ApprovedTutorRequest = () => {
     const handleDelete = (e) => {
         e.preventDefault();
         fetch(`https://tutorwise-backend.vercel.app/api/admin/unapprove-request-tutor/${deleteData.id}/`, {
-            method: "POST", // Using POST as per your requirement
+            method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(editData), // Send the data you want to transfer elsewhere
         })
             .then((response) => {
                 if (response.ok) {
-                    // Perform the transition logic to move data elsewhere
-                    setRows((prevRows) =>
-                        prevRows.filter((row) => row.id !== editData.id) // Removing the item after successful POST
-
-                    );
-                    setOpenDeleteModal(false); // Close the modal after operation
-                    window.location.reload();
+                    setRows((prevRows) => prevRows.filter((row) => row.id !== deleteData.id));
+                    setOpenDeleteModal(false);
+                    setSnackbarMessage("Tutor request deleted successfully.");
+                    setSnackbarSeverity("success");
+                    setOpenSnackbar(true);
                 } else {
-                    console.error("Failed to process request.");
+                    console.error("Failed to delete request.");
+                    setSnackbarMessage("Failed to delete tutor request.");
+                    setSnackbarSeverity("error");
+                    setOpenSnackbar(true);
                 }
             })
-            .catch((error) => console.error("Error processing request:", error));
+            .catch((error) => {
+                console.error("Error processing request:", error);
+                setSnackbarMessage("Error occurred while deleting the request.");
+                setSnackbarSeverity("error");
+                setOpenSnackbar(true);
+            });
     };
 
 
@@ -167,11 +179,22 @@ const ApprovedTutorRequest = () => {
                         prevRows.map((row) => (row.id === editData.id ? editData : row))
                     );
                     setOpen(false);
+                    setSnackbarMessage("Tutor request updated successfully.");
+                    setSnackbarSeverity("success");
+                    setOpenSnackbar(true);
                 } else {
                     console.error("Failed to update.");
+                    setSnackbarMessage("Failed to update tutor request.");
+                    setSnackbarSeverity("error");
+                    setOpenSnackbar(true);
                 }
             })
-            .catch((error) => console.error("Error updating data:", error));
+            .catch((error) => {
+                console.error("Error updating data:", error);
+                setSnackbarMessage("Error occurred while updating the request.");
+                setSnackbarSeverity("error");
+                setOpenSnackbar(true);
+            });
     };
 
     const handleClose = () => {
@@ -436,6 +459,17 @@ const ApprovedTutorRequest = () => {
                     <Button onClick={handleDelete} color="error">Delete</Button>
                 </DialogActions>
             </Dialog>
+
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={6000}
+                onClose={() => setOpenSnackbar(false)}
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            >
+                <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity} sx={{ width: "100%" }}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
 
         </Box>
     );

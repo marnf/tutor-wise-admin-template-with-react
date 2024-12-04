@@ -5,6 +5,8 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextFie
 import { MdDelete } from "react-icons/md";
 import { FaUserEdit } from "react-icons/fa";
 import { BiSolidSelectMultiple } from "react-icons/bi";
+import { Snackbar, Alert } from "@mui/material";
+
 
 
 const columns = [
@@ -47,6 +49,11 @@ const PendingTutorRequest = () => {
     const [open, setOpen] = useState(false);  // Modal open state
     const [openDeleteModal, setOpenDeleteModal] = useState(false);  // Modal open state
     const [editData, setEditData] = useState({});  // State to hold the data for editing
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+    const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // success বা error হতে পারে
+    const [deleteId, setDeleteId] = useState("")
+
 
     const subjectOptions = [
         "Math",
@@ -64,7 +71,7 @@ const PendingTutorRequest = () => {
             .then((data) => {
                 const formattedData = data.map((request) => ({
                     id: request.id,
-                    username: request.username || "Not Available",
+                    username: request.name || "Not Available",
                     phone: request.phone || "Not Available",
                     location: request.location || "Not Available",
                     details: request.details || "No Details",
@@ -101,13 +108,40 @@ const PendingTutorRequest = () => {
         setEditData({});
     };
 
-    const handleOpenDeleteModal = (id) => {
-        setOpenDeleteModal(true)
+    const handleOpenDeleteModal = (row) => {
+        setDeleteId(row);
+        setOpenDeleteModal(true);
+
     };
 
-    const handleDeleteConfirm = (id) => {
+    const handleDeleteConfirm = () => {
+        fetch(`https://tutorwise-backend.vercel.app/api/admin/delete-request-tutor/${deleteId}/`, {
+            method: "DELETE",
+        })
+            .then((response) => {
+                if (response.ok) {
+                    setSnackbarMessage("Tutor request deleted successfully!");
+                    setSnackbarSeverity("success");
+                    setOpenSnackbar(true);
+                    setRows(rows.filter((row) => row.id !== deleteId)); // Correctly filter using deleteId
+                    setOpenDeleteModal(false); // Close the modal after deletion
+                } else {
+                    setSnackbarMessage("Failed to delete the tutor request.");
+                    setSnackbarSeverity("error");
+                    setOpenSnackbar(true);
+                }
+            })
+            .catch((error) => {
+                setSnackbarMessage("An error occurred while deleting.");
+                setSnackbarSeverity("error");
+                setOpenSnackbar(true);
+                setOpenDeleteModal(false); // Close modal on error as well
+            });
+    };
 
-    }
+
+
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -375,23 +409,30 @@ const PendingTutorRequest = () => {
             </Dialog>
 
 
-            <Modal
-                open={openDeleteModal}
-                onClose={() => setOpenDeleteModal(false)}
-                aria-labelledby="delete-confirmation-modal"
+           
+
+            <Dialog open={openDeleteModal} onClose={() => setOpenDeleteModal(false)}>
+                <DialogTitle>Confirm Deletion</DialogTitle>
+                <DialogContent>
+                    <p>Are you sure you want to delete this tutor request?</p>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenDeleteModal(false)}>Cancel</Button>
+                    <Button onClick={handleDeleteConfirm} color="error">Delete</Button>
+                </DialogActions>
+            </Dialog>
+
+
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={6000}
+                onClose={() => setOpenSnackbar(false)}
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}
             >
-                <Box sx={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", p: 3, backgroundColor: "#fff", borderRadius: "12px" }}>
-                    <h4 className="py-5">Are you sure you want to delete this review?</h4>
-                    <div className=" flex justify-center">
-                        <Button variant="contained" color="error" onClick={handleDeleteConfirm}>
-                            Delete
-                        </Button>
-                        <Button variant="outlined" onClick={() => setOpenDeleteModal(false)} sx={{ marginLeft: "1rem" }}>
-                            Cancel
-                        </Button>
-                    </div>
-                </Box>
-            </Modal>
+                <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity} sx={{ width: "100%" }}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
 
         </Box>
     );

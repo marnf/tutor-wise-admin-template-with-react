@@ -62,7 +62,7 @@ const UserList = () => {
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
-    const [selectedOptions , setSelectedOptions]= useState('')
+    const [selectedOptions, setSelectedOptions] = useState('')
 
 
 
@@ -91,6 +91,7 @@ const UserList = () => {
                 const formattedUsers = usersData.map((user) => ({
                     id: user.id,
                     username: user.username || "Not Available",
+
                     phone: user.phone || "Not Available",
                     userType: user.user_type || "Not Available",
                     rolesName: user.roles_name ? user.roles_name.join(", ") : "",  // Store rolesName as a string
@@ -264,68 +265,67 @@ const UserList = () => {
     const handleCreateSubmit = (event) => {
         event.preventDefault();
 
-
-
-
-
-
-    // Convert role names to IDs (if required)
-    const roleIds = currentRow?.role_ids?.map((role) => {
-        if (typeof role === "string") {
-            // Find the corresponding id from originalRolesOptions
-            const matchedOption = originalRolesOptions.find((option) => option.label === role);
-            return matchedOption ? matchedOption.value : role; // Return id if found, else return the role as is
-        }
-        return role; // Already an ID
-    }) || [];
-
-    // Prepare new user data
-    const newUser = {
-        username: currentRow?.username || "",
-        email: currentRow?.email || "",
-        password: password || "",
-        phone: currentRow?.phone || "",
-        user_type: currentRow?.userType || "admin",
-        role_ids: roleIds, // Send IDs
-    };
-
-    console.log(newUser);
+        // Convert role names to IDs (if required)
+        const roleIds = currentRow?.role_ids?.map((role) => {
+            if (typeof role === "string") {
+                const matchedOption = originalRolesOptions.find((option) => option.label === role);
+                return matchedOption ? matchedOption.value : role;
+            }
+            return role;
+        }) || [];
 
         // Prepare new user data
-        // const newUser = {
-        //     username: currentRow?.username || "",
-        //     email: currentRow?.email || "",
-        //     password: password || "", // ensure to send the password correctly
-        //     phone: currentRow?.phone || "",
-        //     user_type: currentRow?.userType || "admin",
-        //     role_ids: currentRow?.role_ids || [],
-        // };
+        const newUser = {
+            id: new Date().getTime(), // Correctly setting ID
+            username: currentRow?.username || "",
+            gmail: currentRow?.gmail || "",
+            password: password || "",
+            phone: currentRow?.phone || "",
+            user_type: currentRow?.userType || "admin",
+            role_ids: roleIds, // Send IDs
+        };
 
-        // console.log(newUser)
+        console.log(newUser);
 
         // API POST request to create a new user
-        fetch("https://192.168.0.154/api/admin/account/create-user/", {
+        fetch("https://tutorwise-backend.vercel.app/api/account/admin/create-user/", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(newUser),
         })
-            .then((response) => response.json())
+            .then(async (response) => {
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error("Server Error:", errorData);
+
+                    const errorMessage = errorData.message|| errorData.error || "Unknown error occurred!";
+                    setSnackbarMessage(errorMessage);
+                    setOpenErrorSnackbar(true);
+                    return;
+                }
+                return response.json();
+            })
             .then((data) => {
-                // Update the rows state with new user
-                setRows([...rows, { ...newUser, id: data.id }]);
-                setFilteredRows([...filteredRows, { ...newUser, id: data.id }]);
-                setOpenCreateModal(false)
-                setSnackbarMessage("User created successfully!");
-                setOpenSnackbar(true);
+                if (data) {
+                    setRows([...rows, { ...newUser, id: data.id || new Date().getTime() }]);
+                    setFilteredRows([...filteredRows, { ...newUser, id: data.id || new Date().getTime() }]);
+                    setOpenCreateModal(false);
+                    setSnackbarMessage("User created successfully!");
+                    setOpenSnackbar(true);
+                }
             })
             .catch((error) => {
-                console.error("Error creating user:", error);
-                setSnackbarMessage("Oops! Sorry, something went wrong.");
-                setOpenErrorSnackbar(true); // Open error snackbar
+                console.error("Network or server error:", error);
+                setSnackbarMessage("Oops! Network error occurred.");
+                setOpenErrorSnackbar(true);
             });
+
+
+
     };
+
 
 
     // Confirm Delete User
@@ -356,13 +356,24 @@ const UserList = () => {
     const handleSubmit = (event) => {
         event.preventDefault();
 
+        const roleIds = currentRow?.role_ids?.map((role) => {
+            if (typeof role === "string") {
+                // Find the corresponding id from originalRolesOptions
+                const matchedOption = originalRolesOptions.find((option) => option.label === role);
+                return matchedOption ? matchedOption.value : role; // Return id if found, else return the role as is
+            }
+            return role; // Already an ID
+        }) || [];
+
         // Prepare the updated data
         const updatedData = {
             username: currentRow.username,
             phone: currentRow.phone,
             user_type: currentRow.userType,
-            roles_name: currentRow.rolesName,  // Pass as array for API
+            role_ids: roleIds,  // Pass as array for API
         };
+
+        console.log(updatedData)
 
         // API PUT Request to update user
         fetch(`https://tutorwise-backend.vercel.app/api/admin/edit-approved-request-tutor/${currentRow.id}`, {
@@ -536,12 +547,12 @@ const UserList = () => {
                                 <label htmlFor="email" className="form-label">Email:</label>
                                 <input
                                     type="email"
-                                    name="email"
-                                    id="email"
+                                    name="gmail"
+                                    id="gmail"
                                     style={{ height: '37px', padding: '5px 10px', fontSize: '14px' }}
                                     className="form-control"
-                                    value={currentRow?.email || ""}
-                                    onChange={(e) => setCurrentRow({ ...currentRow, email: e.target.value })}
+                                    value={currentRow?.gmail || ""}
+                                    onChange={(e) => setCurrentRow({ ...currentRow, gmail: e.target.value })}
                                     required
                                 />
                             </div>
@@ -699,19 +710,21 @@ const UserList = () => {
                         <div className="mb-4">
                             <label htmlFor="rolesName" className="form-label">Access:</label>
                             <Select
-                                isMulti
-                                name="rolesName"
-                                options={rolesOptions}
-                                value={currentRow?.rolesName?.map((role) => {
 
-                                    const ooo = rolesOptions.find((option) => option.value === role);
-                                    return { value: role?.value, label: role?.label }
-                                }) || []}
+                                isMulti
+                                name="role_ids"
+                                options={rolesOptions}
+                                value={currentRow?.rolesName?.map((role) => ({
+                                    value: role,
+                                    label: role,
+                                })) || []}
+
                                 onChange={handleRolesChange}
                                 closeMenuOnSelect={false}
                                 className="basic-multi-select"
                                 classNamePrefix="select"
                             />
+
                         </div>
 
                         <div className="mb-4">
