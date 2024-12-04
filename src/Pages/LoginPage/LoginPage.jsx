@@ -13,7 +13,7 @@ const LoginPage = () => {
 
     // API রিকোয়েস্ট পাঠানো
     try {
-      const response = await fetch("https://192.168.0.154:8000/api/account/admin/login/", {
+      const response = await fetch("http://192.168.0.154:8000/api/account/admin/login/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -71,7 +71,7 @@ const LoginPage = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-            {error && <p style={{ color: 'red', fontSize: '12px', marginTop: '5px' }}>{error}</p>} {/* Inline CSS for error message */}
+            {error && <p style={{ color: 'red', fontSize: '12px', marginTop: '5px' }}>{error}</p>}
           </div>
           <button type="submit" className="login-btn">Login</button>
         </form>
