@@ -180,7 +180,7 @@ const InstitutionList = () => {
 
     return (
 
-        <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
+        <Box sx={{ height: "80vh", width: "100%", padding: 2, overflowX: "auto" }} md={{overflowX: "auto"}} lg={{overflowX: "auto"}}>
 
             <h2 className="text-center font-bold h3">Institution List</h2>
 

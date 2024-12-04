@@ -92,11 +92,11 @@ const PendingHigherTutorRequest = () => {
     const [editData, setEditData] = useState({});
     const [formData, setFormData] = useState({}); // Initialize formData state
 
-     // Snackbar state
-     const [openSnackbar, setOpenSnackbar] = useState(false);
-     const [snackbarMessage, setSnackbarMessage] = useState("");
-     const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // 'success' or 'error'
- 
+    // Snackbar state
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+    const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // 'success' or 'error'
+
 
     useEffect(() => {
         fetch("https://tutorwise-backend.vercel.app/api/admin/view-hire-request-tutor/")
@@ -203,7 +203,12 @@ const PendingHigherTutorRequest = () => {
 
 
     return (
-        <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
+        <Box sx={{
+            height: "80vh",
+            width: "100%",
+            padding: 2,
+            overflowX: "auto", // Ensure horizontal scroll for all devices
+        }}>
             <h2 className="text-center font-bold h3">Pending Higher Tutor Requests</h2>
             <div className="flex justify-end">
                 <TextField
@@ -217,10 +222,14 @@ const PendingHigherTutorRequest = () => {
             </div>
             <DataGrid
                 rows={filteredRows}
-                columns={columns}
+                columns={columns.map((col) => ({
+                    ...col,
+                    minWidth: 150, // Minimum width for each column (adjust as needed)
+                }))}
                 pageSize={10}
                 rowsPerPageOptions={[5, 10, 20]}
                 disableSelectionOnClick
+               
                 sx={{
                     "& .MuiDataGrid-columnHeader": {
                         backgroundColor: "#f0f0f0",
@@ -229,13 +238,20 @@ const PendingHigherTutorRequest = () => {
                     },
                     "& .MuiDataGrid-cell": {
                         border: "1px solid #e0e0e0", // Border for each cell
+                        whiteSpace: "normal", // Allow text to wrap in cells
+                        wordWrap: "break-word", // Break long words if necessary
                     },
-
                     "& .MuiDataGrid-cell:focus": {
                         outline: "none", // Remove default outline on focus
                     },
+                    "& .MuiDataGrid-virtualScroller": {
+                        overflowX: "auto", // Ensure horizontal scroll for table content
+                    },
                 }}
             />
+
+
+
             <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
                 <DialogTitle>Edit Request</DialogTitle>
                 <DialogContent>
