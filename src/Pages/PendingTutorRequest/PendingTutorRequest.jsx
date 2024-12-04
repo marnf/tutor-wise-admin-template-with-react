@@ -224,7 +224,7 @@ const PendingTutorRequest = () => {
                                     label="Name"
                                     variant="outlined"
                                     fullWidth
-                                    value={editData.name || ""}
+                                    value={editData.username || ""}
                                     onChange={(e) => setEditData({ ...editData, name: e.target.value })}
                                 />
                             </Grid>

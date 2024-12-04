@@ -22,81 +22,86 @@ import ProPayment from './Pages/Payment/ProPayment/ProPayment.jsx';
 import Payment from './Pages/Payment/Payment/Payment.jsx';
 import Review from './Pages/Review/Review.jsx';
 import Testimonial from './Pages/Testimonial/Testimonial.jsx';
+import ProtectedRoute from './Components/ProtectedRoute .jsx';
 
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <LoginPage />,
+    path: "/login",
+    element: <LoginPage />, // Login page route
   },
   {
-    path: "/home",
-    element: <Home />, // Home component will be used for the dashboard
+    path: "/",
+    element: (
+      <ProtectedRoute>
+        <Home />
+      </ProtectedRoute>
+    ), // ProtectedRoute দিয়ে Home route wrap
     children: [
       {
-        path: "/home",
+        path: "/",
         element: <DashBoard />,
       },
       {
-        path: "/home/userlist",
+        path: "/userlist",
         element: <UserList />,
       },
       {
-        path: "/home/pending-tutor-request",
+        path: "/pending-tutor-request",
         element: <PendingTutorRequest />,
       },
       {
-        path: "/home/approved-tutor-request",
-        element: <ApprovedTutorRequest></ApprovedTutorRequest>
+        path: "/approved-tutor-request",
+        element: <ApprovedTutorRequest />,
       },
       {
-        path: "/home/pending-higher-tutor-request",
-        element: <PendingHigherTutorRequest></PendingHigherTutorRequest>
+        path: "/pending-higher-tutor-request",
+        element: <PendingHigherTutorRequest />,
       },
       {
-        path: "/home/approved-higher-tutor-request",
-        element: <ApprovedHigherTutorRequest></ApprovedHigherTutorRequest>
+        path: "/approved-higher-tutor-request",
+        element: <ApprovedHigherTutorRequest />,
       },
       {
-        path: "/home/pro-tutor-list",
-        element: <Protutor></Protutor>
+        path: "/pro-tutor-list",
+        element: <Protutor />,
       },
       {
-        path: "/home/tutor-list",
-        element: <Tutor></Tutor>
+        path: "/tutor-list",
+        element: <Tutor />,
       },
       {
-        path: "/home/add-institution",
-        element: <AddInstitution></AddInstitution>
+        path: "/add-institution",
+        element: <AddInstitution />,
       },
       {
-        path: "/home/institution-list",
-        element: <InstitutionList></InstitutionList>
+        path: "/institution-list",
+        element: <InstitutionList />,
       },
       {
-        path: "/home/add-faq",
-        element: <AddFaq></AddFaq>
+        path: "/add-faq",
+        element: <AddFaq />,
       },
       {
-        path: "/home/faq-list",
-        element: <FaqList></FaqList>
+        path: "/faq-list",
+        element: <FaqList />,
       },
       {
-        path: "/home/pro-payment",
-        element: <ProPayment></ProPayment>
+        path: "/pro-payment",
+        element: <ProPayment />,
       },
       {
-        path: "/home/payment",
-        element: <Payment></Payment>
+        path: "/payment",
+        element: <Payment />,
       },
       {
-        path: "/home/review",
-        element: <Review></Review>
+        path: "/review",
+        element: <Review />,
       },
       {
-        path: "/home/testimonial",
-        element: <Testimonial></Testimonial>
+        path: "/testimonial",
+        element: <Testimonial />,
       },
-    ]
+    ],
   },
 ]);
 

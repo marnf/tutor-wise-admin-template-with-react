@@ -13,7 +13,7 @@ const LoginPage = () => {
 
     // API রিকোয়েস্ট পাঠানো
     try {
-      const response = await fetch("http://192.168.0.154:8000/api/account/admin/login/", {
+      const response = await fetch("https://192.168.0.154:8000/api/account/admin/login/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -34,7 +34,7 @@ const LoginPage = () => {
           roles: data.roles,
           token: data.token,
         }));
-        navigate("/home");  // হোম পেজে রিডিরেক্ট করুন
+        navigate("/");  // হোম পেজে রিডিরেক্ট করুন
       } else {
         // API থেকে আসা ভুল লগিন মেসেজ
         setError(data.message || "Invalid email or password!");

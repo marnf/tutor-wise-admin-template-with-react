@@ -6,24 +6,24 @@ import logo from '../../../public/images/TutorwiseLogo.png';
 
 const items = [
   {
-    key: '/home',
+    key: '/',
     icon: <MailOutlined />,
-    label: <Link to="/home">Dashboard</Link>,
+    label: <Link to="/">Dashboard</Link>,
   },
   {
-    key: '/home/userlist',
+    key: '/userlist',
     icon: <MailOutlined />,
-    label: <Link to="/home/userlist">User List</Link>,
+    label: <Link to="/userlist">User List</Link>,
   },
   {
     icon: <AppstoreOutlined />,
     label: 'Tutor Request',
     key: 'tutor-request', // Unique key for this group
     children: [
-      { key: '/home/pending-tutor-request', label: <Link to="/home/pending-tutor-request">Pending Tutor Request</Link> },
-      { key: '/home/approved-tutor-request', label: <Link to="/home/approved-tutor-request">Approved Tutor Request</Link> },
-      { key: '/home/pending-higher-tutor-request', label: <Link to="/home/pending-higher-tutor-request">Pending Higher Tutor Request</Link> },
-      { key: '/home/approved-higher-tutor-request', label: <Link to="/home/approved-higher-tutor-request">Approved Higher Tutor Request</Link> },
+      { key: '/pending-tutor-request', label: <Link to="/pending-tutor-request">Pending Tutor Request</Link> },
+      { key: '/approved-tutor-request', label: <Link to="/approved-tutor-request">Approved Tutor Request</Link> },
+      { key: '/pending-higher-tutor-request', label: <Link to="/pending-higher-tutor-request">Pending Higher Tutor Request</Link> },
+      { key: '/approved-higher-tutor-request', label: <Link to="/approved-higher-tutor-request">Approved Higher Tutor Request</Link> },
     ],
   },
   {
@@ -31,8 +31,8 @@ const items = [
     icon: <AppstoreOutlined />,
     label: 'Tutor List',
     children: [
-      { key: '/home/pro-tutor-list', label: <Link to="/home/pro-tutor-list">Pro Tutor</Link> },
-      { key: '/home/tutor-list', label: <Link to="/home/tutor-list"> Tutor</Link> },
+      { key: '/pro-tutor-list', label: <Link to="/pro-tutor-list">Pro Tutor</Link> },
+      { key: '/tutor-list', label: <Link to="/tutor-list"> Tutor</Link> },
     ],
   },
   {
@@ -40,8 +40,8 @@ const items = [
     icon: <AppstoreOutlined />,
     label: 'Institution',
     children: [
-      { key: '/home/add-institution', label: <Link to="/home/add-institution">Add Institution</Link> },
-      { key: '/home/institution-list', label: <Link to="/home/institution-list">Institution List</Link> },
+      { key: '/add-institution', label: <Link to="/add-institution">Add Institution</Link> },
+      { key: '/institution-list', label: <Link to="/institution-list">Institution List</Link> },
     ],
   },
   {
@@ -49,8 +49,8 @@ const items = [
     icon: <AppstoreOutlined />,
     label: 'FAQ',
     children: [
-      { key: '/home/add-faq', label: <Link to="/home/add-faq">Add FAQ</Link> },
-      { key: '/home/faq-list', label: <Link to="/home/faq-list">FAQ List</Link> },
+      { key: '/add-faq', label: <Link to="/add-faq">Add FAQ</Link> },
+      { key: '/faq-list', label: <Link to="/faq-list">FAQ List</Link> },
     ],
   },
   {
@@ -58,19 +58,19 @@ const items = [
     icon: <AppstoreOutlined />,
     label: 'Payment',
     children: [
-      { key: '/home/pro-payment', label: <Link to="/home/pro-payment">Pro Payment</Link> },
-      { key: '/home/payment', label: <Link to="/home/payment">Payment</Link> },
+      { key: '/pro-payment', label: <Link to="/pro-payment">Pro Payment</Link> },
+      { key: '/payment', label: <Link to="/payment">Payment</Link> },
     ],
   },
   {
-    key: '/home/review',
+    key: '/review',
     icon: <MailOutlined />,
-    label: <Link to="/home/review">Review</Link>,
+    label: <Link to="/review">Review</Link>,
   },
   {
-    key: '/home/testimonial',
+    key: '/testimonial',
     icon: <MailOutlined />,
-    label: <Link to="/home/testimonial">Testimonial</Link>,
+    label: <Link to="/testimonial">Testimonial</Link>,
   },
 ];
 
