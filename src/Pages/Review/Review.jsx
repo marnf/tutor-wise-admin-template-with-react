@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Modal, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert } from "@mui/material";
+import { Box, Button, Modal, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, LinearProgress } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { BiSolidSelectMultiple } from "react-icons/bi";
 import { FaUserEdit } from "react-icons/fa";
@@ -44,13 +44,16 @@ const Review = () => {
     const [openApproveModal, setOpenApproveModal] = useState(false);
     const [approveId, setApproveId] = useState(null);
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        setLoading(true)
         const BASE_URL = "https://tutorwise-backend.vercel.app";
         fetch(`${BASE_URL}/api/admin/view-review-rating/`)
             .then((res) => res.json())
             .then((data) => {
                 setRows(data);
+                setLoading(false)
             })
             .catch((error) => console.error("Error fetching reviews:", error));
     }, []);
@@ -163,7 +166,11 @@ const Review = () => {
                 />
             </Box>
 
-
+            {loading ? (
+                <Box sx={{ width: '100%' }}>
+                <LinearProgress />
+              </Box>
+            ) : (
             <DataGrid
                 rows={rows}
                 columns={columns(handleEditClick, handleApproveClick)}
@@ -184,7 +191,7 @@ const Review = () => {
                         outline: "none", // Remove default outline on focus
                     },
                 }}
-            />
+            />)}
 
             {/* Modal for editing review */}
             <Modal
@@ -200,15 +207,16 @@ const Review = () => {
                         left: "50%",
                         transform: "translate(-50%, -50%)",
                         maxWidth: "800px",
+                        maxHeight: "600px",
                         width: "100%",
                         backgroundColor: "#fff",
                         borderRadius: "12px",
                         p: 4,
                     }}
                 >
-                    <h3 className="text-center bold text-2xl font-bold py-3" >Edit Information Form</h3>
+                    <h3 className="text-center bold text-2xl font-bold py-1" >Edit Information Form</h3>
                     <form onSubmit={handleFormSubmit}>
-                        <div className="row mb-4">
+                        <div className="row ">
                             <div className="col-md-10 ">
                                 <label htmlFor="tutorName" className="form-label fw-bold">
                                     Tutor Name:
@@ -233,7 +241,7 @@ const Review = () => {
                             </div>
                         </div>
 
-                        <div className="mb-3">
+                        <div className="mb-2">
                             <label htmlFor="review" className="form-label fw-bold">
                                 Review:
                             </label>
@@ -254,7 +262,7 @@ const Review = () => {
                             />
                         </div>
 
-                        <div className="mb-3">
+                        <div className="mb-2">
                             <label htmlFor="rating" className="form-label fw-bold">
                                 Rating (1-5):
                             </label>
@@ -277,7 +285,7 @@ const Review = () => {
                             />
                         </div>
 
-                        <div className="mb-3">
+                        <div className="mb-2">
                             <label htmlFor="studentName" className="form-label fw-bold">
                                 Student Name:
                             </label>

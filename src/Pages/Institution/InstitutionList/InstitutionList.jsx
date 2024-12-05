@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Modal, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, CircularProgress } from "@mui/material";
+import { Box, Button, Modal, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { FaUserEdit } from "react-icons/fa";
-import { MdDelete } from "react-icons/md";
-
-
 
 const columns = (handleEditClick, handleDeleteClick) => [
     { field: "id", headerName: "ID", flex: 0.5 },
@@ -26,21 +22,21 @@ const columns = (handleEditClick, handleDeleteClick) => [
         headerName: "Actions",
         flex: 1,
         renderCell: (params) => (
-
-            <Box display="flex" justifyContent="end" className="mt-3" gap={1}>
-
-                <FaUserEdit title="Edit"
-                    size={25}
-                    color="black"
-                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
-                    onClick={() => handleEditClick(params.row)} />
-
-                <MdDelete title="Delete"
-                    size={25}
-                    color="red"
-                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+            <Box display="flex" gap={1}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleEditClick(params.row)}
+                >
+                    Edit
+                </Button>
+                <Button
+                    variant="contained"
+                    color="error"
                     onClick={() => handleDeleteClick(params.row.id)}
-                />
+                >
+                    Delete
+                </Button>
             </Box>
         ),
     },
@@ -48,18 +44,14 @@ const columns = (handleEditClick, handleDeleteClick) => [
 
 const InstitutionList = () => {
     const [rows, setRows] = useState([]);
-    const [filteredRows, setFilteredRows] = useState([]); // ফিল্টারকৃত ডেটা
     const [selectedInstitution, setSelectedInstitution] = useState(null);
     const [openModal, setOpenModal] = useState(false);
-    const [searchText, setSearchText] = useState("");
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [deleteId, setDeleteId] = useState(null);
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
-    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         const BASE_URL = "https://tutorwise-backend.vercel.app";
-        setLoading(true);
         fetch(`${BASE_URL}/api/admin/view-institution/`)
             .then((res) => res.json())
             .then((data) => {
@@ -69,11 +61,8 @@ const InstitutionList = () => {
                     name: item.name,
                 }));
                 setRows(formattedData);
-                setFilteredRows(formattedData);
-                setLoading(false) 
             })
-            .catch((error) => console.error("Error fetching data:", error))
-            
+            .catch((error) => console.error("Error fetching data:", error));
     }, []);
 
     // Handle edit button click
@@ -81,20 +70,6 @@ const InstitutionList = () => {
         setSelectedInstitution(institution);
         setOpenModal(true);
     };
-
-
-    const handleSearch = (event) => {
-        const value = event.target.value.toLowerCase();
-        setSearchText(value);
-        const filtered = rows.filter(
-            (row) =>
-                row.id.toString().toLowerCase().includes(value) ||
-                row.name.toLowerCase().includes(value)
-        );
-
-        setFilteredRows(filtered);
-    };
-
 
     // Handle form submission for edit
     const handleFormSubmit = (e) => {
@@ -179,53 +154,29 @@ const InstitutionList = () => {
     };
 
     return (
-
-        <Box sx={{ height: "80vh", width: "100%", padding: 2, overflowX: "auto" }} md={{overflowX: "auto"}} lg={{overflowX: "auto"}}>
-
-            <h2 className="text-center font-bold h3">Institution List</h2>
-
-            <Box className="flex justify-end mb-2">
-                <TextField
-                    placeholder="Search..."
-                    value={searchText}
-                    onChange={handleSearch}
-                    variant="outlined"
-                    size="small"
-                    sx={{ width: "300px" }}
-                />
-            </Box>
-
-            {loading ? (
-                <Box display="flex" justifyContent="center" alignItems="center" height="100%">
-                   <p>Loading...</p>
-                </Box>
-            ) : (
-                <DataGrid
-                    rows={filteredRows} // Use filteredRows here
-                    columns={columns(handleEditClick, handleDeleteClick)}
-                    pageSize={10}
-                    rowsPerPageOptions={[5, 10, 20]}
-                    disableSelectionOnClick
-                    sx={{
-                        "& .MuiDataGrid-columnHeader": {
-                            backgroundColor: "#f0f0f0",
-                            fontWeight: "bold",
-                            borderBottom: "2px solid #1976d2", // Column header's bottom border
-                        },
-                        "& .MuiDataGrid-cell": {
-                            border: "1px solid #e0e0e0", // Border for each cell
-                        },
-
-                        "& .MuiDataGrid-cell:focus": {
-                            outline: "none", // Remove default outline on focus
-                        },
-                    }}
-                />
-            )
-            }
-
-
-
+        <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
+            <h2 style={{ textAlign: "center", marginBottom: "1rem" }}>Institution List</h2>
+            <DataGrid
+                rows={rows}
+                columns={columns(handleEditClick, handleDeleteClick)}
+                pageSize={10}
+                rowsPerPageOptions={[5, 10, 20]}
+                disableSelectionOnClick
+                sx={{
+                    "& .MuiDataGrid-columnHeader": {
+                        backgroundColor: "#f0f0f0",
+                        fontWeight: "bold",
+                        borderBottom: "2px solid #1976d2", // Column header's bottom border
+                    },
+                    "& .MuiDataGrid-cell": {
+                        border: "1px solid #e0e0e0", // Border for each cell
+                    },
+                   
+                    "& .MuiDataGrid-cell:focus": {
+                        outline: "none", // Remove default outline on focus
+                    },
+                }}
+            />
 
             {/* Modal for editing institution */}
             <Modal
@@ -341,7 +292,6 @@ const InstitutionList = () => {
             </Snackbar>
         </Box>
     );
-}
-
+};
 
 export default InstitutionList;

@@ -23,6 +23,7 @@ import Payment from './Pages/Payment/Payment/Payment.jsx';
 import Review from './Pages/Review/Review.jsx';
 import Testimonial from './Pages/Testimonial/Testimonial.jsx';
 import ProtectedRoute from './Components/ProtectedRoute .jsx';
+import TutorPostAction from './Pages/TutonPostAction/TutonPostAction.jsx';
 
 const router = createBrowserRouter([
   {
@@ -68,6 +69,10 @@ const router = createBrowserRouter([
       {
         path: "/tutor-list",
         element: <Tutor />,
+      },
+      {
+        path: "/tutor-post",
+        element: <TutorPostAction></TutorPostAction>
       },
       {
         path: "/add-institution",

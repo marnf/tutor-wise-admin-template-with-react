@@ -10,11 +10,15 @@ import {
   Snackbar,
   Alert,
   TextField,
+  LinearProgress,
+  Typography,
+  Divider,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { MdDelete } from "react-icons/md";
+import { FaUserEdit } from "react-icons/fa";
 
-const columns = (handleDeleteClick) => [
+const columns = (handleDeleteClick, handleEditClick) => [
   { field: "id", headerName: "ID", flex: 0.5 },
   { field: "question", headerName: "Question", flex: 1 },
   { field: "answer", headerName: "Answer", flex: 1.5 },
@@ -25,7 +29,15 @@ const columns = (handleDeleteClick) => [
     flex: 0.8,
     renderCell: (params) => (
       <Box display="flex" justifyContent="end" className="mt-3">
-        <MdDelete title="Delete"
+        <FaUserEdit
+          title="Edit"
+          size={25}
+          color="black"
+          className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+          onClick={() => handleEditClick(params.row)}
+        />
+        <MdDelete
+          title="Delete"
           size={25}
           color="red"
           className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
@@ -43,8 +55,12 @@ const FaqList = () => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
   const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [editData, setEditData] = useState({ id: null, question: "", answer: "" });
+  const [showEditModal, setShowEditModal] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
     const BASE_URL = "https://tutorwise-backend.vercel.app";
     fetch(`${BASE_URL}/api/account/view-faq/`)
       .then((res) => res.json())
@@ -56,29 +72,31 @@ const FaqList = () => {
           created_date: moment(item.created_date).format("dddd, MMMM Do YYYY, h:mm A"),
         }));
         setRows(formattedData);
-        setFilteredRows(formattedData); // Initially, show all rows
+        setFilteredRows(formattedData);
+        setLoading(false);
       })
-      .catch((error) => console.error("Error fetching data:", error));
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+      });
   }, []);
 
-  // Handle search input change
   const handleSearch = (event) => {
     const query = event.target.value;
     setSearchQuery(query);
-    const filteredData = rows.filter((row) =>
-      row.question.toLowerCase().includes(query.toLowerCase()) ||
-      row.answer.toLowerCase().includes(query.toLowerCase())
+    const filteredData = rows.filter(
+      (row) =>
+        row.question.toLowerCase().includes(query.toLowerCase()) ||
+        row.answer.toLowerCase().includes(query.toLowerCase())
     );
     setFilteredRows(filteredData);
   };
 
-  // Handle delete button click
   const handleDeleteClick = (id) => {
     setDeleteId(id);
     setOpenDeleteModal(true);
   };
 
-  // Confirm deletion
   const handleDelete = () => {
     const BASE_URL = "https://tutorwise-backend.vercel.app";
     fetch(`${BASE_URL}/api/admin/delete-faq/${deleteId}/`, {
@@ -87,6 +105,7 @@ const FaqList = () => {
       .then((res) => {
         if (res.ok) {
           setRows((prevRows) => prevRows.filter((row) => row.id !== deleteId));
+          setFilteredRows((prevFilteredRows) => prevFilteredRows.filter((row) => row.id !== deleteId));
           setSnackbar({ open: true, message: "FAQ deleted successfully!", severity: "success" });
         } else {
           setSnackbar({ open: true, message: "Failed to delete FAQ.", severity: "error" });
@@ -102,12 +121,55 @@ const FaqList = () => {
       });
   };
 
-  // Close snackbar
+  const handleEditRequest = (row) => {
+    setEditData({ id: row.id, question: row.question, answer: row.answer });
+    setShowEditModal(true);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const BASE_URL = "http://192.168.0.154:8000";
+    fetch(`${BASE_URL}/api/admin/edit-faq/${editData.id}/`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        question: editData.question,
+        answer: editData.answer,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data) {
+          setRows((prevRows) =>
+            prevRows.map((row) =>
+              row.id === editData.id ? { ...row, question: editData.question, answer: editData.answer } : row
+            )
+          );
+          setFilteredRows((prevFilteredRows) =>
+            prevFilteredRows.map((row) =>
+              row.id === editData.id ? { ...row, question: editData.question, answer: editData.answer } : row
+            )
+          );
+          setSnackbar({ open: true, message: "FAQ updated successfully!", severity: "success" });
+        } else {
+          setSnackbar({ open: true, message: "Failed to update FAQ.", severity: "error" });
+        }
+        setShowEditModal(false); // Edit modal বন্ধ করা
+      })
+      .catch((error) => {
+        console.error("Error updating FAQ:", error);
+        setSnackbar({ open: true, message: "An error occurred.", severity: "error" });
+        setShowEditModal(false); // Edit modal বন্ধ করা
+      });
+  };
+
+
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
   };
 
-  // Close delete modal
   const handleCloseDeleteModal = () => {
     setOpenDeleteModal(false);
     setDeleteId(null);
@@ -118,7 +180,7 @@ const FaqList = () => {
       <h2 className="text-center font-bold h3">FAQ List</h2>
 
       {/* Search Bar */}
-      <Box display="flex" justifyContent="flex-end" >
+      <Box display="flex" justifyContent="flex-end">
         <TextField
           label="Search"
           variant="outlined"
@@ -130,49 +192,122 @@ const FaqList = () => {
         />
       </Box>
 
-      <DataGrid
-        rows={filteredRows} // Use filteredRows instead of rows
-        columns={columns(handleDeleteClick)}
-        pageSize={10}
-        rowsPerPageOptions={[5, 10, 20]}
-        disableSelectionOnClick
-        sx={{
-          "& .MuiDataGrid-columnHeader": {
-            backgroundColor: "#f0f0f0",
-            fontWeight: "bold",
-            borderBottom: "2px solid #1976d2",
-          },
-          "& .MuiDataGrid-cell": {
-            border: "1px solid #e0e0e0",
-          },
-          "& .MuiDataGrid-cell:focus": {
-            outline: "none",
-          },
-        }}
-      />
+      {loading ? (
+        <Box sx={{ width: '100%' }}>
+          <LinearProgress />
+        </Box>
+      ) : (
+        <DataGrid
+          rows={filteredRows} // Use filteredRows instead of rows
+          columns={columns(handleDeleteClick, handleEditRequest)}
+          pageSize={10}
+          rowsPerPageOptions={[5, 10, 20]}
+          disableSelectionOnClick
+          sx={{
+            "& .MuiDataGrid-columnHeader": {
+              backgroundColor: "#f0f0f0",
+              fontWeight: "bold",
+              borderBottom: "2px solid #1976d2",
+            },
+            "& .MuiDataGrid-cell": {
+              border: "1px solid #e0e0e0",
+            },
+            "& .MuiDataGrid-cell:focus": {
+              outline: "none",
+            },
+          }}
+        />
+      )}
 
       {/* Dialog for confirming deletion */}
-      <Dialog open={openDeleteModal} onClose={handleCloseDeleteModal}>
-        <DialogTitle>Confirm Deletion</DialogTitle>
-        <DialogContent>
-          <p>Are you sure you want to delete this FAQ?</p>
+      <Dialog open={openDeleteModal} onClose={handleCloseDeleteModal} maxWidth="sm" fullWidth>
+        <DialogTitle sx={{ backgroundColor: "white", color: "black", textAlign: "center" }}>
+          <Typography variant="h6">Confirm Deletion</Typography>
+        </DialogTitle>
+        <DialogContent sx={{ padding: 3 }}>
+          <Typography variant="body1" sx={{ marginBottom: 2 }}>
+            Are you sure you want to delete this FAQ?
+          </Typography>
+          <Divider sx={{ marginBottom: 2 }} />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDeleteModal}>Cancel</Button>
+        <DialogActions sx={{ padding: 2 }}>
+          <Button onClick={handleCloseDeleteModal} color="secondary">
+            Cancel
+          </Button>
           <Button onClick={handleDelete} color="error">
             Delete
           </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Snackbar for notifications */}
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={3000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: "100%" }}>
+      {/* Edit FAQ Dialog */}
+      <Dialog open={showEditModal} onClose={() => setShowEditModal(false)} maxWidth="sm" fullWidth>
+        <DialogTitle sx={{ backgroundColor: "white", color: "black", textAlign: "center" }}>
+          <Typography variant="h6">Edit FAQ</Typography>
+        </DialogTitle>
+        <DialogContent sx={{ padding: 3 }}>
+          <TextField
+            label="Question"
+            variant="outlined"
+            fullWidth
+            value={editData.question}
+            onChange={(e) => setEditData({ ...editData, question: e.target.value })}
+            margin="normal"
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "gray", // হোভার ইফেক্ট সরানো
+                },
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#1976d2", // ফোকাস অবস্থায় নীল বর্ডার
+                  boxShadow: "0 0 5px rgba(25, 118, 210, 0.5)", // হালকা নীল শেডো
+                },
+              },
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: "gray", // ডিফল্ট ধূসর বর্ডার
+              },
+            }}
+          />
+          <TextField
+            label="Answer"
+            variant="outlined"
+            fullWidth
+            multiline
+            rows={4}
+            value={editData.answer}
+            onChange={(e) => setEditData({ ...editData, answer: e.target.value })}
+            margin="normal"
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "gray", // হোভার ইফেক্ট সরানো
+                },
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#1976d2", // ফোকাস অবস্থায় নীল বর্ডার
+                  boxShadow: "0 0 5px rgba(25, 118, 210, 0.5)", // হালকা নীল শেডো
+                },
+              },
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: "gray", // ডিফল্ট ধূসর বর্ডার
+              },
+            }}
+          />
+
+
+        </DialogContent>
+        <DialogActions sx={{ padding: 2 }}>
+          <Button onClick={() => setShowEditModal(false)} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit} color="primary">
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Snackbar */}
+      <Snackbar open={snackbar.open} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity}>
           {snackbar.message}
         </Alert>
       </Snackbar>

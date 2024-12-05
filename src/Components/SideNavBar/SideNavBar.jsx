@@ -36,6 +36,11 @@ const items = [
     ],
   },
   {
+    key: '/tutor-post',
+    icon: <MailOutlined />,
+    label: <Link to="/tutor-post">Tuition Post</Link>,
+  },
+  {
     key: 'institution',
     icon: <AppstoreOutlined />,
     label: 'Institution',

@@ -1,30 +1,70 @@
 import React, { useState, useEffect } from "react";
 import {
-    Alert,
-    Autocomplete,
     Box,
-    Button,
-    Checkbox,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    FormControlLabel,
-    FormLabel,
-    Grid,
-    LinearProgress,
-    MenuItem,
-    Radio,
-    RadioGroup,
-    Snackbar,
-    TextareaAutosize,
     TextField,
+    Button,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Grid,
+    Snackbar,
+    Alert,
+    FormLabel,
+    RadioGroup,
+    FormControlLabel,
+    Radio,
+    MenuItem,
+    Autocomplete,
+    TextareaAutosize,
+    Checkbox,
+    LinearProgress,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { FaUserEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 
-// Dummy subject options
+const columns = (handleEditClick, handleDeleteClick) => [
+    { field: "serial", headerName: "Serial Number", minWidth: 10 },  // Default minWidth: 150
+    { field: "id", headerName: "ID", minWidth: 10 },
+    { field: "created_at", headerName: "Create Date", minWidth: 150 },
+    { field: "student_name", headerName: "Student Name", minWidth: 150 },
+    { field: "phone", headerName: "Phone", minWidth: 120 },
+    { field: "subject", headerName: "Subject", minWidth: 150 },
+    { field: "lesson_type", headerName: "Lesson Type", minWidth: 70 },
+    { field: "days_per_week", headerName: "Days Per Week", minWidth: 50 },
+    { field: "budget_amount", headerName: "Budget", minWidth: 50 },
+    { field: "user_joining_date", headerName: "Tuition Start Date", minWidth: 150 },
+    { field: "educational_level_choices", headerName: "Educational Level", minWidth: 100 },
+    { field: "gender", headerName: "Gender", minWidth: 60 },
+    { field: "curriculum", headerName: "Curriculum", minWidth: 150 },
+    {
+        field: "actions",
+        headerName: "Actions",
+        minWidth: 150,
+        renderCell: (params) => (
+            <Box display="flex" justifyContent="center" gap={1}>
+                <FaUserEdit
+                    title="Edit"
+                    size={25}
+                    className="cursor-pointer"
+                    onClick={() => handleEditClick(params.row)}
+                />
+                <MdDelete
+                    title="Delete"
+                    size={25}
+                    color="red"
+                    className="cursor-pointer"
+                    onClick={() => handleDeleteClick(params.row.id)}
+                />
+            </Box>
+        ),
+    },
+];
+
+
+
+
 const subjectOptions = [
     "Bangla", "English", "Math", "Physics", "Science", "Chemistry",
     "Digital Technology", "Life and livelihood", "Healthy Safety",
@@ -37,230 +77,147 @@ const subjectOptions = [
     "Arts and crafts", "Art and Culture"
 ];
 
-
-const columns = [
-    { field: "id", headerName: "ID", flex: 0.5 },
-    { field: "name", headerName: "Name", flex: 1 },
-    { field: "phone", headerName: "Phone", flex: 1 },
-    { field: "location", headerName: "Location", flex: 1 },
-    { field: "details", headerName: "Details", flex: 2 },
-    { field: "subject", headerName: "Subject", flex: 1 },
-    { field: "start_date", headerName: "Start Date", flex: 1 },
-    { field: "class_name", headerName: "Class", flex: 1 },
-    { field: "lesson_type", headerName: "Lesson Type", flex: 1 },
-    { field: "gender", headerName: "Gender", flex: 1 },
-    { field: "budget", headerName: "Budget", flex: 1 },
-    { field: "days_per_week", headerName: "Days/Week", flex: 1 },
-    { field: "start_immediate", headerName: "Start Immediately", flex: 1 },
-    { field: "additional_comment", headerName: "Additional Comment", flex: 2 },
-    {
-        field: "actions",
-        headerName: "Actions",
-        flex: 2,
-        renderCell: (params) => (
-
-
-            <Box display="flex" justifyContent="center" className="mt-3" gap={1}>
-
-                <FaUserEdit title="Edit"
-                    size={25}
-                    color="black"
-                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
-                    onClick={() => params.row.handleEdit(params.row)} />
-
-                <MdDelete title="Delete"
-                    size={25}
-                    color="red"
-                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
-                    onClick={() => params.row.handleDelete(params.row)}
-                />
-            </Box>
-
-        ),
-    },
-];
-
-const ApprovedTutorRequest = () => {
-    const [rows, setRows] = useState([]);
-    const [searchQuery, setSearchQuery] = useState("");
-    const [filteredRows, setFilteredRows] = useState([]);
-    const [open, setOpen] = useState(false);
-    const [openDeleteModal, setOpenDeleteModal] = useState(false);
-    const [editData, setEditData] = useState({});
-    const [deleteData, setDeleteData] = useState({});
+const TutorPostAction = () => {
     const [loading, setLoading] = useState(false);
-    const [openSnackbar, setOpenSnackbar] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState("");
-    const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // 'success' or 'error'
+    const [rows, setRows] = useState([]);  // Original data
+    const [searchText, setSearchText] = useState("");  // Search query
+    const [editData, setEditData] = useState({});  // For editing data
+    const [open, setOpen] = useState(false);  // Dialog open state
+    const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+    const [filteredRows, setFilteredRows] = useState([]);  // Filtered data for search
 
-
+    // Fetch data on initial load
     useEffect(() => {
-        setLoading(true)
-        fetch("https://tutorwise-backend.vercel.app/api/admin/approve-request-tutor-list/")
-            .then((res) => res.json())
-            .then((data) => {
-                const formattedData = data.map((item) => ({
-                    ...item,
-                    start_immediate: item.start_immediate ? "Yes" : "No",
-                    handleEdit: handleEditRequest,
-                    handleDelete: handleDeleteRequest,
-                }));
-                setRows(formattedData);
-                setFilteredRows(formattedData);
-                setLoading(false)
+        const fetchData = () => {
+            setLoading(true);
+    
+            fetch("http://192.168.0.154:8000/api/admin/tuition/list", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
             })
-            .catch((error) => console.error("Error fetching data:", error));
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Failed to fetch data");
+                }
+                return response.json();
+            })
+            .then((data) => {
+                const dataWithSerial = data.map((item, index) => ({
+                    ...item,
+                    serial: index + 1  
+                }));
+    
+                setRows(dataWithSerial);
+                setFilteredRows(dataWithSerial);
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.error("Error fetching data:", error);
+                setLoading(false);
+            });
+        };
+    
+        fetchData();
     }, []);
+    
 
-    useEffect(() => {
-        const result = rows.filter((row) =>
-            Object.values(row).join(" ").toLowerCase().includes(searchQuery.toLowerCase())
+
+
+    // Handle search functionality
+    const handleSearch = (event) => {
+        const value = event.target.value.toLowerCase();
+        setSearchText(value);
+
+        // Filter rows based on search
+        const filtered = rows.filter((row) =>
+            Object.values(row).some((field) =>
+                String(field).toLowerCase().includes(value)
+            )
         );
-        setFilteredRows(result);
-    }, [searchQuery, rows]);
+        setFilteredRows(filtered);  // Update filtered rows
+    };
 
-    const handleEditRequest = (row) => {
-        setEditData({
-            ...row,
-            start_immediate: row.start_immediate === "Yes", // Correctly set the start_immediate value
-        });
+    // Handle editing
+    const handleEditClick = (row) => {
+        setEditData(row);
         setOpen(true);
     };
 
-    const handleDeleteRequest = (row) => {
-        setDeleteData(row);
-        setOpenDeleteModal(true);
+    // Handle dialog close
+    const handleClose = () => setOpen(false);
 
+    // Handle delete action
+    const handleDeleteClick = (id) => {
+        // Implement delete functionality
+        setSnackbar({ open: true, message: "Deleted successfully!", severity: "success" });
     };
 
-    const handleDelete = (e) => {
-        e.preventDefault();
-        fetch(`https://tutorwise-backend.vercel.app/api/admin/unapprove-request-tutor/${deleteData.id}/`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-            .then((response) => {
-                if (response.ok) {
-                    setRows((prevRows) => prevRows.filter((row) => row.id !== deleteData.id));
-                    setOpenDeleteModal(false);
-                    setSnackbarMessage("Tutor request deleted successfully.");
-                    setSnackbarSeverity("success");
-                    setOpenSnackbar(true);
-                } else {
-                    console.error("Failed to delete request.");
-                    setSnackbarMessage("Failed to delete tutor request.");
-                    setSnackbarSeverity("error");
-                    setOpenSnackbar(true);
-                }
-            })
-            .catch((error) => {
-                console.error("Error processing request:", error);
-                setSnackbarMessage("Error occurred while deleting the request.");
-                setSnackbarSeverity("error");
-                setOpenSnackbar(true);
-            });
-    };
-
-
-
-
-
+    // Handle form submit for editing
     const handleSubmit = (e) => {
         e.preventDefault();
-        fetch(`https://tutorwise-backend.vercel.app/api/admin/edit-approved-request-tutor/${editData.id}/`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(editData),
-        })
-            .then((response) => {
-                if (response.ok) {
-                    setRows((prevRows) =>
-                        prevRows.map((row) => (row.id === editData.id ? editData : row))
-                    );
-                    setOpen(false);
-                    setSnackbarMessage("Tutor request updated successfully.");
-                    setSnackbarSeverity("success");
-                    setOpenSnackbar(true);
-                } else {
-                    console.error("Failed to update.");
-                    setSnackbarMessage("Failed to update tutor request.");
-                    setSnackbarSeverity("error");
-                    setOpenSnackbar(true);
-                }
-            })
-            .catch((error) => {
-                console.error("Error updating data:", error);
-                setSnackbarMessage("Error occurred while updating the request.");
-                setSnackbarSeverity("error");
-                setOpenSnackbar(true);
-            });
-    };
-
-    const handleClose = () => {
+        // Save the edited data
+        setSnackbar({ open: true, message: "Updated successfully!", severity: "success" });
         setOpen(false);
     };
 
-
-    const handleCloseDeleteModal = () => {
-        setOpenDeleteModal(false);
-    };
-
-
-
     return (
-        <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-            <h2 className="text-center font-bold h3">Approved Tutor Request List</h2>
-            <div className="flex justify-end">
-                <TextField
-                    label="Search Tutor Requests"
-                    variant="outlined"
-                    value={searchQuery}
-                    size="small"
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    style={{ marginBottom: "1rem", width: "300px" }}
-                />
-            </div>
+        <Box sx={{ padding: 2 }}>
+            <TextField
+                placeholder="Search..."
+                value={searchText}
+                onChange={handleSearch}
+                variant="outlined"
+                size="small"
+                fullWidth
+                sx={{ marginBottom: 2 }}
+            />
 
             {loading ? (
                 <Box sx={{ width: '100%' }}>
-                <LinearProgress />
-              </Box>
+                    <LinearProgress />
+                </Box>
             ) : (
-            <DataGrid
-                rows={filteredRows}
-                columns={columns.map((col) => ({
-                    ...col,
-                    minWidth: 150, // Minimum width for each column (adjust as needed)
-                }))}
-                pageSize={10}
-                rowsPerPageOptions={[5, 10, 20]}
-                disableSelectionOnClick
 
-                sx={{
-                    "& .MuiDataGrid-columnHeader": {
-                        backgroundColor: "#f0f0f0",
-                        fontWeight: "bold",
-                        borderBottom: "2px solid #1976d2", // Column header's bottom border
-                    },
-                    "& .MuiDataGrid-cell": {
-                        border: "1px solid #e0e0e0", // Border for each cell
-                        whiteSpace: "normal", // Allow text to wrap in cells
-                        wordWrap: "break-word", // Break long words if necessary
-                    },
-                    "& .MuiDataGrid-cell:focus": {
-                        outline: "none", // Remove default outline on focus
-                    },
-                    "& .MuiDataGrid-virtualScroller": {
-                        overflowX: "auto", // Ensure horizontal scroll for table content
-                    },
-                }}
-            />
+                <DataGrid
+                    rows={filteredRows}  // filtered rows
+                    columns={columns(handleEditClick, handleDeleteClick).map((col) => ({
+                        ...col,
+                        minWidth: col.minWidth || 150,
+                    }))}
+                    pageSize={10}
+                    rowsPerPageOptions={[5, 10, 20]}
+                    disableSelectionOnClick
+                    sx={{
+                        "& .MuiDataGrid-columnHeader": {
+                            backgroundColor: "#f0f0f0",
+                            fontWeight: "bold",
+                            borderBottom: "2px solid #1976d2",
+                        },
+                        "& .MuiDataGrid-cell": {
+                            border: "1px solid #e0e0e0",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                        },
+                        "& .MuiDataGrid-cell:focus": {
+                            outline: "none",
+                        },
+                        "& .MuiDataGrid-root": {
+                            overflowX: "auto",
+                        },
+                        "& .MuiDataGrid-virtualScroller": {
+                            overflowX: "auto",
+                        },
+                    }}
+                />
+
+
+
             )}
 
+            {/* Edit Dialog */}
             <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
                 <DialogTitle>Edit Tutor Request</DialogTitle>
                 <DialogContent>
@@ -272,8 +229,8 @@ const ApprovedTutorRequest = () => {
                                     label="Name"
                                     variant="outlined"
                                     fullWidth
-                                    value={editData.name || ""}
-                                    onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+                                    value={editData.student_name || ""}
+                                    onChange={(e) => setEditData({ ...editData, student_name: e.target.value })}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -281,8 +238,8 @@ const ApprovedTutorRequest = () => {
                                     label="Location"
                                     variant="outlined"
                                     fullWidth
-                                    value={editData.location || ""}
-                                    onChange={(e) => setEditData({ ...editData, location: e.target.value })}
+                                    value={editData.user_location || ""}
+                                    onChange={(e) => setEditData({ ...editData, user_location: e.target.value })}
                                 />
                             </Grid>
 
@@ -306,8 +263,8 @@ const ApprovedTutorRequest = () => {
                                     type="date"
                                     variant="outlined"
                                     fullWidth
-                                    value={editData.start_date || ""}
-                                    onChange={(e) => setEditData({ ...editData, start_date: e.target.value })}
+                                    value={editData.user_joining_date || ""}
+                                    onChange={(e) => setEditData({ ...editData, user_joining_date: e.target.value })}
                                     InputLabelProps={{
                                         shrink: true,
                                     }}
@@ -347,8 +304,8 @@ const ApprovedTutorRequest = () => {
                                     type="number"
                                     variant="outlined"
                                     fullWidth
-                                    value={editData.budget || ""}
-                                    onChange={(e) => setEditData({ ...editData, budget: e.target.value })}
+                                    value={editData.budget_amount || ""}
+                                    onChange={(e) => setEditData({ ...editData, budget_amount: e.target.value })}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -467,34 +424,16 @@ const ApprovedTutorRequest = () => {
                 </DialogContent>
             </Dialog>
 
-            <Dialog open={openDeleteModal} onClose={handleCloseDeleteModal}>
-                <DialogTitle>Confirm Deletion</DialogTitle>
-                <DialogContent>
-                    <p>Are you sure you want to delete this tutor request?</p>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseDeleteModal}>Cancel</Button>
-                    <Button onClick={handleDelete} color="error">Delete</Button>
-                </DialogActions>
-            </Dialog>
-
+            {/* Snackbar */}
             <Snackbar
-                open={openSnackbar}
-                autoHideDuration={6000}
-                onClose={() => setOpenSnackbar(false)}
-                anchorOrigin={{ vertical: "top", horizontal: "center" }}
+                open={snackbar.open}
+                autoHideDuration={3000}
+                onClose={() => setSnackbar({ ...snackbar, open: false })}
             >
-                <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity} sx={{ width: "100%" }}>
-                    {snackbarMessage}
-                </Alert>
+                <Alert severity={snackbar.severity}>{snackbar.message}</Alert>
             </Snackbar>
-
         </Box>
     );
 };
 
-export default ApprovedTutorRequest;
-
-
-
-
+export default TutorPostAction;

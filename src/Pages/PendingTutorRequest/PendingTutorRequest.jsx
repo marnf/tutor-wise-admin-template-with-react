@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal } from "@mui/material";
+import { LinearProgress, Modal } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, TextareaAutosize, Grid, MenuItem, Autocomplete, Radio, RadioGroup, FormControlLabel, FormLabel, Checkbox } from "@mui/material";
 import { MdDelete } from "react-icons/md";
@@ -11,7 +11,7 @@ import { Snackbar, Alert } from "@mui/material";
 
 const columns = [
     { field: "id", headerName: "ID", flex: 0.5 },
-    { field: "username", headerName: "Name", flex: 1 },
+    { field: "name", headerName: "Name", flex: 1 },
     { field: "phone", headerName: "Phone", flex: 1 },
     { field: "location", headerName: "Location", flex: 1 },
     { field: "details", headerName: "Details", flex: 2 },
@@ -22,7 +22,7 @@ const columns = [
         renderCell: (params) => (
 
 
-            <Box display="flex" justifyContent="end" className="mt-3" gap={1}>
+            <Box display="flex" justifyContent="center" className="mt-3" gap={1}>
 
                 <BiSolidSelectMultiple title="Edit"
                     size={25}
@@ -52,34 +52,39 @@ const PendingTutorRequest = () => {
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // success বা error হতে পারে
-    const [deleteId, setDeleteId] = useState("")
+    const [deleteId, setDeleteId] = useState("");
+    const [loading, setLoading] = useState(false);
 
 
     const subjectOptions = [
-        "Math",
-        "Science",
-        "English",
-        "History",
-        "Geography",
-        "Literature",
-        "Art",
+        "Bangla", "English", "Math", "Physics", "Science", "Chemistry",
+        "Digital Technology", "Life and livelihood", "Healthy Safety",
+        "Religious Studies", "Biology", "Information and Communication Technology",
+        "Agriculture Education", "Geography", "Psychology", "Sports",
+        "Accounting", "Finance & Banking", "Economics", "Statistics",
+        "Production Management & Marketing", "Business Organization and management",
+        "Civic & Good Governance", "History", "History and Social Sciences",
+        "Islamic History", "Sociology", "Social Work", "Logic", "Soil Science",
+        "Arts and crafts", "Art and Culture"
     ];
 
     useEffect(() => {
+        setLoading(true)
         fetch("https://tutorwise-backend.vercel.app/api/admin/view-request-tutor/")
             .then((res) => res.json())
             .then((data) => {
                 const formattedData = data.map((request) => ({
                     id: request.id,
-                    username: request.name || "Not Available",
-                    phone: request.phone || "Not Available",
-                    location: request.location || "Not Available",
+                    name: request.name || "",
+                    phone: request.phone || "",
+                    location: request.location || "",
                     details: request.details || "No Details",
                     handleEdit: handleOpenEditModal,
                     handleDelete: handleOpenDeleteModal,
                 }));
                 setRows(formattedData);
                 setFilteredRows(formattedData);
+                setLoading(false)
             })
             .catch((error) => console.error("Error fetching data:", error));
     }, []);
@@ -190,27 +195,42 @@ const PendingTutorRequest = () => {
                 />
             </div>
 
-            <DataGrid
-                rows={filteredRows}
-                columns={columns}
-                pageSize={10}
-                rowsPerPageOptions={[5, 10, 20]}
-                disableSelectionOnClick
-                sx={{
-                    "& .MuiDataGrid-columnHeader": {
-                        backgroundColor: "#f0f0f0",
-                        fontWeight: "bold",
-                        borderBottom: "2px solid #1976d2", // Column header's bottom border
-                    },
-                    "& .MuiDataGrid-cell": {
-                        border: "1px solid #e0e0e0", // Border for each cell
-                    },
 
-                    "& .MuiDataGrid-cell:focus": {
-                        outline: "none", // Remove default outline on focus
-                    },
-                }}
-            />
+            {loading ? (
+                <Box sx={{ width: '100%' }}>
+                    <LinearProgress />
+                </Box>
+            ) : (
+                <DataGrid
+                    rows={filteredRows}
+                    columns={columns.map((col) => ({
+                        ...col,
+                        minWidth: 150, // Minimum width for each column (adjust as needed)
+                    }))}
+                    pageSize={10}
+                    rowsPerPageOptions={[5, 10, 20]}
+                    disableSelectionOnClick
+
+                    sx={{
+                        "& .MuiDataGrid-columnHeader": {
+                            backgroundColor: "#f0f0f0",
+                            fontWeight: "bold",
+                            borderBottom: "2px solid #1976d2", // Column header's bottom border
+                        },
+                        "& .MuiDataGrid-cell": {
+                            border: "1px solid #e0e0e0", // Border for each cell
+                            whiteSpace: "normal", // Allow text to wrap in cells
+                            wordWrap: "break-word", // Break long words if necessary
+                        },
+                        "& .MuiDataGrid-cell:focus": {
+                            outline: "none", // Remove default outline on focus
+                        },
+                        "& .MuiDataGrid-virtualScroller": {
+                            overflowX: "auto", // Ensure horizontal scroll for table content
+                        },
+                    }}
+                />
+            )}
 
             {/* Edit Modal */}
             <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
@@ -224,7 +244,7 @@ const PendingTutorRequest = () => {
                                     label="Name"
                                     variant="outlined"
                                     fullWidth
-                                    value={editData.username || ""}
+                                    value={editData.name || ""}
                                     onChange={(e) => setEditData({ ...editData, name: e.target.value })}
                                 />
                             </Grid>
@@ -246,6 +266,8 @@ const PendingTutorRequest = () => {
                                     fullWidth
                                     value={editData.phone || ""}
                                     onChange={(e) => setEditData({ ...editData, phone: e.target.value })}
+                                    
+                                    disabled
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -275,6 +297,7 @@ const PendingTutorRequest = () => {
                                     <FormControlLabel value="Others" control={<Radio />} label="Others" />
                                 </RadioGroup>
                             </Grid>
+                            
                             <Grid item xs={12} sm={6}>
                                 <FormLabel>Lesson Type</FormLabel>
                                 <RadioGroup
@@ -409,7 +432,7 @@ const PendingTutorRequest = () => {
             </Dialog>
 
 
-           
+
 
             <Dialog open={openDeleteModal} onClose={() => setOpenDeleteModal(false)}>
                 <DialogTitle>Confirm Deletion</DialogTitle>

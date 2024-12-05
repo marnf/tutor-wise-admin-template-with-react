@@ -11,11 +11,13 @@ import {
     MenuItem,
     Autocomplete,
     Snackbar,
-    Alert, // Import Grid component
+    Alert,
+    LinearProgress, // Import Grid component
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { FaUserEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
+import { BiSolidSelectMultiple } from "react-icons/bi";
 
 
 // Dummy subject options
@@ -66,6 +68,12 @@ const columns = [
 
             <Box display="flex" justifyContent="end" className="mt-3" gap={1}>
 
+                <BiSolidSelectMultiple title="Approve"
+                    size={25}
+                    color="green"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                    onClick={() => params.row.handleApprove(params.row)} />
+
                 <FaUserEdit title="Edit"
                     size={25}
                     color="black"
@@ -89,27 +97,31 @@ const PendingHigherTutorRequest = () => {
     const [filteredRows, setFilteredRows] = useState([]);
     const [open, setOpen] = useState(false);
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const [openApproveModal, setOpenApproveModal] = useState(false);
     const [editData, setEditData] = useState({});
+    const [approveData, setApproveData] = useState({});
     const [formData, setFormData] = useState({}); // Initialize formData state
-
-    // Snackbar state
+    const [loading, setLoading] = useState(false);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // 'success' or 'error'
 
 
     useEffect(() => {
+        setLoading(true)
         fetch("https://tutorwise-backend.vercel.app/api/admin/view-hire-request-tutor/")
             .then((res) => res.json())
             .then((data) => {
                 const formattedData = data.map((item) => ({
                     ...item,
                     location: `${item.tutor_division}, ${item.tutor_district}`,
+                    handleApprove:handleApproveRequest,
                     handleEdit: handleEditRequest,
                     handleDelete: handleDeleteRequest,
                 }));
                 setRows(formattedData);
                 setFilteredRows(formattedData);
+                setLoading(false)
             })
             .catch((error) => console.error("Error fetching data:", error));
     }, []);
@@ -121,6 +133,12 @@ const PendingHigherTutorRequest = () => {
         setFilteredRows(result);
     }, [searchQuery, rows]);
 
+    const handleApproveRequest =(row)=>{
+        setApproveData(row)
+        setOpenApproveModal(true)
+
+    }
+
     const handleEditRequest = (row) => {
         setEditData(row);
         setFormData(row); // Initialize formData with row data for editing
@@ -128,8 +146,39 @@ const PendingHigherTutorRequest = () => {
     };
 
     const handleDeleteRequest = (row) => {
-        // Store the row data to be deleted
+        
         setOpenDeleteModal(true); // Open the delete modal
+    };
+
+
+    const handleApprove = () => {
+        fetch(`http://192.168.0.154:8000//api/admin/approve-request/${approveData.id}/`, {
+            method: "POST", // or PUT if needed
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+            .then((res) => {
+                if (res.ok) {
+                    setSnackbarMessage("Request approved successfully!");
+                    setSnackbarSeverity("success");
+                    setOpenSnackbar(true);
+                    setRows((prevRows) =>
+                        prevRows.filter((row) => row.id !== approveData.id) // Optionally remove the approved item from the list
+                    );
+                    setOpenApproveModal(false)
+                } else {
+                    setSnackbarMessage("Failed to approve request.");
+                    setSnackbarSeverity("error");
+                    setOpenSnackbar(true);
+                }
+            })
+            .catch((error) => {
+                console.error("Error approving request:", error);
+                setSnackbarMessage("Error approving request.");
+                setSnackbarSeverity("error");
+                setOpenSnackbar(true);
+            });
     };
 
 
@@ -192,6 +241,11 @@ const PendingHigherTutorRequest = () => {
     };
 
 
+    const handleCloseApproveModal = () => {
+        setOpenApproveModal(false);
+    };
+
+
 
     const handleChange = (e) => {
         const { name, value } = e.target; // Get the name and value of the field
@@ -220,6 +274,12 @@ const PendingHigherTutorRequest = () => {
                     style={{ marginBottom: "1rem", width: "300px" }}
                 />
             </div>
+
+            {loading ? (
+                <Box sx={{ width: '100%' }}>
+                <LinearProgress />
+              </Box>
+            ) : (
             <DataGrid
                 rows={filteredRows}
                 columns={columns.map((col) => ({
@@ -229,7 +289,7 @@ const PendingHigherTutorRequest = () => {
                 pageSize={10}
                 rowsPerPageOptions={[5, 10, 20]}
                 disableSelectionOnClick
-               
+
                 sx={{
                     "& .MuiDataGrid-columnHeader": {
                         backgroundColor: "#f0f0f0",
@@ -249,6 +309,7 @@ const PendingHigherTutorRequest = () => {
                     },
                 }}
             />
+            )}
 
 
 
@@ -438,6 +499,18 @@ const PendingHigherTutorRequest = () => {
                     </form>
                 </DialogContent>
             </Dialog>
+
+            <Dialog open={openApproveModal} onClose={handleCloseApproveModal}>
+                <DialogTitle>Confirm Approve</DialogTitle>
+                <DialogContent>
+                    <p>Are you sure you want to Approve this tutor request?</p>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseApproveModal}>Cancel</Button>
+                    <Button onClick={handleApprove} color="error">Approve</Button>
+                </DialogActions>
+            </Dialog>
+
 
             <Dialog open={openDeleteModal} onClose={handleCloseDeleteModal}>
                 <DialogTitle>Confirm Deletion</DialogTitle>

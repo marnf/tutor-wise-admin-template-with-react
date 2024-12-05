@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Modal, Snackbar, Alert, TextField } from "@mui/material";
+import { Box, Button, Modal, Snackbar, Alert, TextField, LinearProgress, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { MdDelete } from "react-icons/md";
 
@@ -10,14 +10,17 @@ const Testimonial = () => {
     const [deleteId, setDeleteId] = useState(null);
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        setLoading(true)
         const BASE_URL = "https://tutorwise-backend.vercel.app";
         fetch(`${BASE_URL}/api/admin/testimonials-view/`)
             .then((res) => res.json())
             .then((data) => {
                 setRows(data);
-                setFilteredRows(data); // Initially show all rows
+                setFilteredRows(data); 
+                setLoading(false)
             })
             .catch((error) => console.error("Error fetching reviews:", error));
     }, []);
@@ -103,6 +106,12 @@ const Testimonial = () => {
                 />
             </Box>
 
+
+            {loading ? (
+                <Box sx={{ width: '100%' }}>
+                <LinearProgress />
+              </Box>
+            ) : (
             <DataGrid
                 rows={filteredRows}
                 columns={columns(handleDeleteClick)}
@@ -122,39 +131,22 @@ const Testimonial = () => {
                         outline: "none",
                     },
                 }}
-            />
+            />)}
 
             {/* Delete Confirmation Modal */}
-            <Modal
-                open={openDeleteModal}
-                onClose={() => setOpenDeleteModal(false)}
-                aria-labelledby="delete-review-modal"
-                aria-describedby="delete-review-modal-description"
-            >
-                <Box
-                    sx={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        maxWidth: "500px",
-                        width: "100%",
-                        backgroundColor: "#fff",
-                        borderRadius: "12px",
-                        p: 4,
-                    }}
-                >
-                    <h3 className="text-center font-bold text-xl py-3">Are you sure you want to delete this review?</h3>
-                    <div className="d-flex justify-content-center gap-4">
-                        <Button variant="contained" color="error" onClick={handleDeleteConfirm}>
-                            Yes, Delete
-                        </Button>
-                        <Button variant="contained" onClick={() => setOpenDeleteModal(false)}>
-                            Cancel
-                        </Button>
-                    </div>
-                </Box>
-            </Modal>
+           
+            <Dialog open={openDeleteModal}   onClose={() => setOpenDeleteModal(false)}>
+                <DialogTitle>Approve Review</DialogTitle>
+                <DialogContent>
+                    <p>Are you sure you want to remove this testimonial?</p>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenDeleteModal(false)}>Cancel</Button>
+                    <Button onClick={handleDeleteConfirm} color="danger">
+                        Remove
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
             {/* Snackbar */}
             <Snackbar

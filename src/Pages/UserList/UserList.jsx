@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { Alert, Box, Button, Modal, TextField } from "@mui/material";
+import { Alert, Box, Button, LinearProgress, Modal, TextField } from "@mui/material";
 import Select from "react-select";  // Import react-select
 import { BiSolidSelectMultiple } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
@@ -25,7 +25,7 @@ const columns = [
 
 
 
-            <Box display="flex" justifyContent="end" className="mt-3" gap={1}>
+            <Box display="flex" justifyContent="center" className="mt-3" gap={1}>
 
                 <BiSolidSelectMultiple title="Edit"
                     size={25}
@@ -84,6 +84,7 @@ const UserList = () => {
 
     // Fetch Data for Users
     useEffect(() => {
+        setLoading(true);
         fetch("https://tutorwise-backend.vercel.app/api/admin/all-users-list/")
             .then((res) => res.json())
             .then((data) => {
@@ -100,6 +101,7 @@ const UserList = () => {
                 }));
                 setRows(formattedUsers);
                 setFilteredRows(formattedUsers);
+                setLoading(false);
             })
             .catch((error) => console.error("Error fetching data:", error));
     }, []);
@@ -300,7 +302,7 @@ const UserList = () => {
                     const errorData = await response.json();
                     console.error("Server Error:", errorData);
 
-                    const errorMessage = errorData.message|| errorData.error || "Unknown error occurred!";
+                    const errorMessage = errorData.message || errorData.error || "Unknown error occurred!";
                     setSnackbarMessage(errorMessage);
                     setOpenErrorSnackbar(true);
                     return;
@@ -438,33 +440,45 @@ const UserList = () => {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     style={{ width: "300px" }}
                 />
-
-
-
             </div>
 
-            <DataGrid
+            {loading ? (
+                <Box sx={{ width: '100%' }}>
+                <LinearProgress />
+              </Box>
+            ) : (
 
-                rows={filteredRows}
-                columns={columns}
-                pageSize={10}
-                rowsPerPageOptions={[5, 10, 20]}
-                disableSelectionOnClick
-                sx={{
-                    "& .MuiDataGrid-columnHeader": {
-                        backgroundColor: "#f0f0f0",
-                        fontWeight: "bold",
-                        borderBottom: "2px solid #1976d2", // Column header's bottom border
-                    },
-                    "& .MuiDataGrid-cell": {
-                        border: "1px solid #e0e0e0", // Border for each cell
-                    },
+                <DataGrid
 
-                    "& .MuiDataGrid-cell:focus": {
-                        outline: "none", // Remove default outline on focus
-                    },
-                }}
-            />
+                    rows={filteredRows}
+                    columns={columns.map((col) => ({
+                        ...col,
+                        minWidth: 125, // Minimum width for each column (adjust as needed)
+                    }))}
+                    pageSize={10}
+                    rowsPerPageOptions={[5, 10, 20]}
+                    disableSelectionOnClick
+
+                    sx={{
+                        "& .MuiDataGrid-columnHeader": {
+                            backgroundColor: "#f0f0f0",
+                            fontWeight: "bold",
+                            borderBottom: "2px solid #1976d2", // Column header's bottom border
+                        },
+                        "& .MuiDataGrid-cell": {
+                            border: "1px solid #e0e0e0", // Border for each cell
+                            whiteSpace: "normal", // Allow text to wrap in cells
+                            wordWrap: "break-word", // Break long words if necessary
+                        },
+                        "& .MuiDataGrid-cell:focus": {
+                            outline: "none", // Remove default outline on focus
+                        },
+                        "& .MuiDataGrid-virtualScroller": {
+                            overflowX: "auto", // Ensure horizontal scroll for table content
+                        },
+                    }}
+                />
+            )}
 
 
 

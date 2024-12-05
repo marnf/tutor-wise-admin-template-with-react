@@ -4,6 +4,7 @@ import {
     TextField,
     Snackbar,
     Alert,
+    LinearProgress,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 
@@ -24,8 +25,10 @@ const ProPayment = () => {
     const [rows, setRows] = useState([]);
     const [filteredRows, setFilteredRows] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        setLoading(true)
         const BASE_URL = "https://tutorwise-backend.vercel.app";
         fetch(`${BASE_URL}/api/admin/buy-apply-payment`)
             .then((res) => res.json())
@@ -44,7 +47,8 @@ const ProPayment = () => {
                 }));
 
                 setRows(formattedData);
-                setFilteredRows(formattedData); // Initially, show all rows
+                setFilteredRows(formattedData); 
+                setLoading(false)
             })
             .catch((error) => console.error("Error fetching data:", error));
     }, []);
@@ -77,12 +81,21 @@ const ProPayment = () => {
                 />
             </div>
 
+            {loading ? (
+                <Box sx={{ width: '100%' }}>
+                <LinearProgress />
+              </Box>
+            ) : (
             <DataGrid
                 rows={filteredRows}
-                columns={columns}
+                columns={columns.map((col) => ({
+                    ...col,
+                    minWidth: 150, // Minimum width for each column (adjust as needed)
+                }))}
                 pageSize={10}
                 rowsPerPageOptions={[5, 10, 20]}
                 disableSelectionOnClick
+
                 sx={{
                     "& .MuiDataGrid-columnHeader": {
                         backgroundColor: "#f0f0f0",
@@ -91,13 +104,17 @@ const ProPayment = () => {
                     },
                     "& .MuiDataGrid-cell": {
                         border: "1px solid #e0e0e0", // Border for each cell
+                        whiteSpace: "normal", // Allow text to wrap in cells
+                        wordWrap: "break-word", // Break long words if necessary
                     },
-
                     "& .MuiDataGrid-cell:focus": {
                         outline: "none", // Remove default outline on focus
                     },
+                    "& .MuiDataGrid-virtualScroller": {
+                        overflowX: "auto", // Ensure horizontal scroll for table content
+                    },
                 }}
-            />
+            />)}
         </Box>
     );
 };
