@@ -91,7 +91,7 @@ const TutorPostAction = () => {
         const fetchData = () => {
             setLoading(true);
     
-            fetch("http://192.168.0.154:8000/api/admin/tuition/list", {
+            fetch("https://tutorwise-backend.vercel.app/api/admin/tuition/list", {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",

@@ -128,7 +128,7 @@ const FaqList = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const BASE_URL = "http://192.168.0.154:8000";
+    const BASE_URL = "https://tutorwise-backend.vercel.app";
     fetch(`${BASE_URL}/api/admin/edit-faq/${editData.id}/`, {
       method: "PUT",
       headers: {

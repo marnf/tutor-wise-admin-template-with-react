@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Box, Button, Modal, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
+import { FaUserEdit } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
 
 const columns = (handleEditClick, handleDeleteClick) => [
     { field: "id", headerName: "ID", flex: 0.5 },
@@ -22,25 +24,28 @@ const columns = (handleEditClick, handleDeleteClick) => [
         headerName: "Actions",
         flex: 1,
         renderCell: (params) => (
-            <Box display="flex" gap={1}>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => handleEditClick(params.row)}
-                >
-                    Edit
-                </Button>
-                <Button
-                    variant="contained"
-                    color="error"
+            <Box display="flex" justifyContent="center" className="mt-3" gap={1}>
+
+                <FaUserEdit title="Edit"
+                    size={25}
+                    color="black"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                    onClick={() => handleEditClick(params.row)} />
+
+                <MdDelete title="Delete"
+                    size={25}
+                    color="red"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => handleDeleteClick(params.row.id)}
-                >
-                    Delete
-                </Button>
+                />
             </Box>
+
+
         ),
     },
 ];
+
+
 
 const InstitutionList = () => {
     const [rows, setRows] = useState([]);
@@ -64,6 +69,26 @@ const InstitutionList = () => {
             })
             .catch((error) => console.error("Error fetching data:", error));
     }, []);
+
+
+    const CustomFooter = ({ totalRows }) => {
+        return (
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: 50,
+                    backgroundColor: "#f9f9f9",
+                    borderTop: "1px solid #ccc",
+                    fontWeight: "bold",
+                }}
+            >
+                Total Data: {totalRows}
+            </Box>
+        );
+    };
+
 
     // Handle edit button click
     const handleEditClick = (institution) => {
@@ -162,6 +187,7 @@ const InstitutionList = () => {
                 pageSize={10}
                 rowsPerPageOptions={[5, 10, 20]}
                 disableSelectionOnClick
+               
                 sx={{
                     "& .MuiDataGrid-columnHeader": {
                         backgroundColor: "#f0f0f0",
@@ -171,7 +197,7 @@ const InstitutionList = () => {
                     "& .MuiDataGrid-cell": {
                         border: "1px solid #e0e0e0", // Border for each cell
                     },
-                   
+
                     "& .MuiDataGrid-cell:focus": {
                         outline: "none", // Remove default outline on focus
                     },

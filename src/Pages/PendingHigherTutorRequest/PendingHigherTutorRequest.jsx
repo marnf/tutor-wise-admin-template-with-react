@@ -152,7 +152,7 @@ const PendingHigherTutorRequest = () => {
 
 
     const handleApprove = () => {
-        fetch(`http://192.168.0.154:8000//api/admin/approve-request/${approveData.id}/`, {
+        fetch(`https://tutorwise-backend.vercel.app//api/admin/approve-request/${approveData.id}/`, {
             method: "POST", // or PUT if needed
             headers: {
                 "Content-Type": "application/json",

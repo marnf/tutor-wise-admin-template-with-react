@@ -89,10 +89,12 @@ const UserList = () => {
             .then((res) => res.json())
             .then((data) => {
                 const usersData = data.user_data || data;
+
+
                 const formattedUsers = usersData.map((user) => ({
+
                     id: user.id,
                     username: user.username || "Not Available",
-
                     phone: user.phone || "Not Available",
                     userType: user.user_type || "Not Available",
                     rolesName: user.roles_name ? user.roles_name.join(", ") : "",  // Store rolesName as a string
@@ -431,6 +433,8 @@ const UserList = () => {
 
 
                 {/* Search Bar */}
+
+                
                 <TextField
                     label="Search Users"
                     variant="outlined"
@@ -458,6 +462,7 @@ const UserList = () => {
                     pageSize={10}
                     rowsPerPageOptions={[5, 10, 20]}
                     disableSelectionOnClick
+                    
 
                     sx={{
                         "& .MuiDataGrid-columnHeader": {
