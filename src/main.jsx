@@ -22,94 +22,92 @@ import ProPayment from './Pages/Payment/ProPayment/ProPayment.jsx';
 import Payment from './Pages/Payment/Payment/Payment.jsx';
 import Review from './Pages/Review/Review.jsx';
 import Testimonial from './Pages/Testimonial/Testimonial.jsx';
-import ProtectedRoute from './Components/ProtectedRoute .jsx';
 import TutorPostAction from './Pages/TutonPostAction/TutonPostAction.jsx';
 import InactiveUser from './Pages/InactiveUser/InactiveUser.jsx'
+import PrivateRoute from './../src/PrivateRoute/PrivateRoute.jsx'
 
 const router = createBrowserRouter([
   {
     path: "/login",
-    element: <LoginPage />, // Login page route
+    element: <LoginPage />,
   },
   {
     path: "/",
-    element: (
-      <ProtectedRoute>
-        <Home />
-      </ProtectedRoute>
-    ), // ProtectedRoute দিয়ে Home route wrap
+    element: <Home />,
     children: [
       {
         path: "/",
-        element: <DashBoard />,
+        element:  <DashBoard />,
       },
       {
         path: "/userlist",
-        element: <UserList />,
+        element: <PrivateRoute allowedRoles={[1]}>
+          <UserList />
+        </PrivateRoute>
       },
       {
         path: "/pending-tutor-request",
-        element: <PendingTutorRequest />,
+        element: <PrivateRoute allowedRoles={[2]}> <PendingTutorRequest /> </PrivateRoute>
       },
       {
         path: "/approved-tutor-request",
-        element: <ApprovedTutorRequest />,
+        element: <PrivateRoute allowedRoles={[2]}> <ApprovedTutorRequest /> </PrivateRoute>
       },
       {
         path: "/pending-higher-tutor-request",
-        element: <PendingHigherTutorRequest />,
+        element:<PrivateRoute allowedRoles={[2]}> <PendingHigherTutorRequest />,</PrivateRoute>
       },
       {
         path: "/approved-higher-tutor-request",
-        element: <ApprovedHigherTutorRequest />,
+        element:<PrivateRoute allowedRoles={[2]}> <ApprovedHigherTutorRequest />,</PrivateRoute>
       },
       {
         path: "/pro-tutor-list",
-        element: <Protutor />,
+        element:<PrivateRoute allowedRoles={[3]}> <Protutor />,</PrivateRoute>
       },
       {
         path: "/tutor-list",
-        element: <Tutor />,
+        element:<PrivateRoute allowedRoles={[3]}> <Tutor />,</PrivateRoute>
       },
       {
         path: "/tutor-post",
-        element: <TutorPostAction></TutorPostAction>
+        element:<PrivateRoute allowedRoles={[4]}> <TutorPostAction></TutorPostAction></PrivateRoute>
       },
       {
         path: "/inactive-user",
-        element: <InactiveUser></InactiveUser>
+        element:<PrivateRoute allowedRoles={[5]}> <InactiveUser></InactiveUser></PrivateRoute>
       },
       {
         path: "/add-institution",
-        element: <AddInstitution />,
+        element:<PrivateRoute allowedRoles={[6]}> <AddInstitution />,</PrivateRoute>
       },
       {
         path: "/institution-list",
-        element: <InstitutionList />,
+        element:<PrivateRoute allowedRoles={[6]}><InstitutionList />,</PrivateRoute>
       },
       {
         path: "/add-faq",
-        element: <AddFaq />,
+        element: <PrivateRoute allowedRoles={[7]}> <AddFaq />,</PrivateRoute>
       },
       {
         path: "/faq-list",
-        element: <FaqList />,
+        element:<PrivateRoute allowedRoles={[7]}> <FaqList />,</PrivateRoute>
       },
       {
         path: "/pro-payment",
-        element: <ProPayment />,
+        element:<PrivateRoute allowedRoles={[8]}> <ProPayment />,</PrivateRoute>
       },
       {
         path: "/payment",
-        element: <Payment />,
+        element:<PrivateRoute allowedRoles={[8]}> <Payment />,</PrivateRoute>
       },
       {
         path: "/review",
-        element: <Review />,
+        element: <PrivateRoute allowedRoles={[9]}><Review />,</PrivateRoute>
       },
       {
         path: "/testimonial",
-        element: <Testimonial />,
+        element:<PrivateRoute allowedRoles={[10]}> <Testimonial />,</PrivateRoute>
       },
     ],
   },
