@@ -5,20 +5,22 @@ import {
     Snackbar,
     Alert,
     LinearProgress,
+    Button
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
+import { DateRangePicker } from "react-date-range";
 
 const columns = [
-    { field: "id", headerName: "ID", flex: 0.5 },
-    { field: "name", headerName: "Name", flex: 1 },
-    { field: "user_type", headerName: "User Type", flex: 1.5 },
-    { field: "email", headerName: "Email", flex: 1 },
-    { field: "phone", headerName: "Phone", flex: 1 },
-    { field: "transaction_id", headerName: "Transaction ID", flex: 1 },
-    { field: "package", headerName: "Package", flex: 1 },
-    { field: "amount", headerName: "Amount", flex: 1 },
-    { field: "digital_bank_name", headerName: "Digital Banking", flex: 1 },
-    { field: "created_at", headerName: "Payment Time", flex: 1 },
+    { field: "id", headerName: "ID", minWidth: 0.5 },
+    { field: "date", headerName: "Payment Time", minWidth: 1 },
+    { field: "name", headerName: "Name", minWidth: 1 },
+    { field: "user_type", headerName: "User Type", minWidth: 1.5 },
+    // { field: "email", headerName: "Email", minWidth: 1 },
+    // { field: "phone", headerName: "Phone", minWidth: 1 },
+    { field: "transaction_id", headerName: "Transaction ID", minWidth: 1 },
+    { field: "package", headerName: "Package", minWidth: 1 },
+    { field: "digital_bank_name", headerName: "Digital Banking", minWidth: 1 },
+    { field: "amount", headerName: "Amount", minWidth: 1 },
 ];
 
 const ProPayment = () => {
@@ -26,6 +28,14 @@ const ProPayment = () => {
     const [filteredRows, setFilteredRows] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [loading, setLoading] = useState(false);
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [dateRange, setDateRange] = useState([
+        {
+            startDate: new Date(),
+            endDate: new Date(),
+            key: "selection",
+        },
+    ]);
 
     useEffect(() => {
         setLoading(true)
@@ -43,11 +53,11 @@ const ProPayment = () => {
                     package: item.package,
                     amount: item.amount,
                     digital_bank_name: item.digital_bank_name,
-                    created_at: item.created_at,
+                    date: item.created_at,
                 }));
 
                 setRows(formattedData);
-                setFilteredRows(formattedData); 
+                setFilteredRows(formattedData);
                 setLoading(false)
             })
             .catch((error) => console.error("Error fetching data:", error));
@@ -64,57 +74,104 @@ const ProPayment = () => {
         setFilteredRows(filteredData);
     };
 
+    const handleDateFilter = () => {
+        const startDate = dateRange[0].startDate;
+        const endDate = dateRange[0].endDate;
+
+        const filteredData = rows.filter((row) => {
+            const rowDate = new Date(row.created_at);
+            return rowDate >= startDate && rowDate <= endDate;
+        });
+        setFilteredRows(filteredData);
+        setShowDatePicker(false); // Close the date picker after filtering
+    };
+
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
             <h2 className="text-center font-bold h3">FAQ List</h2>
 
-            {/* Search Bar */}
-            <div className="flex justify-end">
+
+            {/* Filters & Search */}
+            <div className="flex items-center justify-between mb-4">
+                {/* Date Range Picker */}
+                <div className="relative">
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        onClick={() => setShowDatePicker(!showDatePicker)}
+                        sx={{ height: "40px" }}
+                    >
+                        Select Date Range
+                    </Button>
+                    {showDatePicker && (
+                        <div style={{ position: "absolute", zIndex: 100, top: "50px" }}>
+                            <DateRangePicker
+                                onChange={(item) => setDateRange([item.selection])}
+                                showSelectionPreview={true}
+                                moveRangeOnFirstSelection={false}
+                                ranges={dateRange}
+                                direction="horizontal"
+                            />
+                            <Button
+                                variant="contained"
+                                color="success"
+                                size="small"
+                                onClick={handleDateFilter}
+                                sx={{ marginTop: "10px" }}
+                            >
+                                Apply Filter
+                            </Button>
+                        </div>
+                    )}
+                </div>
+
+                {/* Search Bar */}
                 <TextField
                     label="Search"
                     variant="outlined"
-                    fullWidth
                     size="small"
                     value={searchQuery}
                     onChange={handleSearch}
-                    sx={{ marginBottom: "1rem", width: "300px" }}
+                    sx={{ width: "300px" }}
                 />
             </div>
 
+
             {loading ? (
                 <Box sx={{ width: '100%' }}>
-                <LinearProgress />
-              </Box>
+                    <LinearProgress />
+                </Box>
             ) : (
-            <DataGrid
-                rows={filteredRows}
-                columns={columns.map((col) => ({
-                    ...col,
-                    minWidth: 150, // Minimum width for each column (adjust as needed)
-                }))}
-                pageSize={10}
-                rowsPerPageOptions={[5, 10, 20]}
-                disableSelectionOnClick
+                <DataGrid
+                    rows={filteredRows}
+                    columns={columns.map((col) => ({
+                        ...col,
+                        minWidth: 150, // Minimum width for each column (adjust as needed)
+                    }))}
+                    pageSize={10}
+                    rowsPerPageOptions={[5, 10, 20]}
+                    disableSelectionOnClick
 
-                sx={{
-                    "& .MuiDataGrid-columnHeader": {
-                        backgroundColor: "#f0f0f0",
-                        fontWeight: "bold",
-                        borderBottom: "2px solid #1976d2", // Column header's bottom border
-                    },
-                    "& .MuiDataGrid-cell": {
-                        border: "1px solid #e0e0e0", // Border for each cell
-                        whiteSpace: "normal", // Allow text to wrap in cells
-                        wordWrap: "break-word", // Break long words if necessary
-                    },
-                    "& .MuiDataGrid-cell:focus": {
-                        outline: "none", // Remove default outline on focus
-                    },
-                    "& .MuiDataGrid-virtualScroller": {
-                        overflowX: "auto", // Ensure horizontal scroll for table content
-                    },
-                }}
-            />)}
+                    sx={{
+                        "& .MuiDataGrid-columnHeader": {
+                            backgroundColor: "#f0f0f0",
+                            fontWeight: "bold",
+                            borderBottom: "2px solid #1976d2", // Column header's bottom border
+                        },
+                        "& .MuiDataGrid-cell": {
+                            border: "1px solid #e0e0e0", // Border for each cell
+                            whiteSpace: "normal", // Allow text to wrap in cells
+                            wordWrap: "break-word", // Break long words if necessary
+                        },
+                        "& .MuiDataGrid-cell:focus": {
+                            outline: "none", // Remove default outline on focus
+                        },
+                        "& .MuiDataGrid-virtualScroller": {
+                            overflowX: "auto", // Ensure horizontal scroll for table content
+                        },
+                    }}
+                />)}
         </Box>
     );
 };

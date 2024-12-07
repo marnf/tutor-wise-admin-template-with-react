@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Pie } from 'react-chartjs-2'; // Pie Chart import
 import 'chart.js/auto'; // Chart.js auto register
 import RadialBar from './RadialBar'; // RadialBar import
+import { Link } from 'react-router-dom';
 
 const Dashboard = () => {
     const [totalStudentData, setTotalStudentData] = useState(null);
@@ -220,8 +221,8 @@ const InactiveUserCard = ({ title, value, percentage }) => {
                 </div>
             </div>
             <div className="flex justify-end gap-4 mt-4">
-                <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                    See All
+                <button  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                   <Link to="/inactive-user">Show</Link>
                 </button>
                 <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
                     Send Message

@@ -41,6 +41,11 @@ const items = [
     label: <Link to="/tutor-post">Tuition Post</Link>,
   },
   {
+    key: '/inactive-user',
+    icon: <MailOutlined />,
+    label: <Link to="/inactive-user">Inactive Users</Link>,
+  },
+  {
     key: 'institution',
     icon: <AppstoreOutlined />,
     label: 'Institution',
@@ -128,7 +133,7 @@ const SideNavBar = ({ isSidebarOpen, toggleSidebar }) => {
         <img 
           src={logo} 
           alt="Logo" 
-          style={{ width: '150px', height: 'auto' }} 
+          style={{ width: '100px', height: '50px' }} 
         />
         {/* Toggle Button */}
         <button

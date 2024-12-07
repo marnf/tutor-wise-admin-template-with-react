@@ -10,11 +10,11 @@ import { Snackbar, Alert } from "@mui/material";
 
 
 const columns = [
-    { field: "id", headerName: "ID", flex: 0.5 },
-    { field: "name", headerName: "Name", flex: 1 },
-    { field: "phone", headerName: "Phone", flex: 1 },
-    { field: "location", headerName: "Location", flex: 1 },
-    { field: "details", headerName: "Details", flex: 2 },
+    { field: "id", headerName: "ID", minWidth:40 },
+    { field: "name", headerName: "Name", minWidth: 200 },
+    { field: "phone", headerName: "Phone", minWidth: 120 },
+    { field: "location", headerName: "Location", minWidth: 150 },
+    { field: "details", headerName: "Details", minWidth: 300 },
     {
         field: "actions",
         headerName: "Actions",
@@ -205,7 +205,7 @@ const PendingTutorRequest = () => {
                     rows={filteredRows}
                     columns={columns.map((col) => ({
                         ...col,
-                        minWidth: 150, // Minimum width for each column (adjust as needed)
+                        minWidth: col.minWidth || 150,
                     }))}
                     pageSize={10}
                     rowsPerPageOptions={[5, 10, 20]}

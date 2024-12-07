@@ -34,36 +34,36 @@ const subjectOptions = [
 ];
 
 const columns = [
-    { field: "id", headerName: "ID", flex: 0.5 },
+    { field: "id", headerName: "ID", minWidth: 40 },
     {
         field: "type",
         headerName: "Type",
-        flex: 1,
+        minWidth: 60,
         renderCell: () => (
             <span style={{ fontWeight: "bold" }}>Tutor</span>
         ),
     },
-    { field: "tutor_name", headerName: "Tutor Name", flex: 1 },
-    { field: "tutor_phone", headerName: "Phone", flex: 1 },
-    { field: "location", headerName: "Location", flex: 1 },
-    { field: "tutor_charge", headerName: "Charge", flex: 1 },
+    { field: "tutor_name", headerName: "Tutor Name", minWidth: 150 },
+    { field: "tutor_phone", headerName: "Phone", minWidth: 120 },
+    { field: "location", headerName: "Location", minWidth: 200 },
+    { field: "tutor_charge", headerName: "Charge", minWidth: 60 },
     {
         field: "type_student",
         headerName: "Type",
-        flex: 1,
+        minWidth: 60,
         renderCell: () => (
             <span style={{ fontWeight: "bold" }}>Student</span>
         ),
     },
-    { field: "name", headerName: "Student Name", flex: 1 },
-    { field: "phone", headerName: "Phone", flex: 1 },
-    { field: "medium", headerName: "Medium", flex: 1 },
-    { field: "start_date", headerName: "Start Date", flex: 1 },
-    { field: "subjects", headerName: "Subject", flex: 1 },
+    { field: "name", headerName: "Student Name", minWidth: 150 },
+    { field: "phone", headerName: "Phone", minWidth: 120 },
+    { field: "medium", headerName: "Medium", minWidth: 1 },
+    { field: "start_date", headerName: "Start Date", minWidth: 150 },
+    { field: "subjects", headerName: "Subject", minWidth: 100 },
     {
         field: "actions",
         headerName: "Actions",
-        flex: 1,
+        minWidth: 150,
         renderCell: (params) => (
 
             <Box display="flex" justifyContent="end" className="mt-3" gap={1}>
@@ -284,7 +284,7 @@ const PendingHigherTutorRequest = () => {
                 rows={filteredRows}
                 columns={columns.map((col) => ({
                     ...col,
-                    minWidth: 150, // Minimum width for each column (adjust as needed)
+                    minWidth: col.minWidth || 150,
                 }))}
                 pageSize={10}
                 rowsPerPageOptions={[5, 10, 20]}

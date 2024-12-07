@@ -60,16 +60,11 @@
 .login-btn {
   width: 100%;
   padding: 10px;
-  background-color: #4CAF50;
   color: white;
   border: none;
   border-radius: 4px;
   font-size: 16px;
   cursor: pointer;
-}
-
-.login-btn:hover {
-  background-color: #45a049;
 }
 
 .forgot-password {
@@ -130,4 +125,15 @@
   color: red;
 }
 
+
+
+
+
+.button-blue{
+  background-color: #0F254A; 
+}
+
+.button-color{
+  background-color: #EE3F25;
+}
 

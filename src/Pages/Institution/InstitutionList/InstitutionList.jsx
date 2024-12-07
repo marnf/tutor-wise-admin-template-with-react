@@ -71,24 +71,6 @@ const InstitutionList = () => {
     }, []);
 
 
-    const CustomFooter = ({ totalRows }) => {
-        return (
-            <Box
-                sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: 50,
-                    backgroundColor: "#f9f9f9",
-                    borderTop: "1px solid #ccc",
-                    fontWeight: "bold",
-                }}
-            >
-                Total Data: {totalRows}
-            </Box>
-        );
-    };
-
 
     // Handle edit button click
     const handleEditClick = (institution) => {

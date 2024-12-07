@@ -39,24 +39,24 @@ const subjectOptions = [
 
 
 const columns = [
-    { field: "id", headerName: "ID", flex: 0.5 },
-    { field: "name", headerName: "Name", flex: 1 },
-    { field: "phone", headerName: "Phone", flex: 1 },
-    { field: "location", headerName: "Location", flex: 1 },
-    { field: "details", headerName: "Details", flex: 2 },
-    { field: "subject", headerName: "Subject", flex: 1 },
-    { field: "start_date", headerName: "Start Date", flex: 1 },
-    { field: "class_name", headerName: "Class", flex: 1 },
-    { field: "lesson_type", headerName: "Lesson Type", flex: 1 },
-    { field: "gender", headerName: "Gender", flex: 1 },
-    { field: "budget", headerName: "Budget", flex: 1 },
-    { field: "days_per_week", headerName: "Days/Week", flex: 1 },
-    { field: "start_immediate", headerName: "Start Immediately", flex: 1 },
-    { field: "additional_comment", headerName: "Additional Comment", flex: 2 },
+    { field: "id", headerName: "ID", minWidth: 40 },
+    { field: "name", headerName: "Name", minWidth: 150 },
+    { field: "phone", headerName: "Phone", minWidth: 120 },
+    { field: "location", headerName: "Location", minWidth: 200 },
+    { field: "details", headerName: "Details", minWidth: 200 },
+    { field: "subject", headerName: "Subject", minWidth: 150 },
+    { field: "start_date", headerName: "Start Date", minWidth: 150 },
+    { field: "class_name", headerName: "Class", minWidth: 120 },
+    { field: "lesson_type", headerName: "Lesson Type", minWidth: 100 },
+    { field: "gender", headerName: "Gender", minWidth: 60 },
+    { field: "budget", headerName: "Budget", minWidth: 60 },
+    { field: "days_per_week", headerName: "Days/Week", minWidth: 60 },
+    { field: "start_immediate", headerName: "Start Immediately", minWidth: 60 },
+    { field: "additional_comment", headerName: "Additional Comment", minWidth: 200 },
     {
         field: "actions",
         headerName: "Actions",
-        flex: 2,
+        flex: 1,
         renderCell: (params) => (
 
 
@@ -234,7 +234,7 @@ const ApprovedTutorRequest = () => {
                 rows={filteredRows}
                 columns={columns.map((col) => ({
                     ...col,
-                    minWidth: 150, // Minimum width for each column (adjust as needed)
+                    minWidth: col.minWidth || 150,
                 }))}
                 pageSize={10}
                 rowsPerPageOptions={[5, 10, 20]}

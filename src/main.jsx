@@ -24,6 +24,7 @@ import Review from './Pages/Review/Review.jsx';
 import Testimonial from './Pages/Testimonial/Testimonial.jsx';
 import ProtectedRoute from './Components/ProtectedRoute .jsx';
 import TutorPostAction from './Pages/TutonPostAction/TutonPostAction.jsx';
+import InactiveUser from './Pages/InactiveUser/InactiveUser.jsx'
 
 const router = createBrowserRouter([
   {
@@ -73,6 +74,10 @@ const router = createBrowserRouter([
       {
         path: "/tutor-post",
         element: <TutorPostAction></TutorPostAction>
+      },
+      {
+        path: "/inactive-user",
+        element: <InactiveUser></InactiveUser>
       },
       {
         path: "/add-institution",

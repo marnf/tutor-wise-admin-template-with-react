@@ -4,23 +4,23 @@ import { DataGrid } from "@mui/x-data-grid";
 
 // Columns definition for DataGrid
 const columns = [
-    { field: "id", headerName: "ID", flex: 0.5 },
+    { field: "id", headerName: "ID",  minWidth: 40 },
     {
         field: "profile_picture",
         headerName: "Profile Picture",
-        flex: 1,
+         minWidth: 80,
         renderCell: (params) => (
             <img src={params.value} alt="Profile" style={{ width: 50, height: 50, borderRadius: "50%" }} />
         )
     },
-    { field: "full_name", headerName: "Name", flex: 1 },
-    { field: "division", headerName: "Division", flex: 1 },
-    { field: "location", headerName: "Location", flex: 1 },
-    { field: "subject", headerName: "Subject", flex: 1 },
-    { field: "gender", headerName: "Gender", flex: 1 },
-    { field: "days_per_week", headerName: "Days/Week", flex: 1 },
-    { field: "charge_per_month", headerName: "Charge", flex: 1 },
-    { field: "phone", headerName: "Phone", flex: 1 },
+    { field: "full_name", headerName: "Name",  minWidth: 150},
+    { field: "division", headerName: "Division",  minWidth: 80},
+    { field: "location", headerName: "Location",  minWidth: 150},
+    { field: "subject", headerName: "Subject",  minWidth: 100},
+    { field: "gender", headerName: "Gender",  minWidth: 60},
+    { field: "days_per_week", headerName: "Days/Week",  minWidth: 40},
+    { field: "charge_per_month", headerName: "Charge",  minWidth: 40},
+    { field: "phone", headerName: "Phone",  minWidth: 150},
 ];
 
 const Protutor = () => {
@@ -86,7 +86,7 @@ const Protutor = () => {
                     rows={filteredRows}
                     columns={columns.map((col) => ({
                         ...col,
-                        minWidth: 150, // Minimum width for each column (adjust as needed)
+                        minWidth: col.minWidth || 150, // Minimum width for each column (adjust as needed)
                     }))}
                     pageSize={10}
                     rowsPerPageOptions={[5, 10, 20]}

@@ -13,14 +13,43 @@ const LoginPage = () => {
   const [showForgotPopup, setShowForgotPopup] = useState(false);
   const [showOtpPopup, setShowOtpPopup] = useState(false);
   const [otp, setOtp] = useState("");
-  const [timer, setTimer] = useState(120); // 2 মিনিটের টাইমার
+  const [showSetPasswordPopup , setShowSetPasswordPopup] = useState(false);
+  const [timer, setTimer] = useState(5); // 2 মিনিটের টাইমার
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // API রিকোয়েস্ট হ্যান্ডলিং (উল্লেখিত কোড অপরিবর্তিত রাখা হয়েছে)
+    
   };
+
+  const handleEmailSubmit = (event) => {
+    event.preventDefault();
+  
+    const formData = {  gmail: gmail };
+    
+    console.log(formData)
+  
+    fetch("http://192.168.0.154:8000/api/account/admin/forgot-password/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then((response) => {
+        if (response.ok) {
+          console.log("woo, it's working");     
+        } else {
+          console.log("shet");        
+        }
+      })
+      .catch((error) => {
+        console.error("Error submitting form:", error);
+      });
+  };
+  
+
 
   const handleForgotPassword = () => {
     setShowForgotPopup(true);
@@ -40,10 +69,23 @@ const LoginPage = () => {
     }, 1000);
   };
 
+  
   const handleResendOtp = () => {
-    setTimer(120);
-  }
-
+    if (timer === 0) {
+      setTimer(5); 
+      const newOtpTimer = setInterval(() => {
+        setTimer((prev) => {
+          if (prev <= 1) {
+            clearInterval(newOtpTimer); 
+            return 0;
+          }
+          return prev - 1; 
+        });
+      }, 1000); 
+    }
+  };
+  
+  
 
 
   return (
@@ -82,11 +124,13 @@ const LoginPage = () => {
               />
             </div>
             {error && <p className="error">{error}</p>}
-            <button type="submit" className="login-btn">Login</button>
+            <button type="submit" className="login-btn button-color">Login</button>
           </form>
           <p className="forgot-password" onClick={handleForgotPassword}>Forgot Password?</p>
         </div>
       </div>
+
+
 
       {/* Forgot Password Popup */}
       {showForgotPopup && (
@@ -102,7 +146,8 @@ const LoginPage = () => {
               </label>
               <input
                 type="email"
-                id="email"
+                id="gmailForOtp"
+                name="gmail"
                 placeholder="Enter your email"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 required
@@ -110,14 +155,14 @@ const LoginPage = () => {
             </div>
             <div className="flex justify-between space-x-4">
               <button
-                className="w-full bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition"
+                className="w-full  text-white px-4 py-2 rounded-lg button-blue transition"
                 onClick={() => setShowForgotPopup(false)}
               >
                 Cancel
               </button>
               <button
-                className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-                onClick={handleOtpSubmit}
+                className="w-full text-white px-4 py-2 rounded-lg button-color transition"
+                onClick={handleEmailSubmit}
               >
                 Confirm
               </button>
@@ -130,14 +175,14 @@ const LoginPage = () => {
 
       {/* OTP Verification Popup */}
       {showOtpPopup && (
-        <div className="fixed inset-0 bg-slate-200  bg-opacity-60 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-slate-200 bg-opacity-60 flex items-center justify-center z-50">
           <div className="bg-white w-full max-w-md p-6 rounded-lg shadow-lg relative">
             {/* Close Icon */}
             <button
               onClick={() => setShowOtpPopup(false)}
-              className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 focus:outline-none" >
+              className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 focus:outline-none">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2"
-                stroke="currentColor" className="w-6 h-6" >
+                stroke="currentColor" className="w-6 h-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
@@ -173,11 +218,13 @@ const LoginPage = () => {
               ))}
             </div>
 
-
             <div className="flex justify-end gap-2 mb-4">
               <button
-                onClick={handleOtpSubmit}
-                className="w-full bg-blue-600 text-white py-2 rounded-md text-lg hover:bg-blue-700"
+                onClick={() => {
+                  setShowOtpPopup(false);
+                  setShowSetPasswordPopup(true); 
+                }}
+                className="w-full button-color text-white py-2 rounded-md text-lg"
               >
                 Submit
               </button>
@@ -187,7 +234,10 @@ const LoginPage = () => {
             <div className="flex justify-between items-center text-sm text-gray-600">
               <button
                 onClick={handleResendOtp}
-                className="text-blue-600 hover:underline focus:outline-none"
+                disabled={timer > 0}
+                className={`text-blue-600 hover:underline focus:outline-none ${
+                  timer > 0 ? 'opacity-50 cursor-not-allowed hover:no-underline' : ''
+                }`}
               >
                 Resend OTP
               </button>
@@ -195,11 +245,77 @@ const LoginPage = () => {
             </div>
           </div>
         </div>
-
       )}
+
+      {/* Set New Password Popup */}
+      {showSetPasswordPopup && (
+        <div className="fixed inset-0 bg-slate-200 bg-opacity-60 flex items-center justify-center z-50">
+          <div className="bg-white w-full max-w-md p-6 rounded-lg shadow-lg relative">
+            {/* Close Icon */}
+            <button
+              onClick={() => setShowSetPasswordPopup(false)}
+              className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 focus:outline-none">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2"
+                stroke="currentColor" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Logo */}
+            <img src={headerImage} style={{ height: '200px', width: '200px' }} alt="Header" className="header-image mx-auto" />
+
+            {/* Set New Password Form */}
+            <form>
+            <div className="mb-6">
+                <label htmlFor="new-password" className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                <input
+                  type="password"
+                  id="new-password"
+                  placeholder="Enter new password"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+              </div>
+              <div className="mb-6">
+                <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700 mb-2">confirm Password</label>
+                <input
+                  type="password"
+                  id="confirm-password"
+                  placeholder="Enter confirm password"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+              </div>
+              <div className="flex justify-between space-x-4">
+                <button
+                  type="button"
+                  className="w-full  px-4 py-2 rounded-lg button-blue text-white transition"
+                  onClick={() => setShowSetPasswordPopup(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="w-full text-white px-4 py-2 rounded-lg button-color transition"
+                >
+                  Submit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
 
   );
 };
 
 export default LoginPage;
+
+
+
+
+
+
+
