@@ -8,9 +8,11 @@ import { BiSolidSelectMultiple } from "react-icons/bi";
 import { Snackbar, Alert } from "@mui/material";
 
 
+const user = JSON.parse(localStorage.getItem("user"));
+const isSuperAdmin = user?.user_type === "super_admin";
 
 const columns = [
-    { field: "id", headerName: "ID", minWidth:40 },
+    { field: "id", headerName: "ID", minWidth: 40 },
     { field: "name", headerName: "Name", minWidth: 200 },
     { field: "phone", headerName: "Phone", minWidth: 120 },
     { field: "location", headerName: "Location", minWidth: 150 },
@@ -30,17 +32,29 @@ const columns = [
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => params.row.handleEdit(params.row)} />
 
-                <MdDelete title="Delete"
+                <MdDelete
+                    title="Delete"
                     size={25}
-                    color="red"
-                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
-                    onClick={() => params.row.handleDelete(params.row.id)} />
+                    color={isSuperAdmin ? "red" : "gray"}
+                    className={`transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 ${isSuperAdmin ? "cursor-pointer" : "cursor-not-allowed"
+                        }`}
+                    onClick={() => {
+                        if (isSuperAdmin) {
+                            params.row.handleDelete(params.row.id); // শুধু অ্যাডমিন হলে কাজ করবে
+                        }
+                    }}
+                    style={{
+                        pointerEvents: isSuperAdmin ? "auto" : "none", // নিষ্ক্রিয় হলে ইভেন্ট ব্লক করবে
+                        opacity: isSuperAdmin ? 1 : 0.5, // নিষ্ক্রিয় হলে ফেইড হয়ে যাবে
+                    }}
+                />
 
             </Box>
 
         ),
     },
 ];
+
 
 const PendingTutorRequest = () => {
     const [rows, setRows] = useState([]);
@@ -266,7 +280,7 @@ const PendingTutorRequest = () => {
                                     fullWidth
                                     value={editData.phone || ""}
                                     onChange={(e) => setEditData({ ...editData, phone: e.target.value })}
-                                    
+
                                     disabled
                                 />
                             </Grid>
@@ -297,7 +311,7 @@ const PendingTutorRequest = () => {
                                     <FormControlLabel value="Others" control={<Radio />} label="Others" />
                                 </RadioGroup>
                             </Grid>
-                            
+
                             <Grid item xs={12} sm={6}>
                                 <FormLabel>Lesson Type</FormLabel>
                                 <RadioGroup

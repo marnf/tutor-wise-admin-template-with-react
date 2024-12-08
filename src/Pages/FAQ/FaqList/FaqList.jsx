@@ -17,6 +17,15 @@ import {
 import { DataGrid } from "@mui/x-data-grid";
 import { MdDelete } from "react-icons/md";
 import { FaUserEdit } from "react-icons/fa";
+import Modal from '@mui/material/Modal';
+
+
+
+
+const user = JSON.parse(localStorage.getItem("user"));
+const isSuperAdmin = user?.user_type === "super_admin";
+
+
 
 const columns = (handleDeleteClick, handleEditClick) => [
   { field: "id", headerName: "ID", flex: 0.5 },
@@ -36,12 +45,22 @@ const columns = (handleDeleteClick, handleEditClick) => [
           className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
           onClick={() => handleEditClick(params.row)}
         />
+
         <MdDelete
           title="Delete"
           size={25}
-          color="red"
-          className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
-          onClick={() => handleDeleteClick(params.row.id)}
+          color={isSuperAdmin ? "red" : "gray"}
+          className={`transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 ${isSuperAdmin ? "cursor-pointer" : "cursor-not-allowed"
+            }`}
+          onClick={() => {
+            if (isSuperAdmin) {
+              handleDeleteClick(params.row.id);
+            }
+          }}
+          style={{
+            pointerEvents: isSuperAdmin ? "auto" : "none",
+            opacity: isSuperAdmin ? 1 : 0.5,
+          }}
         />
       </Box>
     ),
@@ -220,25 +239,21 @@ const FaqList = () => {
       )}
 
       {/* Dialog for confirming deletion */}
-      <Dialog open={openDeleteModal} onClose={handleCloseDeleteModal} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ backgroundColor: "white", color: "black", textAlign: "center" }}>
-          <Typography variant="h6">Confirm Deletion</Typography>
-        </DialogTitle>
-        <DialogContent sx={{ padding: 3 }}>
-          <Typography variant="body1" sx={{ marginBottom: 2 }}>
-            Are you sure you want to delete this FAQ?
-          </Typography>
-          <Divider sx={{ marginBottom: 2 }} />
+
+
+      <Dialog open={openDeleteModal} onClose={handleCloseDeleteModal}>
+        <DialogTitle>Delete</DialogTitle>
+        <DialogContent>
+          <p>Are you sure you want to delete this user?</p>
         </DialogContent>
-        <DialogActions sx={{ padding: 2 }}>
-          <Button onClick={handleCloseDeleteModal} color="secondary">
-            Cancel
-          </Button>
-          <Button onClick={handleDelete} color="error">
-            Delete
+        <DialogActions>
+          <Button onClick={handleCloseDeleteModal}>Cancel</Button>
+          <Button onClick={handleDelete} color="danger">
+            Remove
           </Button>
         </DialogActions>
       </Dialog>
+
 
       {/* Edit FAQ Dialog */}
       <Dialog open={showEditModal} onClose={() => setShowEditModal(false)} maxWidth="sm" fullWidth>
@@ -313,6 +328,18 @@ const FaqList = () => {
       </Snackbar>
     </Box>
   );
+};
+
+
+const modalStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  backgroundColor: 'white',
+  padding: '20px',
+  boxShadow: 24,
+  borderRadius: '8px',
 };
 
 export default FaqList;

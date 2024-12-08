@@ -11,6 +11,11 @@ import { Snackbar } from '@mui/material';
 
 
 
+const user = JSON.parse(localStorage.getItem("user"));
+const isSuperAdmin = user?.user_type === "super_admin";
+
+
+
 const columns = [
     { field: "id", headerName: "ID", flex: 0.5 },
     { field: "username", headerName: "Name", flex: 1 },
@@ -31,14 +36,26 @@ const columns = [
                     size={25}
                     color="green"
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
-                    onClick={() => params.row.handleEdit(params.row)} />
+                    onClick={() => params.row.handleEdit(params.row)}
+                />
 
-                <MdDelete title="Delete"
+
+                <MdDelete
+                    title="Delete"
                     size={25}
-                    color="red"
-                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
-                    onClick={() => params.row.handleDelete(params.row)} />
-
+                    color={isSuperAdmin ? "red" : "gray"}
+                    className={`transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 ${isSuperAdmin ? "cursor-pointer" : "cursor-not-allowed"
+                        }`}
+                    onClick={() => {
+                        if (isSuperAdmin) {
+                            params.row.handleDelete(params.row);
+                        }
+                    }}
+                    style={{
+                        pointerEvents: isSuperAdmin ? "auto" : "none",
+                        opacity: isSuperAdmin ? 1 : 0.5,
+                    }}
+                />
             </Box>
 
         ),
@@ -434,7 +451,7 @@ const UserList = () => {
 
                 {/* Search Bar */}
 
-                
+
                 <TextField
                     label="Search Users"
                     variant="outlined"
@@ -448,8 +465,8 @@ const UserList = () => {
 
             {loading ? (
                 <Box sx={{ width: '100%' }}>
-                <LinearProgress />
-              </Box>
+                    <LinearProgress />
+                </Box>
             ) : (
 
                 <DataGrid
@@ -462,7 +479,7 @@ const UserList = () => {
                     pageSize={10}
                     rowsPerPageOptions={[5, 10, 20]}
                     disableSelectionOnClick
-                    
+
 
                     sx={{
                         "& .MuiDataGrid-columnHeader": {

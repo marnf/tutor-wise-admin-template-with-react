@@ -3,6 +3,12 @@ import { Box, Button, Modal, Snackbar, Alert, TextField, LinearProgress, Dialog,
 import { DataGrid } from "@mui/x-data-grid";
 import { MdDelete } from "react-icons/md";
 
+
+
+const user = JSON.parse(localStorage.getItem("user"));
+const isSuperAdmin = user?.user_type === "super_admin";
+
+
 const Testimonial = () => {
     const [rows, setRows] = useState([]);
     const [filteredRows, setFilteredRows] = useState([]);
@@ -19,7 +25,7 @@ const Testimonial = () => {
             .then((res) => res.json())
             .then((data) => {
                 setRows(data);
-                setFilteredRows(data); 
+                setFilteredRows(data);
                 setLoading(false)
             })
             .catch((error) => console.error("Error fetching reviews:", error));
@@ -79,12 +85,24 @@ const Testimonial = () => {
             flex: 1,
             renderCell: (params) => (
                 <Box display="flex" justifyContent="end" className="mt-3">
-                    <MdDelete title="Delete"
+                    
+                    <MdDelete
+                        title="Delete"
                         size={25}
-                        color="red"
-                        className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
-                        onClick={() => handleDeleteClick(params.row.id)}
+                        color={isSuperAdmin ? "red" : "gray"}
+                        className={`transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 ${isSuperAdmin ? "cursor-pointer" : "cursor-not-allowed"
+                            }`}
+                        onClick={() => {
+                            if (isSuperAdmin) {
+                                handleDeleteClick(params.row.id);
+                            }
+                        }}
+                        style={{
+                            pointerEvents: isSuperAdmin ? "auto" : "none",
+                            opacity: isSuperAdmin ? 1 : 0.5,
+                        }}
                     />
+
                 </Box>
             ),
         },
@@ -109,33 +127,33 @@ const Testimonial = () => {
 
             {loading ? (
                 <Box sx={{ width: '100%' }}>
-                <LinearProgress />
-              </Box>
+                    <LinearProgress />
+                </Box>
             ) : (
-            <DataGrid
-                rows={filteredRows}
-                columns={columns(handleDeleteClick)}
-                pageSize={10}
-                rowsPerPageOptions={[5, 10, 20]}
-                disableSelectionOnClick
-                sx={{
-                    "& .MuiDataGrid-columnHeader": {
-                        backgroundColor: "#f0f0f0",
-                        fontWeight: "bold",
-                        borderBottom: "2px solid #1976d2",
-                    },
-                    "& .MuiDataGrid-cell": {
-                        border: "1px solid #e0e0e0",
-                    },
-                    "& .MuiDataGrid-cell:focus": {
-                        outline: "none",
-                    },
-                }}
-            />)}
+                <DataGrid
+                    rows={filteredRows}
+                    columns={columns(handleDeleteClick)}
+                    pageSize={10}
+                    rowsPerPageOptions={[5, 10, 20]}
+                    disableSelectionOnClick
+                    sx={{
+                        "& .MuiDataGrid-columnHeader": {
+                            backgroundColor: "#f0f0f0",
+                            fontWeight: "bold",
+                            borderBottom: "2px solid #1976d2",
+                        },
+                        "& .MuiDataGrid-cell": {
+                            border: "1px solid #e0e0e0",
+                        },
+                        "& .MuiDataGrid-cell:focus": {
+                            outline: "none",
+                        },
+                    }}
+                />)}
 
             {/* Delete Confirmation Modal */}
-           
-            <Dialog open={openDeleteModal}   onClose={() => setOpenDeleteModal(false)}>
+
+            <Dialog open={openDeleteModal} onClose={() => setOpenDeleteModal(false)}>
                 <DialogTitle>Approve Review</DialogTitle>
                 <DialogContent>
                     <p>Are you sure you want to remove this testimonial?</p>

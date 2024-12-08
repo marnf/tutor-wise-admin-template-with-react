@@ -33,6 +33,11 @@ const subjectOptions = [
     "Arts and crafts", "Art and Culture"
 ];
 
+
+const user = JSON.parse(localStorage.getItem("user"));
+const isSuperAdmin = user?.user_type === "super_admin";
+
+
 const columns = [
     { field: "id", headerName: "ID", minWidth: 40 },
     {
@@ -80,12 +85,23 @@ const columns = [
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => params.row.handleEdit(params.row)} />
 
-                <MdDelete title="Delete"
+                <MdDelete
+                    title="Delete"
                     size={25}
-                    color="red"
-                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
-                    onClick={() => params.row.handleDelete(params.row)}
+                    color={isSuperAdmin ? "red" : "gray"}
+                    className={`transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 ${isSuperAdmin ? "cursor-pointer" : "cursor-not-allowed"
+                        }`}
+                    onClick={() => {
+                        if (isSuperAdmin) {
+                            params.row.handleDelete(params.row); 
+                        }
+                    }}
+                    style={{
+                        pointerEvents: isSuperAdmin ? "auto" : "none",
+                        opacity: isSuperAdmin ? 1 : 0.5, 
+                    }}
                 />
+
             </Box>
         ),
     },
@@ -115,7 +131,7 @@ const PendingHigherTutorRequest = () => {
                 const formattedData = data.map((item) => ({
                     ...item,
                     location: `${item.tutor_division}, ${item.tutor_district}`,
-                    handleApprove:handleApproveRequest,
+                    handleApprove: handleApproveRequest,
                     handleEdit: handleEditRequest,
                     handleDelete: handleDeleteRequest,
                 }));
@@ -133,7 +149,7 @@ const PendingHigherTutorRequest = () => {
         setFilteredRows(result);
     }, [searchQuery, rows]);
 
-    const handleApproveRequest =(row)=>{
+    const handleApproveRequest = (row) => {
         setApproveData(row)
         setOpenApproveModal(true)
 
@@ -146,7 +162,7 @@ const PendingHigherTutorRequest = () => {
     };
 
     const handleDeleteRequest = (row) => {
-        
+
         setOpenDeleteModal(true); // Open the delete modal
     };
 
@@ -277,38 +293,38 @@ const PendingHigherTutorRequest = () => {
 
             {loading ? (
                 <Box sx={{ width: '100%' }}>
-                <LinearProgress />
-              </Box>
+                    <LinearProgress />
+                </Box>
             ) : (
-            <DataGrid
-                rows={filteredRows}
-                columns={columns.map((col) => ({
-                    ...col,
-                    minWidth: col.minWidth || 150,
-                }))}
-                pageSize={10}
-                rowsPerPageOptions={[5, 10, 20]}
-                disableSelectionOnClick
+                <DataGrid
+                    rows={filteredRows}
+                    columns={columns.map((col) => ({
+                        ...col,
+                        minWidth: col.minWidth || 150,
+                    }))}
+                    pageSize={10}
+                    rowsPerPageOptions={[5, 10, 20]}
+                    disableSelectionOnClick
 
-                sx={{
-                    "& .MuiDataGrid-columnHeader": {
-                        backgroundColor: "#f0f0f0",
-                        fontWeight: "bold",
-                        borderBottom: "2px solid #1976d2", // Column header's bottom border
-                    },
-                    "& .MuiDataGrid-cell": {
-                        border: "1px solid #e0e0e0", // Border for each cell
-                        whiteSpace: "normal", // Allow text to wrap in cells
-                        wordWrap: "break-word", // Break long words if necessary
-                    },
-                    "& .MuiDataGrid-cell:focus": {
-                        outline: "none", // Remove default outline on focus
-                    },
-                    "& .MuiDataGrid-virtualScroller": {
-                        overflowX: "auto", // Ensure horizontal scroll for table content
-                    },
-                }}
-            />
+                    sx={{
+                        "& .MuiDataGrid-columnHeader": {
+                            backgroundColor: "#f0f0f0",
+                            fontWeight: "bold",
+                            borderBottom: "2px solid #1976d2", // Column header's bottom border
+                        },
+                        "& .MuiDataGrid-cell": {
+                            border: "1px solid #e0e0e0", // Border for each cell
+                            whiteSpace: "normal", // Allow text to wrap in cells
+                            wordWrap: "break-word", // Break long words if necessary
+                        },
+                        "& .MuiDataGrid-cell:focus": {
+                            outline: "none", // Remove default outline on focus
+                        },
+                        "& .MuiDataGrid-virtualScroller": {
+                            overflowX: "auto", // Ensure horizontal scroll for table content
+                        },
+                    }}
+                />
             )}
 
 

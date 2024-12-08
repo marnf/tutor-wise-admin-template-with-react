@@ -4,47 +4,62 @@ import { DataGrid } from "@mui/x-data-grid";
 import { FaUserEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 
-const columns = (handleEditClick, handleDeleteClick) => [
-    { field: "id", headerName: "ID", flex: 0.5 },
-    {
-        field: "logo",
-        headerName: "Institution Logo",
-        flex: 1,
-        renderCell: (params) => (
-            <img
-                src={params.value || "https://via.placeholder.com/50"}
-                alt="Institution Logo"
-                style={{ width: 50, height: 50, borderRadius: "8px" }}
-            />
-        ),
-    },
-    { field: "name", headerName: "Institution Name", flex: 1 },
-    {
-        field: "actions",
-        headerName: "Actions",
-        flex: 1,
-        renderCell: (params) => (
-            <Box display="flex" justifyContent="center" className="mt-3" gap={1}>
+const columns = (handleEditClick, handleDeleteClick) => {
 
-                <FaUserEdit title="Edit"
-                    size={25}
-                    color="black"
-                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
-                    onClick={() => handleEditClick(params.row)} />
+    const user = JSON.parse(localStorage.getItem("user"));
+    const isSuperAdmin = user?.user_type === "super_admin";
 
-                <MdDelete title="Delete"
-                    size={25}
-                    color="red"
-                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
-                    onClick={() => handleDeleteClick(params.row.id)}
+    return[
+        { field: "id", headerName: "ID", flex: 0.5 },
+        {
+            field: "logo",
+            headerName: "Institution Logo",
+            flex: 1,
+            renderCell: (params) => (
+                <img
+                    src={params.value || "https://via.placeholder.com/50"}
+                    alt="Institution Logo"
+                    style={{ width: 50, height: 50, borderRadius: "8px" }}
                 />
-            </Box>
+            ),
+        },
+        { field: "name", headerName: "Institution Name", flex: 1 },
+        {
+            field: "actions",
+            headerName: "Actions",
+            flex: 1,
+            renderCell: (params) => (
+                <Box display="flex" justifyContent="center" className="mt-3" gap={1}>
+
+                    <FaUserEdit title="Edit"
+                        size={25}
+                        color="black"
+                        className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                        onClick={() => handleEditClick(params.row)} />
 
 
-        ),
-    },
-];
+                    <MdDelete
+                        title="Delete"
+                        size={25}
+                        color={isSuperAdmin ? "red" : "gray"}
+                        className={`transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 ${isSuperAdmin ? "cursor-pointer" : "cursor-not-allowed"
+                            }`}
+                        onClick={() => {
+                            if (isSuperAdmin) handleDeleteClick(params.row.id);
+                        }}
+                        style={{
+                            pointerEvents: isSuperAdmin ? "auto" : "none",
+                            opacity: isSuperAdmin ? 1 : 0.5,
+                        }}
+                    />
 
+                </Box>
+
+
+            ),
+        },
+    ];
+}
 
 
 const InstitutionList = () => {
@@ -169,7 +184,7 @@ const InstitutionList = () => {
                 pageSize={10}
                 rowsPerPageOptions={[5, 10, 20]}
                 disableSelectionOnClick
-               
+
                 sx={{
                     "& .MuiDataGrid-columnHeader": {
                         backgroundColor: "#f0f0f0",
@@ -185,6 +200,8 @@ const InstitutionList = () => {
                     },
                 }}
             />
+
+          
 
             {/* Modal for editing institution */}
             <Modal
