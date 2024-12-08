@@ -4,6 +4,7 @@ import { Pie } from 'react-chartjs-2'; // Pie Chart import
 import 'chart.js/auto'; // Chart.js auto register
 import RadialBar from './RadialBar'; // RadialBar import
 import { Link } from 'react-router-dom';
+import { Doughnut } from 'react-chartjs-2';
 
 const Dashboard = () => {
     const [totalStudentData, setTotalStudentData] = useState(null);
@@ -125,27 +126,17 @@ const Dashboard = () => {
 const PaymentCard = ({ data }) => {
     const chartData = data
         ? {
-            labels: ['Apply Limit', 'Pro Tutor Subscription', 'Remaining Payments'],
+            labels: ['Red', 'Blue', 'Yellow'],
             datasets: [
                 {
-                    data: [
-                        data.total_apply_limit,
-                        data.total_pro_tutor_subscription,
-                        data.total_payment_number - (data.total_apply_limit + data.total_pro_tutor_subscription),
+                    label: 'My First Dataset',
+                    data: [300, 50, 100],
+                    backgroundColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(54, 162, 235)',
+                        'rgb(255, 205, 86)',
                     ],
-                    backgroundColor: ['#4CAF50', '#2196F3', '#FFC107'], // Colors
-                    hoverBackgroundColor: ['#66BB6A', '#42A5F5', '#FFCA28'],
-                    // Display labels on Pie chart
-                    datalabels: {
-                        formatter: (value, context) => {
-                            const label = context.chart.data.labels[context.dataIndex];
-                            return `${label}: ${value}`;
-                        },
-                        color: '#ffffff',
-                        font: {
-                            weight: 'bold',
-                        },
-                    },
+                    hoverOffset: 4,
                 },
             ],
         }

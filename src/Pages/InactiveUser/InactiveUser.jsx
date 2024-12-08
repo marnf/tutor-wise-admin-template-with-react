@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Modal, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert } from "@mui/material";
+import { Box, Button, Modal, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, LinearProgress } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { FaUserEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
@@ -53,11 +53,18 @@ const InactiveUser = () => {
 
 
 
+    const handleEditClick =()=>{
+        console.log('for test')
+    }
+
+    const handleDeleteClick =()=>{
+        console.log('for test de;ete')
+    }
 
     useEffect(() => {
-        const BASE_URL = "https://tutorwise-backend.vercel.app";
         setLoading(true)
-        fetch(`${BASE_URL}/api/admin/view-institution/`)
+        const BASE_URL = "http://192.168.0.154:8000";
+        fetch(`${BASE_URL}/api/admin/tuition/list/`)
             .then((res) => res.json())
             .then((data) => {
                 const formattedData = data.map((request) => ({
@@ -82,7 +89,8 @@ const InactiveUser = () => {
 
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-            <h2 style={{ textAlign: "center", marginBottom: "1rem" }}>Institution List</h2>
+            <h2 className="text-center font-bold h3">Inactive Users</h2>
+            
 
             {loading ? (
                 <Box sx={{ width: '100%' }}>

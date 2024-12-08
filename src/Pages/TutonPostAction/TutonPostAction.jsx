@@ -25,23 +25,23 @@ import { FaUserEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 
 const columns = (handleEditClick, handleDeleteClick) => [
-    { field: "serial", headerName: "Serial Number", minWidth: 10 },  // Default minWidth: 150
-    { field: "id", headerName: "ID", minWidth: 10 },
-    { field: "created_at", headerName: "Create Date", minWidth: 150 },
+    { field: "serial", headerName: "Serial Number", minWidth: 40 },  // Default minWidth: 150
+    { field: "id", headerName: "ID", minWidth: 40 },
+    { field: "created_at", headerName: "Create Date", minWidth: 200 },
     { field: "student_name", headerName: "Student Name", minWidth: 150 },
     { field: "phone", headerName: "Phone", minWidth: 120 },
     { field: "subject", headerName: "Subject", minWidth: 150 },
     { field: "lesson_type", headerName: "Lesson Type", minWidth: 70 },
     { field: "days_per_week", headerName: "Days Per Week", minWidth: 50 },
     { field: "budget_amount", headerName: "Budget", minWidth: 50 },
-    { field: "user_joining_date", headerName: "Tuition Start Date", minWidth: 150 },
+    { field: "tuition_start_date", headerName: "Tuition Start Date", minWidth: 200 },
     { field: "educational_level_choices", headerName: "Educational Level", minWidth: 100 },
     { field: "gender", headerName: "Gender", minWidth: 60 },
     { field: "curriculum", headerName: "Curriculum", minWidth: 150 },
     {
         field: "actions",
         headerName: "Actions",
-        minWidth: 150,
+        flex: 1,
         renderCell: (params) => (
             <Box display="flex" justifyContent="center" gap={1}>
                 <FaUserEdit
@@ -91,7 +91,7 @@ const TutorPostAction = () => {
         const fetchData = () => {
             setLoading(true);
     
-            fetch("https://tutorwise-backend.vercel.app/api/admin/tuition/list", {
+            fetch("http://192.168.0.154:8000/api/admin/tuition/list/", {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
