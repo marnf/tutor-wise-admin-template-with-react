@@ -5,11 +5,14 @@ import { LuLogOut } from "react-icons/lu";
 
 const Header = ({ isSidebarOpen, toggleSidebar }) => {
   const [userType, setUserType] = useState(null);
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'));
     if (user && user.user_type) {
       setUserType(user.user_type);
+      setUserId(user.user_id);
+      
     }
   }, []);
 
@@ -41,6 +44,7 @@ const Header = ({ isSidebarOpen, toggleSidebar }) => {
             {userType && (
               <>
                 <span className="text-lg font-semibold text-gray-700">{userType}</span>
+                <span className="text-lg font-semibold text-gray-700">{userId}</span>
                 <LuLogOut
                  
                   size={25}

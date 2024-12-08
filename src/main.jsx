@@ -25,6 +25,7 @@ import Testimonial from './Pages/Testimonial/Testimonial.jsx';
 import TutorPostAction from './Pages/TutonPostAction/TutonPostAction.jsx';
 import InactiveUser from './Pages/InactiveUser/InactiveUser.jsx'
 import PrivateRoute from './../src/PrivateRoute/PrivateRoute.jsx'
+import ProtectedRoute from './Components/ProtectedRoute .jsx';
 
 const router = createBrowserRouter([
   {
@@ -33,7 +34,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/",
-    element: <Home />,
+    element: <ProtectedRoute><Home /></ProtectedRoute>,
     children: [
       {
         path: "/",

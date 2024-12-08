@@ -5,6 +5,7 @@ import './LoginPage.css';
 import animationData from '../../assets/LogInPageLottie.json';
 import logo from '../../../public/images/TutorwiseLogo.png';
 import headerImage from '../../../public/images/TutorwiseLogo.png';
+import { Alert, Snackbar } from "@mui/material";
 
 const LoginPage = () => {
   const [gmail, setGmail] = useState("");
@@ -13,49 +14,18 @@ const LoginPage = () => {
   const [showForgotPopup, setShowForgotPopup] = useState(false);
   const [showOtpPopup, setShowOtpPopup] = useState(false);
   const [otp, setOtp] = useState("");
-  const [showSetPasswordPopup , setShowSetPasswordPopup] = useState(false);
-  const [timer, setTimer] = useState(5); // 2 মিনিটের টাইমার
+  const [showSetPasswordPopup, setShowSetPasswordPopup] = useState(false);
+  const [timer, setTimer] = useState(5);
+  const [apiMessageFromOtp, setApiMessageFromOtp] = useState("");
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+
 
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-  };
 
-  const handleEmailSubmit = (event) => {
-    event.preventDefault();
-  
-    const formData = {  gmail: gmail };
-    
-    console.log(formData)
-  
-    fetch("http://192.168.0.154:8000/api/account/admin/forgot-password/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    })
-      .then((response) => {
-        if (response.ok) {
-          console.log("woo, it's working");     
-        } else {
-          console.log("shet");        
-        }
-      })
-      .catch((error) => {
-        console.error("Error submitting form:", error);
-      });
-  };
-  
-
-
-  const handleForgotPassword = () => {
-    setShowForgotPopup(true);
-  };
-
-  const handleOtpSubmit = () => {
+  const timerCount = () => {
     setShowForgotPopup(false);
     setShowOtpPopup(true);
     const otpTimer = setInterval(() => {
@@ -69,26 +39,211 @@ const LoginPage = () => {
     }, 1000);
   };
 
-  
+
+
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch("http://192.168.0.154:8000/api/account/admin/login/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          gmail: gmail,
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+      console.log(data)
+
+      if (response.ok) {
+
+        localStorage.setItem("user", JSON.stringify({
+          user_id: data.user_id,
+          user_type: data.user_type,
+          roles: data.roles,
+          token: data.token,
+        }));
+        navigate("/");
+      } else {
+
+        setError(data.message || "Invalid email or password!");
+
+      }
+    } catch (error) {
+      setError("An error occurred. Please try again.");
+
+    }
+  };
+
+  const showOtpModal = () => {
+    setShowForgotPopup(false);
+    setShowOtpPopup(true)
+    timerCount()
+
+  }
+
+  const handleEmailSubmit = (event) => {
+    event.preventDefault();
+
+    const formData = { gmail: gmail };
+
+    showOtpModal();
+
+    fetch("http://192.168.0.154:8000/api/account/admin/forgot-password/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then((response) => {
+        if (response.ok) {
+
+
+        } else {
+          console.log("shet");
+        }
+      })
+      .catch((error) => {
+        console.error("Error submitting form:", error);
+      });
+  };
+
+
+
+  const handleOtpSubmit = (event) => {
+    event.preventDefault();
+
+    const formData = { gmail: gmail, otp: otp };
+    console.log(formData);
+
+    fetch("http://192.168.0.154:8000/api/account/admin/verify-otp/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then((response) => {
+        if (response.ok) {
+          setShowOtpPopup(false);
+          setShowSetPasswordPopup(true);
+        } 
+        else {
+          return response.json().then((data) => {
+            setApiMessageFromOtp(data.message || "Something went wrong.");
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Error submitting form:", error);
+        setApiMessageFromOtp("An unexpected error occurred.");
+      });
+  };
+
+
+
   const handleResendOtp = () => {
+
     if (timer === 0) {
-      setTimer(5); 
+      setTimer(5);
       const newOtpTimer = setInterval(() => {
         setTimer((prev) => {
           if (prev <= 1) {
-            clearInterval(newOtpTimer); 
+            clearInterval(newOtpTimer);
             return 0;
           }
-          return prev - 1; 
+          return prev - 1;
         });
-      }, 1000); 
+      }, 1000);
     }
+
+
+    const formData = { gmail: gmail };
+    console.log(formData)
+
+    fetch("http://192.168.0.154:8000/api/account/admin/resend-otp/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data) {
+
+          setSnackbarMessage(data.message);
+          setSnackbarSeverity("success");
+          setOpenSnackbar(true);
+
+        } else {
+          console.log("Failed to resend OTP.");
+        }
+      })
+      .catch((error) => {
+        console.error("Error submitting form:", error);
+      });
+
+
   };
-  
-  
 
 
-  return (
+  const handleForgotPassword = () => {
+    setShowForgotPopup(true);
+  };
+
+
+  const handleSetPassword = (e) => {
+    e.preventDefault();
+
+    const formData = {
+      gmail: gmail, 
+      password: e.target.password.value, 
+      confirm_password: e.target.confirm_password.value, 
+    };
+
+    console.log(formData)
+
+    fetch("http://192.168.0.154:8000/api/account/admin/save-password/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data) {
+
+          setSnackbarMessage(data.message);
+          setSnackbarSeverity("success");
+          setOpenSnackbar(true);
+
+        } else {
+          console.log("Failed to resend OTP.");
+        }
+      })
+      .catch((error) => {
+        console.error("Error submitting form:", error);
+      });
+
+
+  };
+
+
+
+
+
+
+return (
+  <div>
     <div className="login-container">
       <div className="content flex">
         {/* Lottie Animation */}
@@ -148,6 +303,8 @@ const LoginPage = () => {
                 type="email"
                 id="gmailForOtp"
                 name="gmail"
+                value={gmail}
+                onChange={(e) => setGmail(e.target.value)}
                 placeholder="Enter your email"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 required
@@ -218,12 +375,13 @@ const LoginPage = () => {
               ))}
             </div>
 
-            <div className="flex justify-end gap-2 mb-4">
+            <div className="text-red-600 text-center">
+              {apiMessageFromOtp}
+            </div>
+
+            <div className="flex justify-end gap-2 my-4">
               <button
-                onClick={() => {
-                  setShowOtpPopup(false);
-                  setShowSetPasswordPopup(true); 
-                }}
+                onClick={handleOtpSubmit}
                 className="w-full button-color text-white py-2 rounded-md text-lg"
               >
                 Submit
@@ -235,9 +393,8 @@ const LoginPage = () => {
               <button
                 onClick={handleResendOtp}
                 disabled={timer > 0}
-                className={`text-blue-600 hover:underline focus:outline-none ${
-                  timer > 0 ? 'opacity-50 cursor-not-allowed hover:no-underline' : ''
-                }`}
+                className={`text-blue-600 hover:underline focus:outline-none ${timer > 0 ? 'opacity-50 cursor-not-allowed hover:no-underline' : ''
+                  }`}
               >
                 Resend OTP
               </button>
@@ -265,12 +422,13 @@ const LoginPage = () => {
             <img src={headerImage} style={{ height: '200px', width: '200px' }} alt="Header" className="header-image mx-auto" />
 
             {/* Set New Password Form */}
-            <form>
-            <div className="mb-6">
+            <form onSubmit={handleSetPassword}>
+              <div className="mb-6">
                 <label htmlFor="new-password" className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
                 <input
                   type="password"
                   id="new-password"
+                  name="password"
                   placeholder="Enter new password"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -281,6 +439,7 @@ const LoginPage = () => {
                 <input
                   type="password"
                   id="confirm-password"
+                  name="confirm_password"
                   placeholder="Enter confirm password"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -308,7 +467,19 @@ const LoginPage = () => {
 
     </div>
 
-  );
+    <Snackbar
+      open={openSnackbar}
+      autoHideDuration={6000}
+      onClose={() => setOpenSnackbar(false)}
+      anchorOrigin={{ vertical: "top", horizontal: "center" }}
+    >
+      <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity} sx={{ width: "100%" }}>
+        {snackbarMessage}
+      </Alert>
+    </Snackbar>
+  </div>
+
+);
 };
 
 export default LoginPage;

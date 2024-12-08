@@ -8,7 +8,7 @@ const PrivateRoute = ({ children, allowedRoles }) => {
 
   const hasAccess = userRoles.some((role) => allowedRoles.includes(role));
 
-  return hasAccess ? children : <Navigate to="/login" />;
+  return hasAccess ? children : <Navigate to="/" />;
 };
 
 export default PrivateRoute;
