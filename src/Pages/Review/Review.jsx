@@ -152,8 +152,6 @@ const Review = () => {
 
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-            <h2 className="text-center font-bold h3" >Review List</h2>
-
             {/* Search Box */}
             <Box display="flex" justifyContent="flex-end" mb={2}>
                 <TextField

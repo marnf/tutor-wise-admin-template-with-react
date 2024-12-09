@@ -4,11 +4,13 @@ import {
     Autocomplete,
     Box,
     Button,
+    Card,
     Checkbox,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
+    Divider,
     FormControlLabel,
     FormLabel,
     Grid,
@@ -19,10 +21,12 @@ import {
     Snackbar,
     TextareaAutosize,
     TextField,
+    Typography,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { FaUserEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
+import { BiSolidUserDetail } from "react-icons/bi";
 
 // Dummy subject options
 const subjectOptions = [
@@ -71,7 +75,7 @@ const columns = [
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => params.row.handleEdit(params.row)} />
 
-                 <MdDelete
+                <MdDelete
                     title="Delete"
                     size={25}
                     color={isSuperAdmin ? "red" : "gray"}
@@ -87,6 +91,12 @@ const columns = [
                         opacity: isSuperAdmin ? 1 : 0.5, // নিষ্ক্রিয় হলে ফেইড হয়ে যাবে
                     }}
                 />
+
+                <BiSolidUserDetail title="View"
+                    size={28}
+                    color="purple"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                    onClick={() => params.row.handleViewModal(params.row)} />
             </Box>
 
         ),
@@ -95,6 +105,7 @@ const columns = [
 
 const ApprovedTutorRequest = () => {
     const [rows, setRows] = useState([]);
+    const [view, setView] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [filteredRows, setFilteredRows] = useState([]);
     const [open, setOpen] = useState(false);
@@ -103,6 +114,7 @@ const ApprovedTutorRequest = () => {
     const [deleteData, setDeleteData] = useState({});
     const [loading, setLoading] = useState(false);
     const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [openViewModal, setOpenViewModal] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // 'success' or 'error'
 
@@ -117,6 +129,7 @@ const ApprovedTutorRequest = () => {
                     start_immediate: item.start_immediate ? "Yes" : "No",
                     handleEdit: handleEditRequest,
                     handleDelete: handleDeleteRequest,
+                    handleViewModal: handleOpenViewModal
                 }));
                 setRows(formattedData);
                 setFilteredRows(formattedData);
@@ -145,6 +158,16 @@ const ApprovedTutorRequest = () => {
         setOpenDeleteModal(true);
 
     };
+
+    const handleOpenViewModal = (row) => {
+        setOpenViewModal(true)
+        setView(row)
+
+
+    }
+    const handleCloseViewModal = () => {
+        setOpenViewModal(false)
+    }
 
     const handleDelete = (e) => {
         e.preventDefault();
@@ -226,7 +249,6 @@ const ApprovedTutorRequest = () => {
 
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-            <h2 className="text-center font-bold h3">Approved Tutor Request List</h2>
             <div className="flex justify-end">
                 <TextField
                     label="Search Tutor Requests"
@@ -240,38 +262,38 @@ const ApprovedTutorRequest = () => {
 
             {loading ? (
                 <Box sx={{ width: '100%' }}>
-                <LinearProgress />
-              </Box>
+                    <LinearProgress />
+                </Box>
             ) : (
-            <DataGrid
-                rows={filteredRows}
-                columns={columns.map((col) => ({
-                    ...col,
-                    minWidth: col.minWidth || 150,
-                }))}
-                pageSize={10}
-                rowsPerPageOptions={[5, 10, 20]}
-                disableSelectionOnClick
+                <DataGrid
+                    rows={filteredRows}
+                    columns={columns.map((col) => ({
+                        ...col,
+                        minWidth: col.minWidth || 150,
+                    }))}
+                    pageSize={10}
+                    rowsPerPageOptions={[5, 10, 20]}
+                    disableSelectionOnClick
 
-                sx={{
-                    "& .MuiDataGrid-columnHeader": {
-                        backgroundColor: "#f0f0f0",
-                        fontWeight: "bold",
-                        borderBottom: "2px solid #1976d2", // Column header's bottom border
-                    },
-                    "& .MuiDataGrid-cell": {
-                        border: "1px solid #e0e0e0", // Border for each cell
-                        whiteSpace: "normal", // Allow text to wrap in cells
-                        wordWrap: "break-word", // Break long words if necessary
-                    },
-                    "& .MuiDataGrid-cell:focus": {
-                        outline: "none", // Remove default outline on focus
-                    },
-                    "& .MuiDataGrid-virtualScroller": {
-                        overflowX: "auto", // Ensure horizontal scroll for table content
-                    },
-                }}
-            />
+                    sx={{
+                        "& .MuiDataGrid-columnHeader": {
+                            backgroundColor: "#f0f0f0",
+                            fontWeight: "bold",
+                            borderBottom: "2px solid #1976d2", // Column header's bottom border
+                        },
+                        "& .MuiDataGrid-cell": {
+                            border: "1px solid #e0e0e0", // Border for each cell
+                            whiteSpace: "normal", // Allow text to wrap in cells
+                            wordWrap: "break-word", // Break long words if necessary
+                        },
+                        "& .MuiDataGrid-cell:focus": {
+                            outline: "none", // Remove default outline on focus
+                        },
+                        "& .MuiDataGrid-virtualScroller": {
+                            overflowX: "auto", // Ensure horizontal scroll for table content
+                        },
+                    }}
+                />
             )}
 
             <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
@@ -479,6 +501,197 @@ const ApprovedTutorRequest = () => {
                     </form>
                 </DialogContent>
             </Dialog>
+
+
+            {/* view details modal */}
+
+            <Dialog open={openViewModal} onClose={handleCloseViewModal} fullWidth>
+
+
+                {/* Content */}
+                <DialogContent>
+                    <div
+                        sx={{
+                            padding: 5,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 2,
+                            borderRadius: 4,
+                            boxShadow: '0px 8px 20px rgba(0,0,0,0.1)',
+                            backgroundColor: '#f9f9f9',
+                            maxWidth: '700px',
+                            margin: ' auto',
+                        }}
+                    >
+                        {/* Header Section */}
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                gap: 3,
+                                paddingBottom: 2,
+                                marginBottom: 1,
+                                borderBottom: '1px solid #ddd',
+                            }}
+                        >
+                            {/* Left: Name and Phone */}
+                            <Box>
+                                <Typography
+                                    variant="h6"
+                                    sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}
+                                >
+                                    {view?.name || ''}
+                                </Typography>
+                                <Typography
+                                    variant="body2"
+                                    color="textSecondary"
+                                    sx={{ color: '#777' }}
+                                >
+                                    {view?.phone || ''}
+                                </Typography>
+                            </Box>
+
+                            {/* Right:  */}
+                            <Box>
+                                <Typography
+                                    variant="body2"
+                                    color="textSecondary"
+                                    sx={{
+                                        fontSize: '1rem',
+                                        color: '#555',
+                                        textAlign: 'right',
+                                    }}
+                                >
+                                    <strong>ID:</strong>{view?.id || ''}
+                                </Typography>
+                                <Typography variant="body1">
+                                    {' '}
+                                    {view?.created_at
+                                        ? new Date(view.created_at).toLocaleString()
+                                        : ''}
+                                </Typography>
+                            </Box>
+                        </Box>
+
+                        {/* Body Section */}
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                gap: 3,
+                                flexDirection: { xs: 'column', sm: 'row' },
+                            }}
+                        >
+                            {/* Left Column */}
+                            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+
+                                
+                                <Typography variant="body1">
+                                    <strong>Subject:</strong> {view?.subject || ''}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Class Name:</strong> {view?.class_name || ''}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Lesson Type:</strong> {view?.lesson_type || ''}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Gender:</strong> {view?.gender || ''}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Details:</strong> {view?.details || ''}
+                                </Typography>
+                                <Divider />
+                               
+                               
+                            </Box>
+
+                            {/* Right Column */}
+                            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+
+                                <Typography variant="body1">
+                                    <strong>Location:</strong> {view?.location || ''}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Days Per Week:</strong> {view?.days_per_week || ''}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Start Date:</strong> {view?.start_date || ''}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Budget:</strong> {view?.budget || ''}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Additional Comment:</strong> {view?.additional_comment || ''}
+                                </Typography>
+                                <Divider />
+
+
+                            </Box>
+                        </Box>
+
+                        {/* Footer Section: Checkboxes */}
+                        <Box
+                            sx={{
+                                display: 'flex',
+
+                                gap: 2,
+                                paddingTop: 2,
+                                borderTop: '1px solid #ddd',
+                            }}
+                        >
+                            <FormControlLabel
+                                control={
+                                    <Checkbox checked={view?.is_verified || false} disabled />
+                                }
+                                label="Verified"
+                            />
+                            <FormControlLabel
+                                control={
+                                    <Checkbox checked={view?.is_approve || false} disabled />
+                                }
+                                label="Approved"
+                            />
+                            <FormControlLabel
+                                control={
+                                    <Checkbox checked={view?.start_immediate || false} disabled />
+                                }
+                                label="Start Immediately"
+                            />
+                        </Box>
+
+                        {/* Footer Section: Cancel Button */}
+                        <Box sx={{ textAlign: 'center', marginTop: 2 }}>
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    backgroundColor: '#ff5722',
+                                    color: '#fff',
+                                    fontWeight: 'bold',
+                                    padding: '0.5rem 2rem',
+                                    '&:hover': {
+                                        backgroundColor: '#e64a19',
+                                    },
+                                }}
+                                onClick={handleCloseViewModal}
+                            >
+                                Cancel
+                            </Button>
+                        </Box>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+
+
 
             <Dialog open={openDeleteModal} onClose={handleCloseDeleteModal}>
                 <DialogTitle>Confirm Deletion</DialogTitle>

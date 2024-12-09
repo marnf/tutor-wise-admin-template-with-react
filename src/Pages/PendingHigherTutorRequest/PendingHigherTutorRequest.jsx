@@ -12,12 +12,16 @@ import {
     Autocomplete,
     Snackbar,
     Alert,
-    LinearProgress, // Import Grid component
+    LinearProgress,
+    Typography,
+    Divider,
+    FormControlLabel,
+    Checkbox, // Import Grid component
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { FaUserEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import { BiSolidSelectMultiple } from "react-icons/bi";
+import { BiSolidSelectMultiple, BiSolidUserDetail } from "react-icons/bi";
 
 
 // Dummy subject options
@@ -93,14 +97,20 @@ const columns = [
                         }`}
                     onClick={() => {
                         if (isSuperAdmin) {
-                            params.row.handleDelete(params.row); 
+                            params.row.handleDelete(params.row);
                         }
                     }}
                     style={{
                         pointerEvents: isSuperAdmin ? "auto" : "none",
-                        opacity: isSuperAdmin ? 1 : 0.5, 
+                        opacity: isSuperAdmin ? 1 : 0.5,
                     }}
                 />
+
+                <BiSolidUserDetail title="View"
+                    size={28}
+                    color="purple"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                    onClick={() => params.row.handleViewModal(params.row)} />
 
             </Box>
         ),
@@ -121,6 +131,8 @@ const PendingHigherTutorRequest = () => {
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // 'success' or 'error'
+    const [view, setView] = useState([]);
+    const [openViewModal, setOpenViewModal] = useState(false);
 
 
     useEffect(() => {
@@ -134,6 +146,7 @@ const PendingHigherTutorRequest = () => {
                     handleApprove: handleApproveRequest,
                     handleEdit: handleEditRequest,
                     handleDelete: handleDeleteRequest,
+                    handleViewModal: handleOpenViewModal
                 }));
                 setRows(formattedData);
                 setFilteredRows(formattedData);
@@ -246,7 +259,15 @@ const PendingHigherTutorRequest = () => {
     };
 
 
+    const handleOpenViewModal = (row) => {
+        setOpenViewModal(true)
+        setView(row)
 
+
+    }
+    const handleCloseViewModal = () => {
+        setOpenViewModal(false)
+    }
 
     const handleClose = () => {
         setOpen(false);
@@ -279,7 +300,7 @@ const PendingHigherTutorRequest = () => {
             padding: 2,
             overflowX: "auto", // Ensure horizontal scroll for all devices
         }}>
-            <h2 className="text-center font-bold h3">Pending Higher Tutor Requests</h2>
+
             <div className="flex justify-end">
                 <TextField
                     label="Search Requests"
@@ -515,6 +536,143 @@ const PendingHigherTutorRequest = () => {
                     </form>
                 </DialogContent>
             </Dialog>
+
+
+            {/* view details modal */}
+
+            <Dialog open={openViewModal} onClose={handleCloseViewModal} fullWidth>
+                {/* Content */}
+                <DialogContent>
+                    <div
+                        sx={{
+                            padding: 5,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 2,
+                            borderRadius: 4,
+                            boxShadow: '0px 8px 20px rgba(0,0,0,0.1)',
+                            backgroundColor: '#f9f9f9',
+                            maxWidth: '700px',
+                            margin: ' auto',
+                        }}
+                    >
+                        {/* Header Section */}
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                gap: 3,
+                                paddingBottom: 2,
+                                marginBottom: 1,
+                                borderBottom: '1px solid #ddd',
+                            }}
+                        >
+                            {/* Left: Name and Phone */}
+                            <Box>
+                                <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}>
+                                    {view?.name || 'N/A'}
+                                </Typography>
+                                <Typography variant="body2" color="textSecondary" sx={{ color: '#777' }}>
+                                    {view?.phone || 'N/A'}
+                                </Typography>
+                            </Box>
+
+                            {/* Right: ID and Date */}
+                            <Box>
+                                <Typography variant="body2" color="textSecondary" sx={{ fontSize: '1rem', color: '#555', textAlign: 'right' }}>
+                                    <strong>ID:</strong> {view?.id || 'N/A'}
+                                </Typography>
+                                <Typography variant="body1">
+                                    {view?.start_date ? new Date(view.start_date).toLocaleString() : 'N/A'}
+                                </Typography>
+                            </Box>
+                        </Box>
+
+                        {/* Body Section */}
+                        <Box sx={{ display: 'flex', gap: 3, flexDirection: { xs: 'column', sm: 'row' } }}>
+                            {/* Left Column */}
+                            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                <Typography variant="body1">
+                                    <strong>Tutor Name:</strong> {view?.tutor_name || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Tutor Phone:</strong> {view?.tutor_phone || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Tutor Division:</strong> {view?.tutor_division || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Tutor District:</strong> {view?.tutor_district || 'N/A'}
+                                </Typography>
+                                <Divider />
+
+                            </Box>
+
+                            {/* Right Column */}
+                            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                <Typography variant="body1">
+                                    <strong>Tutor Charge:</strong> {view?.tutor_charge || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Medium:</strong> {view?.medium || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Subjects:</strong> {view?.subjects || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Start Date:</strong> {view?.start_date || 'N/A'}
+                                </Typography>
+                                <Divider />
+
+                            </Box>
+                        </Box>
+
+                        {/* Footer Section: Checkboxes */}
+                        <Box sx={{ display: 'flex', gap: 2, paddingTop: 2, borderTop: '1px solid #ddd' }}>
+                            <FormControlLabel
+                                control={<Checkbox checked={view?.is_verified || false} disabled />}
+                                label="Verified"
+                            />
+                            <FormControlLabel
+                                control={<Checkbox checked={view?.is_approved || false} disabled />}
+                                label="Approved"
+                            />
+                            <FormControlLabel
+                                control={<Checkbox checked={view?.start_immediate || false} disabled />}
+                                label="Start Immediately"
+                            />
+                        </Box>
+
+                        {/* Footer Section: Cancel Button */}
+                        <Box sx={{ textAlign: 'center', marginTop: 2 }}>
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    backgroundColor: '#ff5722',
+                                    color: '#fff',
+                                    fontWeight: 'bold',
+                                    padding: '0.5rem 2rem',
+                                    '&:hover': {
+                                        backgroundColor: '#e64a19',
+                                    },
+                                }}
+                                onClick={handleCloseViewModal}
+                            >
+                                Cancel
+                            </Button>
+                        </Box>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+
 
             <Dialog open={openApproveModal} onClose={handleCloseApproveModal}>
                 <DialogTitle>Confirm Approve</DialogTitle>

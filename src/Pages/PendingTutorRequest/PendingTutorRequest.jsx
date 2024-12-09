@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { LinearProgress, Modal } from "@mui/material";
+import { Avatar, Card, Divider, LinearProgress, Modal, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, TextareaAutosize, Grid, MenuItem, Autocomplete, Radio, RadioGroup, FormControlLabel, FormLabel, Checkbox } from "@mui/material";
 import { MdDelete } from "react-icons/md";
 import { FaUserEdit } from "react-icons/fa";
 import { BiSolidSelectMultiple } from "react-icons/bi";
 import { Snackbar, Alert } from "@mui/material";
+import { BiSolidUserDetail } from "react-icons/bi";
+import "../PendingTutorRequest/PendingTutorRequest.css"
 
 
 const user = JSON.parse(localStorage.getItem("user"));
@@ -49,6 +51,12 @@ const columns = [
                     }}
                 />
 
+                <BiSolidUserDetail title="View"
+                    size={28}
+                    color="purple"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                    onClick={() => params.row.handleViewModal(params.row)} />
+
             </Box>
 
         ),
@@ -68,6 +76,8 @@ const PendingTutorRequest = () => {
     const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // success বা error হতে পারে
     const [deleteId, setDeleteId] = useState("");
     const [loading, setLoading] = useState(false);
+    const [openViewModal, setOpenViewModal] = useState(false);
+    const [view, setView] = useState([]);
 
 
     const subjectOptions = [
@@ -93,8 +103,10 @@ const PendingTutorRequest = () => {
                     phone: request.phone || "",
                     location: request.location || "",
                     details: request.details || "No Details",
+                    created_at : request.created_at || "",
                     handleEdit: handleOpenEditModal,
                     handleDelete: handleOpenDeleteModal,
+                    handleViewModal: handleOpenViewModal
                 }));
                 setRows(formattedData);
                 setFilteredRows(formattedData);
@@ -122,10 +134,18 @@ const PendingTutorRequest = () => {
         setOpen(true);
     };
 
+    const handleOpenViewModal = (row) => {
+        setOpenViewModal(true)
+        setView(row)
+    }
+
     const handleClose = () => {
         setOpen(false);
-        setEditData({});
+
     };
+    const handleCloseViewModal = () => {
+        setOpenViewModal(false)
+    }
 
     const handleOpenDeleteModal = (row) => {
         setDeleteId(row);
@@ -447,7 +467,172 @@ const PendingTutorRequest = () => {
 
 
 
+            {/* view details modal */}
 
+
+            <Dialog open={openViewModal} onClose={handleCloseViewModal}  fullWidth>
+                
+
+                {/* Content */}
+                <DialogContent>
+                    <Card
+                        sx={{
+                            padding: 3,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 2,
+                            borderRadius: 4,
+                            boxShadow: '0px 8px 20px rgba(0,0,0,0.1)',
+                            backgroundColor: '#f9f9f9',
+                            maxWidth: '600px',
+                            margin: ' auto',
+                        }}
+                    >
+                        {/* Header Section */}
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                gap: 3,
+                                paddingBottom: 2,
+                                borderBottom: '1px solid #ddd',
+                            }}
+                        >
+                            {/* Left: Name and Phone */}
+                            <Box>
+                                <Typography
+                                    variant="h6"
+                                    sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}
+                                >
+                                    {view?.name || 'N/A'}
+                                </Typography>
+                                <Typography
+                                    variant="body2"
+                                    color="textSecondary"
+                                    sx={{ color: '#777' }}
+                                >
+                                    {view?.phone || 'N/A'}
+                                </Typography>
+                            </Box>
+
+                            {/* Right: Location */}
+                            <Box>
+                                <Typography
+                                    variant="body2"
+                                    color="textSecondary"
+                                    sx={{
+                                        fontSize: '1rem',
+                                        color: '#555',
+                                        textAlign: 'right',
+                                    }}
+                                >
+                                   {view?.location || 'N/A'}
+                                </Typography>
+                                <Typography variant="body1">
+                                    <strong></strong>{' '}
+                                    {view?.created_at
+                                        ? new Date(view.created_at).toLocaleString()
+                                        : 'N/A'}
+                                </Typography>
+                            </Box>
+                        </Box>
+
+                        {/* Body Section */}
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                gap: 3,
+                                flexDirection: { xs: 'column', sm: 'row' },
+                            }}
+                        >
+                            {/* Left Column */}
+                            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                <Typography variant="body1">
+                                    <strong>Details:</strong> {view?.details || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Subject:</strong> {view?.subject || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Class Name:</strong> {view?.class_name || 'N/A'}
+                                </Typography>
+                            </Box>
+
+                            {/* Right Column */}
+                            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                <Typography variant="body1">
+                                    <strong>Gender:</strong> {view?.gender || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Budget:</strong> {view?.budget || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Days Per Week:</strong> {view?.days_per_week || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                
+                            </Box>
+                        </Box>
+
+                        {/* Footer Section: Checkboxes */}
+                        <Box
+                            sx={{
+                                display: 'flex',
+                               
+                                gap: 2,
+                                paddingTop: 2,
+                                borderTop: '1px solid #ddd',
+                            }}
+                        >
+                            <FormControlLabel
+                                control={
+                                    <Checkbox checked={view?.is_verified || false} disabled />
+                                }
+                                label="Verified"
+                            />
+                            <FormControlLabel
+                                control={
+                                    <Checkbox checked={view?.is_approve || false} disabled />
+                                }
+                                label="Approved"
+                            />
+                            <FormControlLabel
+                                control={
+                                    <Checkbox checked={view?.start_immediate || false} disabled />
+                                }
+                                label="Start Immediately"
+                            />
+                        </Box>
+
+                        {/* Footer Section: Cancel Button */}
+                        <Box sx={{ textAlign: 'center', marginTop: 2 }}>
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    backgroundColor: '#ff5722',
+                                    color: '#fff',
+                                    fontWeight: 'bold',
+                                    padding: '0.5rem 2rem',
+                                    '&:hover': {
+                                        backgroundColor: '#e64a19',
+                                    },
+                                }}
+                                onClick={handleCloseViewModal}
+                            >
+                                Cancel
+                            </Button>
+                        </Box>
+                    </Card>
+                </DialogContent>
+            </Dialog>
+
+
+{/* delete modal */}
             <Dialog open={openDeleteModal} onClose={() => setOpenDeleteModal(false)}>
                 <DialogTitle>Confirm Deletion</DialogTitle>
                 <DialogContent>

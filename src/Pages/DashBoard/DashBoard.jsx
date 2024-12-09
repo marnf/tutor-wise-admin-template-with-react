@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { Pie } from 'react-chartjs-2'; // Pie Chart import
 import 'chart.js/auto'; // Chart.js auto register
 import RadialBar from './RadialBar'; // RadialBar import
 import { Link } from 'react-router-dom';
 import { Doughnut } from 'react-chartjs-2';
+import Chart from 'chart.js/auto';
 
 const Dashboard = () => {
     const [totalStudentData, setTotalStudentData] = useState(null);
@@ -124,8 +125,12 @@ const Dashboard = () => {
 
 // PaymentCard with Pie Chart
 const PaymentCard = ({ data }) => {
-    const chartData = data
-        ? {
+    const chartRef = useRef(null);
+
+    useEffect(() => {
+        if (!data) return;
+
+        const chartData = {
             labels: ['Red', 'Blue', 'Yellow'],
             datasets: [
                 {
@@ -139,62 +144,81 @@ const PaymentCard = ({ data }) => {
                     hoverOffset: 4,
                 },
             ],
-        }
-        : null;
+        };
+
+        const config = {
+            type: 'doughnut',
+            data: chartData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            align: 'start',
+                        },
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: (tooltipItem) => {
+                                const label = tooltipItem.label;
+                                const value = tooltipItem.raw;
+                                return `${label}: ${value}`;
+                            },
+                        },
+                    },
+                },
+            },
+        };
+
+        // Create the chart
+        const chartInstance = new Chart(chartRef.current, config);
+
+        // Cleanup on unmount
+        return () => {
+            chartInstance.destroy();
+        };
+    }, [data]);
 
     return (
         <div className="card bg-white shadow-xl rounded-lg p-6 flex flex-col gap-6">
             <h4 className="text-lg font-semibold text-gray-700 mb-6 text-center">Payment Details</h4>
             {data ? (
-                <>
-                    <div className="flex justify-between items-start">
-                        {/* Pie Chart */}
-                        <div className="w-48 h-48 ">
-                            <Pie
-                                data={chartData}
-                                options={{
-                                    responsive: true,
-                                    plugins: {
-                                        legend: {
-                                            position: 'bottom',
-                                            labels: {
-                                                align: 'start',  // This will left-align the legend text
-                                            },
-                                        },
-                                        // Optional: You can enable tooltips to display extra info
-                                        tooltip: {
-                                            callbacks: {
-                                                label: (tooltipItem) => {
-                                                    const label = tooltipItem.label ;
-                                                    const value = tooltipItem.raw;
-                                                    return `${label}: ${value}`;
-                                                },
-                                            },
-                                        },
-                                    },
-                                    cutoutPercentage: 50, // Hollow center
-                                }}
-                            />
-                        </div>
+                <div className="flex justify-between items-start">
+                    {/* Pie Chart */}
+                    <div className="w-48 h-48">
+                        <canvas ref={chartRef}></canvas>
+                    </div>
 
-                        {/* Right-side labels */}
-                        <div className="ml-6 flex flex-col justify-start space-y-3">
-                            <div className="text-sm space-y-1">
-                                <p className="font-medium"><strong>Total Payment Number:</strong> {data.total_payment_number}</p>
-                                <p className="font-medium"><strong>Total Apply Limit:</strong> {data.total_apply_limit}</p>
-                                <p className="font-medium"><strong>Apply Limit Percentage:</strong> {data.apply_limit_percentage}%</p>
-                                <p className="font-medium"><strong>Total Pro Tutor Subscription:</strong> {data.total_pro_tutor_subscription}</p>
-                                <p className="font-medium"><strong>Pro Tutor Subscription Percentage:</strong> {data.pro_tutor_subscription_percentage}%</p>
-                            </div>
+                    {/* Right-side labels */}
+                    <div className="ml-6 flex flex-col justify-start space-y-3">
+                        <div className="text-sm space-y-1">
+                            <p className="font-medium">
+                                <strong>Total Payment Number:</strong> {data.total_payment_number}
+                            </p>
+                            <p className="font-medium">
+                                <strong>Total Apply Limit:</strong> {data.total_apply_limit}
+                            </p>
+                            <p className="font-medium">
+                                <strong>Apply Limit Percentage:</strong> {data.apply_limit_percentage}%
+                            </p>
+                            <p className="font-medium">
+                                <strong>Total Pro Tutor Subscription:</strong> {data.total_pro_tutor_subscription}
+                            </p>
+                            <p className="font-medium">
+                                <strong>Pro Tutor Subscription Percentage:</strong> {data.pro_tutor_subscription_percentage}%
+                            </p>
                         </div>
                     </div>
-                </>
+                </div>
             ) : (
                 <p className="text-center text-gray-500">Loading...</p>
             )}
         </div>
     );
 };
+
+
 
 
 
@@ -212,8 +236,8 @@ const InactiveUserCard = ({ title, value, percentage }) => {
                 </div>
             </div>
             <div className="flex justify-end gap-4 mt-4">
-                <button  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                   <Link to="/inactive-user">Show</Link>
+                <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                    <Link to="/inactive-user">Show</Link>
                 </button>
                 <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
                     Send Message

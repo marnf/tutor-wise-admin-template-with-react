@@ -52,7 +52,6 @@ const InstitutionForm = () => {
     return (
         <div className="page-body pt-1">
             <div className="form-container mt-5">
-                <h2 className="form-title mt-5">Add Institution</h2>
                 <form id="myForm" onSubmit={handleSubmit}>
                     {/* Institution Name Section */}
                     <div className="form-group">

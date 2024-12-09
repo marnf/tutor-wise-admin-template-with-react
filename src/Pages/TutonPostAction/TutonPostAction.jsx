@@ -83,45 +83,49 @@ const TutorPostAction = () => {
     const [searchText, setSearchText] = useState("");  // Search query
     const [editData, setEditData] = useState({});  // For editing data
     const [open, setOpen] = useState(false);  // Dialog open state
-    const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+    const [snackbarSeverity, setSnackbarSeverity] = useState("success");
     const [filteredRows, setFilteredRows] = useState([]);  // Filtered data for search
+    const [deleteId, setDeleteId] = useState([]);  // Filtered data for search
 
     // Fetch data on initial load
     useEffect(() => {
         const fetchData = () => {
             setLoading(true);
-    
-            fetch("http://192.168.0.154:8000/api/admin/tuition/list/", {
+
+            fetch("https://tutorwise-backend.vercel.app/api/admin/tuition/list/", {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
                 },
             })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Failed to fetch data");
-                }
-                return response.json();
-            })
-            .then((data) => {
-                const dataWithSerial = data.map((item, index) => ({
-                    ...item,
-                    serial: index + 1  
-                }));
-    
-                setRows(dataWithSerial);
-                setFilteredRows(dataWithSerial);
-                setLoading(false);
-            })
-            .catch((error) => {
-                console.error("Error fetching data:", error);
-                setLoading(false);
-            });
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error("Failed to fetch data");
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    const dataWithSerial = data.map((item, index) => ({
+                        ...item,
+                        serial: index + 1
+                    }));
+
+                    setRows(dataWithSerial);
+                    setFilteredRows(dataWithSerial);
+                    setLoading(false);
+                })
+                .catch((error) => {
+                    console.error("Error fetching data:", error);
+                    setLoading(false);
+                });
         };
-    
+
         fetchData();
     }, []);
-    
+
 
 
 
@@ -149,30 +153,90 @@ const TutorPostAction = () => {
     const handleClose = () => setOpen(false);
 
     // Handle delete action
-    const handleDeleteClick = (id) => {
-        // Implement delete functionality
-        setSnackbar({ open: true, message: "Deleted successfully!", severity: "success" });
+    const handleDeleteClick = (row) => {
+        setOpenDeleteModal(true);
+        setDeleteId(row)
+        console.log(row)
     };
+
+    const handleDeleteConfirm = () => {
+        fetch(`http://192.168.0.154:8000/api/admin/delete-tuition-post/${deleteId}/`, {
+            method: "DELETE",
+        })
+            .then((response) => {
+                if (response.ok) {
+                    setSnackbarMessage("Tutor request deleted successfully!");
+                    setSnackbarSeverity("success");
+                    setOpenSnackbar(true);
+                    setRows(rows.filter((row) => row.id !== deleteId)); // Correctly filter using deleteId
+                    setOpenDeleteModal(false); // Close the modal after deletion
+                } else {
+                    setSnackbarMessage("Failed to delete the tutor request.");
+                    setSnackbarSeverity("error");
+                    setOpenSnackbar(true);
+                }
+            })
+            .catch((error) => {
+                setSnackbarMessage("An error occurred while deleting.");
+                setSnackbarSeverity("error");
+                setOpenSnackbar(true);
+                setOpenDeleteModal(false); // Close modal on error as well
+            });
+
+    }
 
     // Handle form submit for editing
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Save the edited data
-        setSnackbar({ open: true, message: "Updated successfully!", severity: "success" });
-        setOpen(false);
+
+        console.log("Form Data:", editData);
+
+        fetch(`http://192.168.0.154:8000/api/admin/edit-tuition-post/${editData.id}/`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(editData),
+        })
+
+            .then((updatedData) => {
+                setRows((prevRows) =>
+                    prevRows.map((row) =>
+                        row.id === updatedData.id ? { ...row, ...updatedData } : row
+                    )
+                );
+                setFilteredRows((prevFilteredRows) =>
+                    prevFilteredRows.map((row) =>
+                        row.id === updatedData.id ? { ...row, ...updatedData } : row
+                    )
+                );
+                setOpen(false);
+                setSnackbarMessage("Successfully done");
+                setSnackbarSeverity("success");
+                setOpenSnackbar(true);
+            })
+            .catch((error) => {
+                console.error("Error updating data:", error);
+                setOpen(false);
+            });
     };
 
     return (
-        <Box sx={{ padding: 2 }}>
-            <TextField
-                placeholder="Search..."
-                value={searchText}
-                onChange={handleSearch}
-                variant="outlined"
-                size="small"
-                fullWidth
-                sx={{ marginBottom: 2 }}
-            />
+        <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
+
+            <Box display="flex" justifyContent="flex-end" mb={1}>
+                <TextField
+                    placeholder="Search..."
+                    value={searchText}
+                    onChange={handleSearch}
+                    variant="outlined"
+                    
+                    size="small"
+                    right
+                    fullWidth
+                    sx={{  width: '300px' }}
+                />
+            </Box>
 
             {loading ? (
                 <Box sx={{ width: '100%' }}>
@@ -238,6 +302,7 @@ const TutorPostAction = () => {
                                     label="Location"
                                     variant="outlined"
                                     fullWidth
+                                    disabled
                                     value={editData.user_location || ""}
                                     onChange={(e) => setEditData({ ...editData, user_location: e.target.value })}
                                 />
@@ -251,9 +316,7 @@ const TutorPostAction = () => {
                                     fullWidth
                                     value={editData.phone || ""}
                                     disabled
-                                    InputProps={{
-                                        readOnly: true,
-                                    }}
+
                                 />
                             </Grid>
 
@@ -263,8 +326,8 @@ const TutorPostAction = () => {
                                     type="date"
                                     variant="outlined"
                                     fullWidth
-                                    value={editData.user_joining_date || ""}
-                                    onChange={(e) => setEditData({ ...editData, user_joining_date: e.target.value })}
+                                    value={editData.tuition_start_date || ""}
+                                    onChange={(e) => setEditData({ ...editData, tuition_start_date: e.target.value })}
                                     InputLabelProps={{
                                         shrink: true,
                                     }}
@@ -279,11 +342,12 @@ const TutorPostAction = () => {
                                     value={editData.gender || ""}
                                     onChange={(e) => setEditData({ ...editData, gender: e.target.value })}
                                 >
-                                    <FormControlLabel value="male" control={<Radio />} label="Male" />
-                                    <FormControlLabel value="female" control={<Radio />} label="Female" />
-                                    <FormControlLabel value="others" control={<Radio />} label="Others" />
+                                    <FormControlLabel value="Male" control={<Radio />} label="Male" />
+                                    <FormControlLabel value="Female" control={<Radio />} label="Female" />
+                                    {/* <FormControlLabel value="Others" control={<Radio />} label="Others" /> */}
                                 </RadioGroup>
                             </Grid>
+
                             <Grid item xs={12} sm={6}>
                                 <FormLabel>Lesson Type</FormLabel>
                                 <RadioGroup
@@ -347,8 +411,8 @@ const TutorPostAction = () => {
                                     label="Class"
                                     select
                                     fullWidth
-                                    value={editData.class_name || ""}
-                                    onChange={(e) => setEditData({ ...editData, class_name: e.target.value })}
+                                    value={editData.educational_level_choices || ""}
+                                    onChange={(e) => setEditData({ ...editData, educational_level_choices: e.target.value })}
                                 >
                                     {[
                                         "Class 1",
@@ -373,6 +437,7 @@ const TutorPostAction = () => {
                             <Grid item xs={12} sm={6}>
                                 <TextareaAutosize
                                     minRows={4}
+                                    disabled
                                     placeholder="Details"
                                     value={editData.details || ""}
                                     onChange={(e) => setEditData({ ...editData, details: e.target.value })}
@@ -424,13 +489,31 @@ const TutorPostAction = () => {
                 </DialogContent>
             </Dialog>
 
+
+            <Dialog open={openDeleteModal} onClose={() => setOpenDeleteModal(false)}>
+                <DialogTitle>Approve Review</DialogTitle>
+                <DialogContent>
+                    <p>Are you sure you want to remove this testimonial?</p>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenDeleteModal(false)}>Cancel</Button>
+                    <Button onClick={handleDeleteConfirm} color="danger">
+                        Remove
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+
             {/* Snackbar */}
             <Snackbar
-                open={snackbar.open}
-                autoHideDuration={3000}
-                onClose={() => setSnackbar({ ...snackbar, open: false })}
+                open={openSnackbar}
+                autoHideDuration={6000}
+                onClose={() => setOpenSnackbar(false)}
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}
             >
-                <Alert severity={snackbar.severity}>{snackbar.message}</Alert>
+                <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity} sx={{ width: "100%" }}>
+                    {snackbarMessage}
+                </Alert>
             </Snackbar>
         </Box>
     );

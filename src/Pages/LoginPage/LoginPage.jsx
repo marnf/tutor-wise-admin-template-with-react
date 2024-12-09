@@ -55,7 +55,7 @@ const LoginPage = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://192.168.0.154:8000/api/account/admin/login/", {
+      const response = await fetch("https://tutorwise-backend.vercel.app/api/account/admin/login/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -106,7 +106,7 @@ const LoginPage = () => {
 
     showOtpModal();
 
-    fetch("http://192.168.0.154:8000/api/account/admin/forgot-password/", {
+    fetch("https://tutorwise-backend.vercel.app/api/account/admin/forgot-password/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -138,7 +138,7 @@ const LoginPage = () => {
     const formData = { gmail: gmail, otp: otp };
 
 
-    fetch("http://192.168.0.154:8000/api/account/admin/verify-otp/", {
+    fetch("https://tutorwise-backend.vercel.app/api/account/admin/verify-otp/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -185,7 +185,7 @@ const LoginPage = () => {
     const formData = { gmail: gmail };
    
 
-    fetch("http://192.168.0.154:8000/api/account/admin/resend-otp/", {
+    fetch("https://tutorwise-backend.vercel.app/api/account/admin/resend-otp/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -232,7 +232,7 @@ const LoginPage = () => {
       setSnackbarSeverity("error");
       setOpenSnackbar(true);
     } else {
-      fetch("http://192.168.0.154:8000/api/account/admin/save-password/", {
+      fetch("https://tutorwise-backend.vercel.app/api/account/admin/save-password/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -247,7 +247,7 @@ const LoginPage = () => {
             setOpenSnackbar(true);
             setShowSetPasswordPopup(false);
 
-            // সফল হলে /login পাথে রিডাইরেক্ট হবে
+           
             navigate("/login");
           } else {
             console.log("Failed to resend OTP.");

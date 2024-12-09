@@ -177,7 +177,6 @@ const InstitutionList = () => {
 
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-            <h2 style={{ textAlign: "center", marginBottom: "1rem" }}>Institution List</h2>
             <DataGrid
                 rows={rows}
                 columns={columns(handleEditClick, handleDeleteClick)}

@@ -50,7 +50,7 @@ const AddFaq = () => {
   return (
     <div className="page-body pt-1">
       <div className="form-container">
-        <h2 className="form-title">Add FAQ Section</h2>
+      
         <form id="myForm" onSubmit={handleSubmit}>
           {/* Question Section */}
           <div className="form-group">

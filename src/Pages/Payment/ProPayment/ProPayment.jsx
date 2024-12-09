@@ -76,7 +76,7 @@ const ProPayment = () => {
 
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-            <h2 className="text-center font-bold h3">Pro Payment</h2>
+
 
             {/* Filters & Search */}
             <div className="flex items-center justify-between mb-4">

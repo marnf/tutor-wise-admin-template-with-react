@@ -88,7 +88,6 @@ const ProPayment = () => {
 
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-            <h2 className="text-center font-bold h3">FAQ List</h2>
 
 
             {/* Filters & Search */}

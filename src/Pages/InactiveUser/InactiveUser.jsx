@@ -63,7 +63,7 @@ const InactiveUser = () => {
 
     useEffect(() => {
         setLoading(true)
-        const BASE_URL = "http://192.168.0.154:8000";
+        const BASE_URL = "https://tutorwise-backend.vercel.app";
         fetch(`${BASE_URL}/api/admin/tuition/list/`)
             .then((res) => res.json())
             .then((data) => {
@@ -89,8 +89,7 @@ const InactiveUser = () => {
 
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-            <h2 className="text-center font-bold h3">Inactive Users</h2>
-            
+           
 
             {loading ? (
                 <Box sx={{ width: '100%' }}>
