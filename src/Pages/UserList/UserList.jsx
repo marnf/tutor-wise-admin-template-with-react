@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { Alert, Box, Button, LinearProgress, Modal, TextField } from "@mui/material";
+import { Alert, Box, Button, Dialog, DialogContent, Divider, LinearProgress, Modal, TextField, Typography } from "@mui/material";
 import Select from "react-select";  // Import react-select
-import { BiSolidSelectMultiple } from "react-icons/bi";
+import { BiSolidSelectMultiple, BiSolidUserDetail } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
 import { GoPlus } from "react-icons/go";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { GiCycle } from "react-icons/gi";
 import { Snackbar } from '@mui/material';
+import moment from "moment";
 
 
 
@@ -19,6 +20,8 @@ const isSuperAdmin = user?.user_type === "super_admin";
 const columns = [
     { field: "id", headerName: "ID", flex: 0.5 },
     { field: "username", headerName: "Name", flex: 1 },
+    { field: "lastLogin", headerName: "Last login", flex: 1 },
+    { field: "joinDate", headerName: "Joining date", flex: 1 },
     { field: "phone", headerName: "Phone", flex: 1 },
     { field: "userType", headerName: "User Type", flex: 1 },
     { field: "rolesName", headerName: "Roles Name", flex: 2 },
@@ -39,6 +42,11 @@ const columns = [
                     onClick={() => params.row.handleEdit(params.row)}
                 />
 
+                <BiSolidUserDetail title="View"
+                    size={29}
+                    color="#f0523a"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                    onClick={() => params.row.handleViewModal(params)} />
 
                 <MdDelete
                     title="Delete"
@@ -80,6 +88,8 @@ const UserList = () => {
     const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [selectedOptions, setSelectedOptions] = useState('')
+    const [view, setView] = useState([]);
+    const [openViewModal, setOpenViewModal] = useState(false);
 
 
 
@@ -99,6 +109,11 @@ const UserList = () => {
         setShowPassword((prevState) => !prevState);
     };
 
+    const formData = (dateString) => {
+        if (!dateString) return "";
+        return moment(dateString).format("MMMM Do YYYY");
+    };
+
     // Fetch Data for Users
     useEffect(() => {
         setLoading(true);
@@ -107,16 +122,17 @@ const UserList = () => {
             .then((data) => {
                 const usersData = data.user_data || data;
 
-
                 const formattedUsers = usersData.map((user) => ({
-
                     id: user.id,
-                    username: user.username || "Not Available",
-                    phone: user.phone || "Not Available",
-                    userType: user.user_type || "Not Available",
+                    lastLogin: formData(user.last_login) || '',
+                    joinDate: formData(user.join_date) || '',
+                    username: user.username || "",
+                    phone: user.phone || "",
+                    userType: user.user_type || "",
                     rolesName: user.roles_name ? user.roles_name.join(", ") : "",  // Store rolesName as a string
                     handleEdit: handleOpenModal,
                     handleDelete: handleDeleteUser,  // Add delete functionality
+                    handleViewModal: handleOpenViewModal
                 }));
                 setRows(formattedUsers);
                 setFilteredRows(formattedUsers);
@@ -138,6 +154,7 @@ const UserList = () => {
             setFilteredRows(rows);
         }
     }, [searchQuery, rows]);
+
 
 
     // Fetch Roles Options for Select
@@ -170,6 +187,18 @@ const UserList = () => {
             })
             .catch((error) => console.error("Error fetching roles options:", error));
     }
+
+    const handleOpenViewModal = (item) => {
+        setView(item.row)
+        console.log(item.row)
+        setOpenViewModal(true)
+
+
+    }
+    const handleCloseViewModal = () => {
+        setOpenViewModal(false)
+    }
+
 
     // Handle Role Selection Change
     const handleRolesChange = (selectedOptions) => {
@@ -423,11 +452,10 @@ const UserList = () => {
 
 
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-            <h2 className="text-center font-bold h3">User List</h2>
 
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center mb-1">
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 -mb-2">
                     <button className=" bg-green-600 hover:bg-green-700 text-white transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-110 duration-300 my-2 p-1 px-2 rounded flex items-center border"
                         onClick={handleCreateUser}>
                         <div className="flex justify-center items-center gap-1">
@@ -452,15 +480,21 @@ const UserList = () => {
                 {/* Search Bar */}
 
 
-                <TextField
-                    label="Search Users"
-                    variant="outlined"
-                    fullWidth
-                    size="small"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    style={{ width: "300px" }}
-                />
+                <div className="flex flex-col  text-end gap-1">
+                    <Typography variant="text-base" className="flex justify-end">
+                     <strong className="text-gray-500"> Total Payment:{rows.length} </strong>
+                    </Typography>
+                    <TextField
+                        label="Search Users"
+                        variant="outlined"
+                        fullWidth
+                        size="small"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        style={{ width: "300px" }}
+                    />
+
+                </div>
             </div>
 
             {loading ? (
@@ -805,6 +839,127 @@ const UserList = () => {
                     </div>
                 </Box>
             </Modal>
+
+
+            {/* view modal */}
+            <Dialog open={openViewModal} onClose={handleCloseViewModal} fullWidth>
+
+
+                {/* Content */}
+                <DialogContent>
+                    <div
+                        sx={{
+                            padding: 3,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 2,
+                            borderRadius: 4,
+                            boxShadow: '0px 8px 20px rgba(0,0,0,0.1)',
+                            backgroundColor: '#f9f9f9',
+                            maxWidth: '600px',
+                            margin: ' auto',
+                        }}
+                    >
+                        {/* Header Section */}
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                gap: 3,
+                                marginBottom: 1,
+                                borderBottom: '1px solid #ddd',
+                            }}
+                        >
+                            {/* Left: Name and Phone */}
+                            <Box>
+                                <Typography
+                                    variant="h6"
+                                    sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}
+                                >
+                                    Name:{view?.username || ''}
+                                </Typography>
+                                <Typography variant="body1">
+                                    Type:{view?.userType || ''}
+                                </Typography>
+
+                            </Box>
+
+                            {/* Right: Location */}
+                            <Box>
+                                <Typography
+                                    variant="body2"
+                                    color="textSecondary"
+                                    sx={{
+                                        fontSize: '1rem',
+                                        color: '#555',
+                                        textAlign: 'right',
+                                    }}
+                                >
+                                    <strong>ID:</strong>  {view?.id || ''}
+                                </Typography>
+                                <Typography variant="body1">
+                                    {view?.joinDate || 'N/A'}
+                                </Typography>
+                            </Box>
+                        </Box>
+
+                        {/* Body Section */}
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                gap: 3,
+                                flexDirection: { xs: 'column', sm: 'row' },
+                            }}
+                        >
+                            {/* Left Column */}
+                            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+
+
+                                <Typography variant="body1">
+                                    <strong>phone:</strong> {view?.phone || 'N/A'}
+                                </Typography>
+
+                                <Typography variant="body1">
+                                    <strong>Roles:</strong> <br /> {view?.rolesName || 'N/A'}
+                                </Typography>
+
+
+
+                            </Box>
+
+                            {/* Right Column */}
+                            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+
+                                <Typography variant="body1">
+                                    <strong>Last login:</strong> <br /> {view?.lastLogin || ''}
+                                </Typography>
+
+                            </Box>
+                        </Box>
+
+
+                        {/* Footer Section: Cancel Button */}
+                        <Box sx={{ textAlign: 'center', marginTop: 2 }}>
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    backgroundColor: '#ff5722',
+                                    color: '#fff',
+                                    fontWeight: 'bold',
+                                    padding: '0.5rem 2rem',
+                                    '&:hover': {
+                                        backgroundColor: '#e64a19',
+                                    },
+                                }}
+                                onClick={handleCloseViewModal}
+                            >
+                                Cancel
+                            </Button>
+                        </Box>
+                    </div>
+                </DialogContent>
+            </Dialog>
 
             {/* Snackbar component */}
             <Snackbar

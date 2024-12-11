@@ -1,26 +1,41 @@
 import React, { useState, useEffect } from "react";
-import { Box, LinearProgress, TextField } from "@mui/material";
+import { Box, Button, Checkbox, Dialog, DialogContent, Divider, FormControlLabel, LinearProgress, TextField, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-
+import { BiSolidUserDetail } from "react-icons/bi";
 // Columns definition for DataGrid
 const columns = [
-    { field: "id", headerName: "ID",  minWidth: 40 },
+    { field: "id", headerName: "ID", minWidth: 130 },
     {
         field: "profile_picture",
         headerName: "Profile Picture",
-         minWidth: 80,
+        minWidth: 80,
         renderCell: (params) => (
             <img src={params.value} alt="Profile" style={{ width: 50, height: 50, borderRadius: "50%" }} />
         )
     },
-    { field: "full_name", headerName: "Name",  minWidth: 150},
-    { field: "division", headerName: "Division",  minWidth: 60},
-    { field: "location", headerName: "Location",  minWidth: 150},
-    { field: "subject", headerName: "Subject",  minWidth: 100},
-    { field: "gender", headerName: "Gender",  minWidth: 60},
-    { field: "days_per_week", headerName: "Days/Week",  minWidth: 60},
-    { field: "charge_per_month", headerName: "Charge",  minWidth: 60},
-    { field: "phone", headerName: "Phone",  minWidth: 150},
+    { field: "full_name", headerName: "Name", flex: 1 },
+    { field: "subject", headerName: "Subject", minWidth: 100 },
+    { field: "gender", headerName: "Gender", minWidth: 60 },
+    { field: "days_per_week", headerName: "Days/Week", minWidth: 60 },
+    { field: "charge_per_month", headerName: "Charge", minWidth: 60 },
+    { field: "phone", headerName: "Phone", minWidth: 150 },
+    {
+        field: "actions",
+        headerName: "Actions",
+        minWidth: 40,
+        renderCell: (params) => (
+
+            <Box display="flex" justifyContent="center" className="mt-3">
+
+                <BiSolidUserDetail title="View"
+                    size={28}
+                     color="#f0523a"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                    onClick={() => params.row.handleViewModal(params)} />
+
+            </Box>
+        ),
+    },
 ];
 
 const Tutor = () => {
@@ -28,6 +43,8 @@ const Tutor = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [filteredRows, setFilteredRows] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [view, setView] = useState([]);
+    const [openViewModal, setOpenViewModal] = useState(false);
 
     // Fetch data from the API
     useEffect(() => {
@@ -37,7 +54,7 @@ const Tutor = () => {
             .then((res) => res.json())
             .then((data) => {
                 const formattedData = data.map((item) => ({
-                    id: item.tutor_personal_info.id,
+                    id: item.tutor_personal_info.customized_user_id,
                     profile_picture: item.tutor_personal_info.profile_picture ? `${BASE_URL}${item.tutor_personal_info.profile_picture}` : null,
                     full_name: item.tutor_personal_info.full_name,
                     division: item.tutor_personal_info.division,
@@ -47,6 +64,7 @@ const Tutor = () => {
                     days_per_week: item.tutor_tuition_info.days_per_week,
                     charge_per_month: item.tutor_tuition_info.charge_per_month,
                     phone: item.tutor_personal_info.phone,
+                    handleViewModal: (params) => handleOpenViewModal(item)
                 }));
                 setRows(formattedData);
                 setFilteredRows(formattedData);
@@ -63,9 +81,22 @@ const Tutor = () => {
         setFilteredRows(result);
     }, [searchQuery, rows]);
 
+
+    const handleOpenViewModal = (item) => {
+        setView(item)
+        console.log(item)
+        setOpenViewModal(true)
+
+
+    }
+    const handleCloseViewModal = () => {
+        setOpenViewModal(false)
+    }
+
+
+
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-            <h2 className="text-center font-bold h3">Tutors</h2>
             <div className="flex justify-end">
                 <TextField
                     label="Search Tutors"
@@ -110,6 +141,270 @@ const Tutor = () => {
                         },
                     }}
                 />)}
+
+
+            <Dialog open={openViewModal} onClose={handleCloseViewModal} fullWidth maxWidth="lg">
+                {/* Content */}
+                <DialogContent>
+                    <div
+                        sx={{
+                            padding: 5,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 3,
+                            borderRadius: 4,
+                            boxShadow: '0px 8px 20px rgba(0,0,0,0.1)',
+                            backgroundColor: '#f9f9f9',
+                            margin: 'auto',
+                        }}
+                    >
+                        {/* Header Section */}
+                        <Box className="flex justify-between items-center flex-col md:flex-row lg:flex-row"
+                            sx={{
+                                gap: 3,
+                                paddingBottom: 2,
+                                marginBottom: 1,
+                                borderBottom: '1px solid #ddd',
+                            }}
+                        >
+                            {/* Left: Profile Image */}
+                            <Box sx={{ display: 'flex', gap: 2, alignItems: "center" }}>
+                                <img
+                                    src={view.tutor_personal_info?.profile_picture ? `https://tutorwise-backend.vercel.app${view.tutor_personal_info.profile_picture}` : '/default-image.jpg'}
+                                    alt="Profile"
+                                    style={{
+                                        width: '80px',
+                                        height: '80px',
+                                        borderRadius: '50%',
+                                        objectFit: 'cover',
+                                        border: '2px solid #ddd',
+                                    }}
+                                />
+                                <div>
+                                    <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}>
+                                        {view?.tutor_personal_info?.full_name || 'N/A'}
+                                    </Typography>
+                                    <Typography variant="body2" color="textSecondary" sx={{ color: '#777' }}>
+                                        {view?.tutor_personal_info?.phone || 'N/A'}
+                                    </Typography>
+                                    <Typography variant="body2" color="textSecondary" sx={{ color: '#777' }}>
+                                        {view?.tutor_personal_info?.university_name || 'N/A'}
+                                    </Typography>
+                                    <Box sx={{ display: 'flex', gap: 2 }}>
+                                        <FormControlLabel
+                                            control={<Checkbox checked={view?.tutor_personal_info?.is_verified || false} disabled />}
+                                            label="Verified"
+                                        />
+                                        <FormControlLabel
+                                            control={<Checkbox checked={view?.tutor_personal_info?.is_pro_tutor || false} disabled />}
+                                            label="Pro Tutor"
+                                        />
+                                        <FormControlLabel
+                                            control={<Checkbox checked={view?.tutor_personal_info?.university_ongoing || false} disabled />}
+                                            label="University Ongoing"
+                                        />
+
+                                    </Box>
+                                </div>
+                            </Box>
+
+                            {/* Right: Name, Phone, ID, University Name */}
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+
+                                <Typography variant="body2" color="textSecondary" sx={{ color: '#777' }}>
+                                    <strong>ID:</strong> {view?.tutor_personal_info?.id || 'N/A'}
+                                </Typography>
+                                <Typography variant="body1">
+                                    {view?.tutor_personal_info?.location || 'N/A'}
+                                </Typography>
+                                <Typography variant="body1">
+                                    {view?.tutor_tuition_info?.i_will_teach || 'N/A'}
+                                </Typography>
+                                <Typography sx={{ color: '#777' }} variant="body1">
+                                    <strong>Apply Number:</strong> {view?.tutor_personal_info?.apply_number || 'N/A'}
+                                </Typography>
+                                <Typography sx={{ color: '#777' }} variant="body1">
+                                    <strong  >Duration:</strong> {view?.tutor_personal_info?.pro_tutor_package_duration || 'N/A'} <strong  >Month</strong>
+                                </Typography>
+
+
+                            </Box>
+                        </Box>
+
+                        {/* Body Section */}
+                        <Box sx={{ display: 'flex', gap: 3, flexDirection: { xs: 'column', sm: 'row' } }}>
+                            {/* Left Column */}
+                            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                <Typography variant="body1">
+                                    <strong>Subject:</strong> {view?.tutor_tuition_info?.subject || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Charge Per Month:</strong> {view?.tutor_tuition_info?.charge_per_month || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Days Per Week:</strong> {view?.tutor_tuition_info?.days_per_week || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Gender:</strong> {view?.tutor_personal_info?.gender || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Location:</strong>{view?.tutor_personal_info?.district || 'N/A'} {view?.tutor_personal_info?.division || 'N/A'}
+                                </Typography>
+
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Pro Tutor Start Date:</strong> {view?.tutor_personal_info?.pro_tutor_start_date || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Pro Tutor End Date:</strong> {view?.tutor_personal_info?.pro_tutor_end_date || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Profile Headline:</strong> {view?.tutor_personal_info?.profile_headline || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>NID Card Number:</strong> {view?.tutor_personal_info?.nidcard_number || 'N/A'}
+                                </Typography>
+
+                                <Divider />
+
+                                <Typography variant="body1">
+                                    <strong>Nominee 1 Name:</strong> {view?.tutor_personal_info?.nominee1_name || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Nominee 1 Address:</strong> {view?.tutor_personal_info?.nominee1_address || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Nominee 1 NID Card Number:</strong> {view?.tutor_personal_info?.nominee1_nidcard_number || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Nominee 1 NID Card Image:</strong>
+                                    <img
+                                        src={view?.tutor_personal_info?.nominee1_nidcard_picture ? `https://tutorwise-backend.vercel.app${view.tutor_personal_info.nominee1_nidcard_picture}` : '/default-image.jpg'}
+                                        alt="Nominee 1 NID"
+                                        style={{ width: 'auto', height: '200px', objectFit: 'cover' }}
+                                    />
+
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>College Certificate:</strong>
+                                    <img
+                                        src={view?.tutor_personal_info?.college_certificate ? `https://tutorwise-backend.vercel.app${view.tutor_personal_info.college_certificate}` : '/default-image.jpg'}
+                                        alt="Nominee 1 NID"
+                                          style={{ width: 'auto', height: '200px', objectFit: 'cover' }}
+                                    />
+                                </Typography>
+
+                            </Box>
+
+                            {/* Right Column */}
+                            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+
+                                <Typography variant="body1">
+                                    <strong>College Section:</strong> {view?.tutor_personal_info?.college_background_section || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>College Name:</strong> {view?.tutor_personal_info?.college_name || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>College CGPA:</strong> {view?.tutor_personal_info?.college_cgpa || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>College Educational Background:</strong> {view?.tutor_personal_info?.college_educational_background || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>University Name:</strong> {view?.tutor_personal_info?.university_name || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>University CGPA:</strong> {view?.tutor_personal_info?.university_cgpa || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>University Level:</strong> {view?.tutor_personal_info?.university_educational_level || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>University Start Date:</strong> {view?.tutor_personal_info?.university_start_date || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>University End Date:</strong> {view?.tutor_personal_info?.university_ending_date || 'N/A'}
+                                </Typography>
+                                <Divider />
+
+
+
+
+
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Profile Description:</strong> {view?.tutor_personal_info?.profile_description || 'N/A'}
+                                </Typography>
+
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Nominee 2 Name:</strong> {view?.tutor_personal_info?.nominee2_name || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Nominee 2 Address:</strong> {view?.tutor_personal_info?.nominee2_address || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Nominee 2 NID Card Number:</strong> {view?.tutor_personal_info?.nominee2_nidcard_number || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Nominee 2 NID Card Image:</strong>
+
+                                    <img
+                                        src={view?.tutor_personal_info?.nominee2_nidcard_picture ? `https://tutorwise-backend.vercel.app${view.tutor_personal_info.nominee2_nidcard_picture}` : '/default-image.jpg'}
+                                        alt="Nominee 1 NID"
+                                          style={{ width: 'auto', height: '200px', objectFit: 'cover' }}
+                                    />
+                                </Typography>
+
+
+                            </Box>
+                        </Box>
+
+                        {/* Footer Section: Cancel Button */}
+                        <Box sx={{ textAlign: 'center', marginTop: 2 }}>
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    backgroundColor: '#ff5722',
+                                    color: '#fff',
+                                    fontWeight: 'bold',
+                                    padding: '0.5rem 2rem',
+                                    '&:hover': {
+                                        backgroundColor: '#e64a19',
+                                    },
+                                }}
+                                onClick={handleCloseViewModal}
+                            >
+                                Cancel
+                            </Button>
+                        </Box>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
 
         </Box>
     );

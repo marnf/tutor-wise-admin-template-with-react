@@ -19,31 +19,36 @@ import {
     TextareaAutosize,
     Checkbox,
     LinearProgress,
+    Card,
+    Typography,
+    Divider,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { FaUserEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
+import { BiSolidUserDetail } from "react-icons/bi";
 
-const columns = (handleEditClick, handleDeleteClick) => [
-    { field: "serial", headerName: "Serial Number", minWidth: 40 },  // Default minWidth: 150
-    { field: "id", headerName: "ID", minWidth: 40 },
-    { field: "created_at", headerName: "Create Date", minWidth: 200 },
+const columns = (handleEditClick, handleDeleteClick , handleOpenViewModal) => [
+    // { field: "serial", headerName: "Serial Number", minWidth: 40 },  // Default minWidth: 150
+    { field: "id", headerName: "ID", minWidth: 130 },
+    // { field: "created_at", headerName: "Create Date", minWidth: 200 },
     { field: "student_name", headerName: "Student Name", minWidth: 150 },
     { field: "phone", headerName: "Phone", minWidth: 120 },
     { field: "subject", headerName: "Subject", minWidth: 150 },
-    { field: "lesson_type", headerName: "Lesson Type", minWidth: 70 },
-    { field: "days_per_week", headerName: "Days Per Week", minWidth: 50 },
+    // { field: "lesson_type", headerName: "Lesson Type", minWidth: 70 },
+    // { field: "days_per_week", headerName: "Days Per Week", minWidth: 50 },
     { field: "budget_amount", headerName: "Budget", minWidth: 50 },
-    { field: "tuition_start_date", headerName: "Tuition Start Date", minWidth: 200 },
+    // { field: "tuition_start_date", headerName: "Tuition Start Date", minWidth: 200 },
     { field: "educational_level_choices", headerName: "Educational Level", minWidth: 100 },
     { field: "gender", headerName: "Gender", minWidth: 60 },
-    { field: "curriculum", headerName: "Curriculum", minWidth: 150 },
+    // { field: "curriculum", headerName: "Curriculum", minWidth: 150 },
     {
         field: "actions",
         headerName: "Actions",
+       
         flex: 1,
         renderCell: (params) => (
-            <Box display="flex" justifyContent="center" gap={1}>
+            <Box display="flex" justifyContent="center" marginTop={2} gap={1}>
                 <FaUserEdit
                     title="Edit"
                     size={25}
@@ -57,6 +62,12 @@ const columns = (handleEditClick, handleDeleteClick) => [
                     className="cursor-pointer"
                     onClick={() => handleDeleteClick(params.row.id)}
                 />
+                <BiSolidUserDetail title="View"
+                    size={28}
+                     color="#f0523a"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                    onClick={() => handleOpenViewModal(params.row)} />
+
             </Box>
         ),
     },
@@ -89,18 +100,15 @@ const TutorPostAction = () => {
     const [snackbarSeverity, setSnackbarSeverity] = useState("success");
     const [filteredRows, setFilteredRows] = useState([]);  // Filtered data for search
     const [deleteId, setDeleteId] = useState([]);  // Filtered data for search
+    const [openViewModal, setOpenViewModal] = useState(false);
+    const [view, setView] = useState([]);
 
     // Fetch data on initial load
     useEffect(() => {
         const fetchData = () => {
             setLoading(true);
 
-            fetch("https://tutorwise-backend.vercel.app/api/admin/tuition/list/", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            })
+            fetch("https://tutorwise-backend.vercel.app/api/admin/tuition/list/")
                 .then((response) => {
                     if (!response.ok) {
                         throw new Error("Failed to fetch data");
@@ -111,6 +119,7 @@ const TutorPostAction = () => {
                     const dataWithSerial = data.map((item, index) => ({
                         ...item,
                         serial: index + 1
+
                     }));
 
                     setRows(dataWithSerial);
@@ -143,6 +152,17 @@ const TutorPostAction = () => {
         setFilteredRows(filtered);  // Update filtered rows
     };
 
+
+    const handleOpenViewModal = (row) => {
+        setOpenViewModal(true)
+        setView(row)
+    }
+
+    const handleCloseViewModal = () => {
+        setOpenViewModal(false)
+    }
+
+
     // Handle editing
     const handleEditClick = (row) => {
         setEditData(row);
@@ -160,7 +180,7 @@ const TutorPostAction = () => {
     };
 
     const handleDeleteConfirm = () => {
-        fetch(`http://192.168.0.154:8000/api/admin/delete-tuition-post/${deleteId}/`, {
+        fetch(`https://tutorwise-backend.vercel.app0/api/admin/delete-tuition-post/${deleteId}/`, {
             method: "DELETE",
         })
             .then((response) => {
@@ -191,7 +211,7 @@ const TutorPostAction = () => {
 
         console.log("Form Data:", editData);
 
-        fetch(`http://192.168.0.154:8000/api/admin/edit-tuition-post/${editData.id}/`, {
+        fetch(`https://tutorwise-backend.vercel.app0/api/admin/edit-tuition-post/${editData.id}/`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -230,11 +250,11 @@ const TutorPostAction = () => {
                     value={searchText}
                     onChange={handleSearch}
                     variant="outlined"
-                    
+
                     size="small"
                     right
                     fullWidth
-                    sx={{  width: '300px' }}
+                    sx={{ width: '300px' }}
                 />
             </Box>
 
@@ -246,7 +266,7 @@ const TutorPostAction = () => {
 
                 <DataGrid
                     rows={filteredRows}  // filtered rows
-                    columns={columns(handleEditClick, handleDeleteClick).map((col) => ({
+                    columns={columns(handleEditClick, handleDeleteClick, handleOpenViewModal).map((col) => ({
                         ...col,
                         minWidth: col.minWidth || 150,
                     }))}
@@ -489,6 +509,170 @@ const TutorPostAction = () => {
                 </DialogContent>
             </Dialog>
 
+
+            <Dialog open={openViewModal} onClose={handleCloseViewModal} fullWidth>
+
+
+                {/* Content */}
+                <DialogContent>
+                    <div
+                        sx={{
+                            padding: 3,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 2,
+                            borderRadius: 4,
+                            boxShadow: '0px 8px 20px rgba(0,0,0,0.1)',
+                            backgroundColor: '#f9f9f9',
+                            maxWidth: '600px',
+                            margin: ' auto',
+                        }}
+                    >
+                        {/* Header Section */}
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                gap: 3,
+                                paddingBottom: 2,
+                                borderBottom: '1px solid #ddd',
+                            }}
+                        >
+                            {/* Left: Name and Phone */}
+                            <Box>
+                                <Typography
+                                    variant="h6"
+                                    sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}
+                                >
+                                    {view?.student_name || ''}
+                                </Typography>
+                                <Typography
+                                    variant="body2"
+                                    color="textSecondary"
+                                    sx={{ color: '#777' }}
+                                >
+                                    {view?.phone || 'N/A'}
+                                </Typography>
+                            </Box>
+
+                            {/* Right: id */}
+                            <Box>
+                                <Typography
+                                    variant="body2"
+                                    color="textSecondary"
+                                    sx={{
+                                        fontSize: '1rem',
+                                        color: '#555',
+                                        textAlign: 'right',
+                                    }}
+                                >
+                                   <strong>id:</strong> {view?.id || 'N/A'}
+                                </Typography>
+                                <Typography variant="body1">
+                                    <strong></strong>{' '}
+                                    {view?.created_at
+                                        ? new Date(view.created_at).toLocaleString()
+                                        : 'N/A'}
+                                </Typography>
+                            </Box>
+                        </Box>
+
+                        {/* Body Section */}
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                marginTop:'8px',
+                                gap: 3,
+                                flexDirection: { xs: 'column', sm: 'row' },
+                            }}
+                        >
+                            {/* Left Column */}
+                            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                               
+                                <Typography variant="body1">
+                                    <strong>Subject:</strong> {view?.subject || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Class Name:</strong> {view?.educational_level_choices || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Details:</strong> {view?.additional_comment || 'N/A'}
+                                </Typography>
+                            </Box>
+
+                            {/* Right Column */}
+                            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                <Typography variant="body1">
+                                    <strong>Gender:</strong> {view?.gender || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Budget:</strong> {view?.budget_amount || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Days Per Week:</strong> {view?.days_per_week || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                
+
+                            </Box>
+                        </Box>
+
+                        {/* Footer Section: Checkboxes */}
+                        <Box
+                            sx={{
+                                display: 'flex',
+
+                                gap: 2,
+                                paddingTop: 2,
+                                borderTop: '1px solid #ddd',
+                            }}
+                        >
+                            <FormControlLabel
+                                control={
+                                    <Checkbox checked={view?.is_verified || false} disabled />
+                                }
+                                label="Verified"
+                            />
+                            <FormControlLabel
+                                control={
+                                    <Checkbox checked={view?.is_approve || false} disabled />
+                                }
+                                label="Approved"
+                            />
+                            <FormControlLabel
+                                control={
+                                    <Checkbox checked={view?.start_immediate || false} disabled />
+                                }
+                                label="Start Immediately"
+                            />
+                        </Box>
+
+                        {/* Footer Section: Cancel Button */}
+                        <Box sx={{ textAlign: 'center', marginTop: 2 }}>
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    backgroundColor: '#ff5722',
+                                    color: '#fff',
+                                    fontWeight: 'bold',
+                                    padding: '0.5rem 2rem',
+                                    '&:hover': {
+                                        backgroundColor: '#e64a19',
+                                    },
+                                }}
+                                onClick={handleCloseViewModal}
+                            >
+                                Cancel
+                            </Button>
+                        </Box>
+                    </div>
+                </DialogContent>
+            </Dialog>
 
             <Dialog open={openDeleteModal} onClose={() => setOpenDeleteModal(false)}>
                 <DialogTitle>Approve Review</DialogTitle>

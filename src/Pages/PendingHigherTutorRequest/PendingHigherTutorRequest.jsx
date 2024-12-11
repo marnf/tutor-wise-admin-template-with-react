@@ -43,7 +43,7 @@ const isSuperAdmin = user?.user_type === "super_admin";
 
 
 const columns = [
-    { field: "id", headerName: "ID", minWidth: 40 },
+    { field: "tutor_customized_user_id", headerName: "ID", minWidth: 130 },
     {
         field: "type",
         headerName: "Type",
@@ -54,8 +54,8 @@ const columns = [
     },
     { field: "tutor_name", headerName: "Tutor Name", minWidth: 150 },
     { field: "tutor_phone", headerName: "Phone", minWidth: 120 },
-    { field: "location", headerName: "Location", minWidth: 200 },
-    { field: "tutor_charge", headerName: "Charge", minWidth: 60 },
+    // { field: "location", headerName: "Location", minWidth: 200 },
+    // { field: "tutor_charge", headerName: "Charge", minWidth: 60 },
     {
         field: "type_student",
         headerName: "Type",
@@ -66,9 +66,9 @@ const columns = [
     },
     { field: "name", headerName: "Student Name", minWidth: 150 },
     { field: "phone", headerName: "Phone", minWidth: 120 },
-    { field: "medium", headerName: "Medium", minWidth: 1 },
-    { field: "start_date", headerName: "Start Date", minWidth: 150 },
-    { field: "subjects", headerName: "Subject", minWidth: 100 },
+    // { field: "medium", headerName: "Medium", minWidth: 1 },
+    // { field: "start_date", headerName: "Start Date", minWidth: 150 },
+    // { field: "subjects", headerName: "Subject", minWidth: 100 },
     {
         field: "actions",
         headerName: "Actions",
@@ -89,6 +89,12 @@ const columns = [
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => params.row.handleEdit(params.row)} />
 
+                <BiSolidUserDetail title="View"
+                    size={29}
+                     color="#f0523a"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                    onClick={() => params.row.handleViewModal(params.row)} />
+
                 <MdDelete
                     title="Delete"
                     size={25}
@@ -106,11 +112,7 @@ const columns = [
                     }}
                 />
 
-                <BiSolidUserDetail title="View"
-                    size={28}
-                    color="purple"
-                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
-                    onClick={() => params.row.handleViewModal(params.row)} />
+
 
             </Box>
         ),

@@ -123,23 +123,28 @@ const Dashboard = () => {
     );
 };
 
-// PaymentCard with Pie Chart
 const PaymentCard = ({ data }) => {
     const chartRef = useRef(null);
 
     useEffect(() => {
         if (!data) return;
 
+        // Chart Data তৈরি (API থেকে ডেটা ব্যবহার)
         const chartData = {
-            labels: ['Red', 'Blue', 'Yellow'],
+            labels: [
+                'Apply Limit Percentage', 
+                'Pro Tutor Subscription Percentage'
+            ], // Labels হিসেবে Apply Limit Percentage ও Pro Tutor Subscription Percentage
             datasets: [
                 {
-                    label: 'My First Dataset',
-                    data: [300, 50, 100],
+                    label: 'Percentage Details',
+                    data: [
+                        data.apply_limit_percentage, 
+                        data.pro_tutor_subscription_percentage
+                    ], // Values হিসেবে API ডেটা
                     backgroundColor: [
-                        'rgb(255, 99, 132)',
-                        'rgb(54, 162, 235)',
-                        'rgb(255, 205, 86)',
+                       '#f0523a', 
+                        '#0d2849', 
                     ],
                     hoverOffset: 4,
                 },
@@ -163,7 +168,7 @@ const PaymentCard = ({ data }) => {
                             label: (tooltipItem) => {
                                 const label = tooltipItem.label;
                                 const value = tooltipItem.raw;
-                                return `${label}: ${value}`;
+                                return `${label}: ${value}%`; // Tooltip-এ Percentage সহ দেখাবে
                             },
                         },
                     },
@@ -171,7 +176,7 @@ const PaymentCard = ({ data }) => {
             },
         };
 
-        // Create the chart
+        // চার্ট ইনস্ট্যান্স তৈরি
         const chartInstance = new Chart(chartRef.current, config);
 
         // Cleanup on unmount
@@ -181,18 +186,18 @@ const PaymentCard = ({ data }) => {
     }, [data]);
 
     return (
-        <div className="card bg-white shadow-xl rounded-lg p-6 flex flex-col gap-6">
-            <h4 className="text-lg font-semibold text-gray-700 mb-6 text-center">Payment Details</h4>
+        <div className="card bg-white shadow-xl rounded-lg p-6  flex flex-col gap-6">
+            <h4 className="text-lg font-semibold text-gray-700 mb-1 text-center">Percentage Details</h4>
             {data ? (
-                <div className="flex justify-between items-start">
-                    {/* Pie Chart */}
+                <div className="flex justify-between items-start ">
+                    {/* Doughnut Chart */}
                     <div className="w-48 h-48">
                         <canvas ref={chartRef}></canvas>
                     </div>
 
-                    {/* Right-side labels */}
+                    {/* ডেটার বিবরণ */}
                     <div className="ml-6 flex flex-col justify-start space-y-3">
-                        <div className="text-sm space-y-1">
+                    <div className="text-sm space-y-1">
                             <p className="font-medium">
                                 <strong>Total Payment Number:</strong> {data.total_payment_number}
                             </p>
@@ -217,6 +222,9 @@ const PaymentCard = ({ data }) => {
         </div>
     );
 };
+
+
+
 
 
 

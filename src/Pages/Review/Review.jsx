@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Modal, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, LinearProgress } from "@mui/material";
+import { Box, Button, Modal, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, LinearProgress, Pagination } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { BiSolidSelectMultiple } from "react-icons/bi";
 import { FaUserEdit } from "react-icons/fa";
@@ -45,6 +45,9 @@ const Review = () => {
     const [approveId, setApproveId] = useState(null);
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
     const [loading, setLoading] = useState(false);
+    const [pageSize, setPageSize] = useState(5);
+    const [page, setPage] = useState(1);
+
 
     useEffect(() => {
         setLoading(true)
@@ -152,44 +155,68 @@ const Review = () => {
 
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-            {/* Search Box */}
-            <Box display="flex" justifyContent="flex-end" mb={2}>
+
+
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                 <TextField
-                    placeholder="Search..."
-                    value={searchText}
-                    onChange={handleSearch}
+                    select
+                    label="Rows per page"
+                    value={pageSize}
+                    onChange={(e) => setPageSize(Number(e.target.value))}
                     variant="outlined"
                     size="small"
-                    sx={{ width: "300px" }}
-                />
+                    sx={{ width: "150px" }}
+                >
+                    {[5, 10, 20].map((option) => (
+                        <option key={option} value={option}>
+                            {option}
+                        </option>
+                    ))}
+                </TextField>
+
+
+                {/* Search Box */}
+                <Box display="flex" justifyContent="flex-end" >
+                    <TextField
+                        placeholder="Search..."
+                        value={searchText}
+                        onChange={handleSearch}
+                        variant="outlined"
+                        size="small"
+                        sx={{ width: "300px" }}
+                    />
+                </Box>
+
             </Box>
 
             {loading ? (
                 <Box sx={{ width: '100%' }}>
-                <LinearProgress />
-              </Box>
+                    <LinearProgress />
+                </Box>
             ) : (
-            <DataGrid
-                rows={rows}
-                columns={columns(handleEditClick, handleApproveClick)}
-                pageSize={10}
-                rowsPerPageOptions={[5, 10, 20]}
-                disableSelectionOnClick
-                sx={{
-                    "& .MuiDataGrid-columnHeader": {
-                        backgroundColor: "#f0f0f0",
-                        fontWeight: "bold",
-                        borderBottom: "2px solid #1976d2", // Column header's bottom border
-                    },
-                    "& .MuiDataGrid-cell": {
-                        border: "1px solid #e0e0e0", // Border for each cell
-                    },
+                <DataGrid
+                    rows={rows}
+                    columns={columns(handleEditClick, handleApproveClick)}
+                    pageSize={pageSize}
+                    rowsPerPageOptions={[5, 10, 20]}
+                    pagination
+                    disableSelectionOnClick
+                    sx={{
+                        "& .MuiDataGrid-columnHeader": {
+                            backgroundColor: "#f0f0f0",
+                            fontWeight: "bold",
+                            borderBottom: "2px solid #1976d2", // Column header's bottom border
+                        },
+                        "& .MuiDataGrid-cell": {
+                            border: "1px solid #e0e0e0", // Border for each cell
+                        },
 
-                    "& .MuiDataGrid-cell:focus": {
-                        outline: "none", // Remove default outline on focus
-                    },
-                }}
-            />)}
+                        "& .MuiDataGrid-cell:focus": {
+                            outline: "none", // Remove default outline on focus
+                        },
+                    }}
+                />)}
+                
 
             {/* Modal for editing review */}
             <Modal

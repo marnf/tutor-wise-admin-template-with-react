@@ -49,17 +49,17 @@ const columns = [
     { field: "id", headerName: "ID", minWidth: 40 },
     { field: "name", headerName: "Name", minWidth: 150 },
     { field: "phone", headerName: "Phone", minWidth: 120 },
-    { field: "location", headerName: "Location", minWidth: 200 },
-    { field: "details", headerName: "Details", minWidth: 200 },
-    { field: "subject", headerName: "Subject", minWidth: 150 },
-    { field: "start_date", headerName: "Start Date", minWidth: 150 },
+    //  { field: "location", headerName: "Location", minWidth: 200 },
+    // { field: "details", headerName: "Details", minWidth: 200 },
     { field: "class_name", headerName: "Class", minWidth: 120 },
-    { field: "lesson_type", headerName: "Lesson Type", minWidth: 100 },
+    { field: "subject", headerName: "Subject", minWidth: 150 },
+    // { field: "start_date", headerName: "Start Date", minWidth: 150 },
+    // { field: "lesson_type", headerName: "Lesson Type", minWidth: 100 },
     { field: "gender", headerName: "Gender", minWidth: 60 },
     { field: "budget", headerName: "Budget", minWidth: 60 },
-    { field: "days_per_week", headerName: "Days/Week", minWidth: 60 },
-    { field: "start_immediate", headerName: "Start Immediately", minWidth: 60 },
-    { field: "additional_comment", headerName: "Additional Comment", minWidth: 200 },
+    // { field: "days_per_week", headerName: "Days/Week", minWidth: 60 },
+    // { field: "start_immediate", headerName: "Start Immediately", minWidth: 60 },
+    // { field: "additional_comment", headerName: "Additional Comment", minWidth: 200 },
     {
         field: "actions",
         headerName: "Actions",
@@ -74,6 +74,12 @@ const columns = [
                     color="black"
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => params.row.handleEdit(params.row)} />
+
+                <BiSolidUserDetail title="View"
+                    size={29}
+                     color="#f0523a"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                    onClick={() => params.row.handleViewModal(params.row)} />
 
                 <MdDelete
                     title="Delete"
@@ -92,11 +98,7 @@ const columns = [
                     }}
                 />
 
-                <BiSolidUserDetail title="View"
-                    size={28}
-                    color="purple"
-                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
-                    onClick={() => params.row.handleViewModal(params.row)} />
+
             </Box>
 
         ),
@@ -585,7 +587,7 @@ const ApprovedTutorRequest = () => {
                             {/* Left Column */}
                             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
 
-                                
+
                                 <Typography variant="body1">
                                     <strong>Subject:</strong> {view?.subject || ''}
                                 </Typography>
@@ -606,8 +608,8 @@ const ApprovedTutorRequest = () => {
                                     <strong>Details:</strong> {view?.details || ''}
                                 </Typography>
                                 <Divider />
-                               
-                               
+
+
                             </Box>
 
                             {/* Right Column */}

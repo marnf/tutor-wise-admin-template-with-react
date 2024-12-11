@@ -5,22 +5,46 @@ import {
     Snackbar,
     Alert,
     LinearProgress,
-    Button
+    Button,
+    Dialog,
+    DialogContent,
+    Typography,
+    Divider
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { DateRangePicker } from "react-date-range";
+import { BiSolidUserDetail } from "react-icons/bi";
+import moment from "moment/moment";
+import { BsFillCalendarDateFill } from "react-icons/bs";
+
 
 const columns = [
-    { field: "id", headerName: "ID", minWidth: 0.5 },
-    { field: "date", headerName: "Payment Time", minWidth: 1 },
-    { field: "name", headerName: "Name", minWidth: 1 },
-    { field: "user_type", headerName: "User Type", minWidth: 1.5 },
+    { field: "customized_user_id", headerName: "ID", minWidth: 130 },
+    { field: "name", headerName: "Name", minWidth: 170 },
+    // { field: "user_type", headerName: "User Type", minWidth: 60 },
     // { field: "email", headerName: "Email", minWidth: 1 },
-    // { field: "phone", headerName: "Phone", minWidth: 1 },
-    { field: "transaction_id", headerName: "Transaction ID", minWidth: 1 },
-    { field: "package", headerName: "Package", minWidth: 1 },
-    { field: "digital_bank_name", headerName: "Digital Banking", minWidth: 1 },
-    { field: "amount", headerName: "Amount", minWidth: 1 },
+    { field: "phone", headerName: "Phone", minWidth: 130 },
+    { field: "transaction_id", headerName: "Transaction ID", minWidth: 160 },
+    { field: "package", headerName: "Package", minWidth: 50 },
+    { field: "digital_bank_name", headerName: "Digital Banking", minWidth: 100 },
+    { field: "amount", headerName: "Amount", minWidth: 70 },
+    {
+        field: "actions",
+        headerName: "Actions",
+        flex: 1,
+        renderCell: (params) => (
+
+            <Box display="flex" justifyContent="center" className="mt-3">
+
+                <BiSolidUserDetail title="View"
+                    size={28}
+                    color="#0d2a4c "
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                    onClick={() => params.row.handleViewModal(params.row)} />
+
+            </Box>
+        ),
+    },
 ];
 
 const ProPayment = () => {
@@ -29,6 +53,8 @@ const ProPayment = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [loading, setLoading] = useState(false);
     const [showDatePicker, setShowDatePicker] = useState(false);
+    const [view, setView] = useState([]);
+    const [openViewModal, setOpenViewModal] = useState(false);
     const [dateRange, setDateRange] = useState([
         {
             startDate: new Date(),
@@ -45,15 +71,18 @@ const ProPayment = () => {
             .then((data) => {
                 const formattedData = data.map((item) => ({
                     id: item.id,
+                    customized_user_id: item.customized_user_id,
                     name: item.name,
-                    user_type: item.user_type,
+                    amount: item.amount,
                     email: item.email,
-                    phone: item.phone,
+                    user_type: item.user_type,
                     transaction_id: item.transaction_id,
                     package: item.package,
                     amount: item.amount,
                     digital_bank_name: item.digital_bank_name,
-                    date: item.created_at,
+                    created_at: item.created_at,
+                    phone: item.phone,
+                    handleViewModal: handleOpenViewModal
                 }));
 
                 setRows(formattedData);
@@ -62,6 +91,24 @@ const ProPayment = () => {
             })
             .catch((error) => console.error("Error fetching data:", error));
     }, []);
+
+
+    const formattedDate = (dateString) => {
+        if (!dateString) return "N/A";
+        return moment(dateString).format("MMMM Do YYYY");
+    };
+
+    const handleOpenViewModal = (item) => {
+        setView(item)
+        console.log(item)
+        setOpenViewModal(true)
+
+
+    }
+    const handleCloseViewModal = () => {
+        setOpenViewModal(false)
+    }
+
 
     // Filtering rows based on search query
     const handleSearch = (event) => {
@@ -91,49 +138,60 @@ const ProPayment = () => {
 
 
             {/* Filters & Search */}
-            <div className="flex items-center justify-between mb-4">
-                {/* Date Range Picker */}
-                <div className="relative">
-                    <Button
-                        variant="contained"
-                        color="primary"
+            <div className="flex items-center justify-between mb-2">
+
+
+                <div className="flex items-center gap-2">
+                    <div className="relative flex items-center justify-start gap-1">
+                        <BsFillCalendarDateFill
+                            size={39}
+                            color="#f0523a"
+                            onClick={() => setShowDatePicker(!showDatePicker)}
+                            className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer pb-1"
+                        />
+
+
+                        {showDatePicker && (
+                            <div style={{ position: "absolute", zIndex: 100, top: "50px" }}>
+                                <DateRangePicker
+                                    onChange={(item) => setDateRange([item.selection])}
+                                    showSelectionPreview={true}
+                                    moveRangeOnFirstSelection={false}
+                                    ranges={dateRange}
+                                    direction="horizontal"
+                                />
+                                <Button
+                                    variant="contained"
+                                    color="success"
+                                    size="small"
+                                    onClick={handleDateFilter}
+                                    sx={{ marginTop: "10px" }}
+                                >
+                                    Apply Filter
+                                </Button>
+
+                            </div>
+
+                        )}
+                    </div>
+
+                    {/* Search Bar */}
+                    <TextField
+                        label="Search"
+                        variant="outlined"
                         size="small"
-                        onClick={() => setShowDatePicker(!showDatePicker)}
-                        sx={{ height: "40px" }}
-                    >
-                        Select Date Range
-                    </Button>
-                    {showDatePicker && (
-                        <div style={{ position: "absolute", zIndex: 100, top: "50px" }}>
-                            <DateRangePicker
-                                onChange={(item) => setDateRange([item.selection])}
-                                showSelectionPreview={true}
-                                moveRangeOnFirstSelection={false}
-                                ranges={dateRange}
-                                direction="horizontal"
-                            />
-                            <Button
-                                variant="contained"
-                                color="success"
-                                size="small"
-                                onClick={handleDateFilter}
-                                sx={{ marginTop: "10px" }}
-                            >
-                                Apply Filter
-                            </Button>
-                        </div>
-                    )}
+                        value={searchQuery}
+                        onChange={handleSearch}
+                        sx={{ width: "300px" }}
+                    />
                 </div>
 
-                {/* Search Bar */}
-                <TextField
-                    label="Search"
-                    variant="outlined"
-                    size="small"
-                    value={searchQuery}
-                    onChange={handleSearch}
-                    sx={{ width: "300px" }}
-                />
+
+                <Typography variant="text-base" className="strong">
+                    Total Payment: {rows.length}
+                </Typography>
+
+
             </div>
 
 
@@ -146,7 +204,7 @@ const ProPayment = () => {
                     rows={filteredRows}
                     columns={columns.map((col) => ({
                         ...col,
-                        minWidth: 150, // Minimum width for each column (adjust as needed)
+                        minWidth: col.minWidth || 150, // Minimum width for each column (adjust as needed)
                     }))}
                     pageSize={10}
                     rowsPerPageOptions={[5, 10, 20]}
@@ -171,6 +229,139 @@ const ProPayment = () => {
                         },
                     }}
                 />)}
+
+
+            <Dialog open={openViewModal} onClose={handleCloseViewModal} fullWidth>
+
+
+                {/* Content */}
+                <DialogContent>
+                    <div
+                        sx={{
+                            padding: 3,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 2,
+                            borderRadius: 4,
+                            boxShadow: '0px 8px 20px rgba(0,0,0,0.1)',
+                            backgroundColor: '#f9f9f9',
+                            maxWidth: '600px',
+                            margin: ' auto',
+                        }}
+                    >
+                        {/* Header Section */}
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                gap: 3,
+                                marginBottom: 1,
+                                borderBottom: '1px solid #ddd',
+                            }}
+                        >
+                            {/* Left: Name and Phone */}
+                            <Box>
+                                <Typography
+                                    variant="h6"
+                                    sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}
+                                >
+                                    {view?.name || 'N/A'}
+                                </Typography>
+                                <Typography variant="body1">
+                                    {view?.user_type || 'N/A'}
+                                </Typography>
+
+                            </Box>
+
+                            {/* Right: Location */}
+                            <Box>
+                                <Typography
+                                    variant="body2"
+                                    color="textSecondary"
+                                    sx={{
+                                        fontSize: '1rem',
+                                        color: '#555',
+                                        textAlign: 'right',
+                                    }}
+                                >
+                                    <strong>ID:</strong>  {view?.customized_user_id || ''}
+                                </Typography>
+                                <Typography variant="body1">
+                                    <strong></strong>{' '}
+                                    {view?.created_at
+                                        ? new Date(view.created_at).toLocaleString()
+                                        : 'N/A'}
+                                </Typography>
+                            </Box>
+                        </Box>
+
+                        {/* Body Section */}
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                gap: 3,
+                                flexDirection: { xs: 'column', sm: 'row' },
+                            }}
+                        >
+                            {/* Left Column */}
+                            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+
+
+                                <Typography variant="body1">
+                                    <strong>phone:</strong> {view?.phone || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Package:</strong> {view?.package || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Amount:</strong> {view?.amount || 'N/A'}
+                                </Typography>
+                            </Box>
+
+                            {/* Right Column */}
+                            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                <Typography variant="body1">
+                                    <strong>Bank:</strong> {view?.digital_bank_name || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Budget:</strong> {view?.amount || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1" >
+                                    <strong>created:</strong> {formattedDate(view?.created_at)}
+                                </Typography>
+                                <Divider />
+
+                            </Box>
+                        </Box>
+
+
+                        {/* Footer Section: Cancel Button */}
+                        <Box sx={{ textAlign: 'center', marginTop: 2 }}>
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    backgroundColor: '#ff5722',
+                                    color: '#fff',
+                                    fontWeight: 'bold',
+                                    padding: '0.5rem 2rem',
+                                    '&:hover': {
+                                        backgroundColor: '#e64a19',
+                                    },
+                                }}
+                                onClick={handleCloseViewModal}
+                            >
+                                Cancel
+                            </Button>
+                        </Box>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
         </Box>
     );
 };

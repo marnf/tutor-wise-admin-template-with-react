@@ -7,7 +7,7 @@ import { FaUserEdit } from "react-icons/fa";
 import { BiSolidSelectMultiple } from "react-icons/bi";
 import { Snackbar, Alert } from "@mui/material";
 import { BiSolidUserDetail } from "react-icons/bi";
-import "../PendingTutorRequest/PendingTutorRequest.css"
+
 
 
 const user = JSON.parse(localStorage.getItem("user"));
@@ -34,6 +34,15 @@ const columns = [
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => params.row.handleEdit(params.row)} />
 
+
+                <BiSolidUserDetail title="View"
+                    size={28}
+                    color="#f0523a"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                    onClick={() => params.row.handleViewModal(params.row)} />
+
+
+
                 <MdDelete
                     title="Delete"
                     size={25}
@@ -51,11 +60,6 @@ const columns = [
                     }}
                 />
 
-                <BiSolidUserDetail title="View"
-                    size={28}
-                    color="purple"
-                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
-                    onClick={() => params.row.handleViewModal(params.row)} />
 
             </Box>
 
@@ -103,7 +107,7 @@ const PendingTutorRequest = () => {
                     phone: request.phone || "",
                     location: request.location || "",
                     details: request.details || "No Details",
-                    created_at : request.created_at || "",
+                    created_at: request.created_at || "",
                     handleEdit: handleOpenEditModal,
                     handleDelete: handleOpenDeleteModal,
                     handleViewModal: handleOpenViewModal
@@ -217,16 +221,21 @@ const PendingTutorRequest = () => {
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
             <h2 className="text-center font-bold h3">Tutor Request List</h2>
 
-            <div className="flex justify-end mb-2">
-                <TextField
-                    label="Search Tutor Requests"
-                    variant="outlined"
-                    fullWidth
-                    value={searchQuery}
-                    size="small"
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    style={{ width: "300px" }}
-                />
+            <div className="flex justify-between items-center  text-end gap-1">
+                <Typography variant="text-base" className="flex justify-end">
+                    <strong className="text-gray-500"> Total Payment:{rows.length} </strong>
+                </Typography>
+                <div className="flex justify-end mb-2">
+                    <TextField
+                        label="Search Tutor Requests"
+                        variant="outlined"
+                        fullWidth
+                        value={searchQuery}
+                        size="small"
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        style={{ width: "300px" }}
+                    />
+                </div>
             </div>
 
 
@@ -470,12 +479,12 @@ const PendingTutorRequest = () => {
             {/* view details modal */}
 
 
-            <Dialog open={openViewModal} onClose={handleCloseViewModal}  fullWidth>
-                
+            <Dialog open={openViewModal} onClose={handleCloseViewModal} fullWidth>
+
 
                 {/* Content */}
                 <DialogContent>
-                    <Card
+                    <div
                         sx={{
                             padding: 3,
                             display: 'flex',
@@ -527,7 +536,7 @@ const PendingTutorRequest = () => {
                                         textAlign: 'right',
                                     }}
                                 >
-                                   {view?.location || 'N/A'}
+                                    {view?.location || 'N/A'}
                                 </Typography>
                                 <Typography variant="body1">
                                     <strong></strong>{' '}
@@ -575,7 +584,7 @@ const PendingTutorRequest = () => {
                                     <strong>Days Per Week:</strong> {view?.days_per_week || 'N/A'}
                                 </Typography>
                                 <Divider />
-                                
+
                             </Box>
                         </Box>
 
@@ -583,7 +592,7 @@ const PendingTutorRequest = () => {
                         <Box
                             sx={{
                                 display: 'flex',
-                               
+
                                 gap: 2,
                                 paddingTop: 2,
                                 borderTop: '1px solid #ddd',
@@ -627,12 +636,12 @@ const PendingTutorRequest = () => {
                                 Cancel
                             </Button>
                         </Box>
-                    </Card>
+                    </div>
                 </DialogContent>
             </Dialog>
 
 
-{/* delete modal */}
+            {/* delete modal */}
             <Dialog open={openDeleteModal} onClose={() => setOpenDeleteModal(false)}>
                 <DialogTitle>Confirm Deletion</DialogTitle>
                 <DialogContent>

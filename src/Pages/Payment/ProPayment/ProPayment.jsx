@@ -1,19 +1,38 @@
 import React, { useState, useEffect } from "react";
-import { Box, LinearProgress, TextField, Button } from "@mui/material";
+import { Box, LinearProgress, TextField, Button, Typography, FormControlLabel, Divider, Checkbox, Dialog, DialogContent } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { DateRangePicker } from "react-date-range";
 import "react-date-range/dist/styles.css"; // main css file
 import "react-date-range/dist/theme/default.css"; // theme css file
+import { BiSolidUserDetail } from "react-icons/bi";
+import moment from "moment/moment";
 
 const columns = [
     { field: "id", headerName: "ID", minWidth: 40 },
-    { field: "created_at", headerName: "Payment Time", minWidth: 150 },
+    // { field: "created_at", headerName: "Payment Time", minWidth: 150 },
     { field: "name", headerName: "User ID", minWidth: 150 },
     { field: "user_type", headerName: "User Type", minWidth: 60 },
     { field: "transaction_id", headerName: "Transaction ID", flex: 1 },
     { field: "package", headerName: "Package", minWidth: 150 },
     { field: "digital_bank_name", headerName: "Digital Banking", minWidth: 80 },
     { field: "amount", headerName: "Amount", minWidth: 60 },
+    {
+        field: "actions",
+        headerName: "Actions",
+        minWidth: 40,
+        renderCell: (params) => (
+
+            <Box display="flex" justifyContent="center" className="mt-3">
+
+                <BiSolidUserDetail title="View"
+                    size={28}
+                     color="#f0523a"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                    onClick={() => params.row.handleViewModal(params.row)} />
+
+            </Box>
+        ),
+    },
 ];
 
 const ProPayment = () => {
@@ -21,6 +40,8 @@ const ProPayment = () => {
     const [filteredRows, setFilteredRows] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [loading, setLoading] = useState(false);
+    const [view, setView] = useState([]);
+    const [openViewModal, setOpenViewModal] = useState(false);
     const [dateRange, setDateRange] = useState([
         {
             startDate: new Date(),
@@ -38,13 +59,18 @@ const ProPayment = () => {
             .then((data) => {
                 const formattedData = data.map((item) => ({
                     id: item.id,
+                    customized_user_id: item.customized_user_id,
                     name: item.name,
+                    amount: item.amount,
+                    email: item.email,
                     user_type: item.user_type,
                     transaction_id: item.transaction_id,
                     package: item.package,
                     amount: item.amount,
                     digital_bank_name: item.digital_bank_name,
                     created_at: item.created_at,
+                    phone : item.phone,
+                    handleViewModal: handleOpenViewModal
                 }));
                 setRows(formattedData);
                 setFilteredRows(formattedData);
@@ -52,6 +78,7 @@ const ProPayment = () => {
             })
             .catch((error) => console.error("Error fetching data:", error));
     }, []);
+
 
     const handleSearch = (event) => {
         setSearchQuery(event.target.value);
@@ -73,6 +100,23 @@ const ProPayment = () => {
         setFilteredRows(filteredData);
         setShowDatePicker(false); // Close the date picker after filtering
     };
+
+    const formattedDate = (dateString) => {
+        if (!dateString) return "N/A";
+        return moment(dateString).format("MMMM Do YYYY");
+    };
+
+    const handleOpenViewModal = (item) => {
+        setView(item)
+        console.log(item)
+        setOpenViewModal(true)
+
+
+    }
+    const handleCloseViewModal = () => {
+        setOpenViewModal(false)
+    }
+
 
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
@@ -149,6 +193,139 @@ const ProPayment = () => {
                     }}
                 />
             )}
+
+
+            <Dialog open={openViewModal} onClose={handleCloseViewModal} fullWidth>
+
+
+                {/* Content */}
+                <DialogContent>
+                    <div
+                        sx={{
+                            padding: 3,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 2,
+                            borderRadius: 4,
+                            boxShadow: '0px 8px 20px rgba(0,0,0,0.1)',
+                            backgroundColor: '#f9f9f9',
+                            maxWidth: '600px',
+                            margin: ' auto',
+                        }}
+                    >
+                        {/* Header Section */}
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                gap: 3,
+                                marginBottom:1,
+                                borderBottom: '1px solid #ddd',
+                            }}
+                        >
+                            {/* Left: Name and Phone */}
+                            <Box>
+                                <Typography
+                                    variant="h6"
+                                    sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}
+                                >
+                                    {view?.name || 'N/A'}
+                                </Typography>
+                                <Typography variant="body1">
+                                  {view?.user_type || 'N/A'}
+                                </Typography>
+                              
+                            </Box>
+
+                            {/* Right: Location */}
+                            <Box>
+                                <Typography
+                                    variant="body2"
+                                    color="textSecondary"
+                                    sx={{
+                                        fontSize: '1rem',
+                                        color: '#555',
+                                        textAlign: 'right',
+                                    }}
+                                >
+                                  <strong>ID:</strong>  {view?.customized_user_id || ''}
+                                </Typography>
+                                <Typography variant="body1">
+                                    <strong></strong>{' '}
+                                    {view?.created_at
+                                        ? new Date(view.created_at).toLocaleString()
+                                        : 'N/A'}
+                                </Typography>
+                            </Box>
+                        </Box>
+
+                        {/* Body Section */}
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                gap: 3,
+                                flexDirection: { xs: 'column', sm: 'row' },
+                            }}
+                        >
+                            {/* Left Column */}
+                            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                               
+                                
+                                <Typography variant="body1">
+                                    <strong>phone:</strong> {view?.phone || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Package:</strong> {view?.package || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Amount:</strong> {view?.amount || 'N/A'}
+                                </Typography>
+                            </Box>
+
+                            {/* Right Column */}
+                            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                <Typography variant="body1">
+                                    <strong>Bank:</strong> {view?.digital_bank_name || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1">
+                                    <strong>Budget:</strong> {view?.amount || 'N/A'}
+                                </Typography>
+                                <Divider />
+                                <Typography variant="body1" >
+                                    <strong>created:</strong> {formattedDate(view?.created_at)}
+                                </Typography>
+                                <Divider />
+
+                            </Box>
+                        </Box>
+
+
+                        {/* Footer Section: Cancel Button */}
+                        <Box sx={{ textAlign: 'center', marginTop: 2 }}>
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    backgroundColor: '#ff5722',
+                                    color: '#fff',
+                                    fontWeight: 'bold',
+                                    padding: '0.5rem 2rem',
+                                    '&:hover': {
+                                        backgroundColor: '#e64a19',
+                                    },
+                                }}
+                                onClick={handleCloseViewModal}
+                            >
+                                Cancel
+                            </Button>
+                        </Box>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
         </Box>
     );
 };
