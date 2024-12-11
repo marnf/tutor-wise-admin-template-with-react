@@ -4,7 +4,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { BiSolidUserDetail } from "react-icons/bi";
 // Columns definition for DataGrid
 const columns = [
-    { field: "id", headerName: "ID", minWidth: 130 },
+    { field: "customizedId", headerName: "ID", minWidth: 130 },
     {
         field: "profile_picture",
         headerName: "Profile Picture",
@@ -13,26 +13,26 @@ const columns = [
             <img src={params.value} alt="Profile" style={{ width: 50, height: 50, borderRadius: "50%" }} />
         )
     },
-    { field: "full_name", headerName: "Name", flex: 1, minWidth: 130 },
+    { field: "full_name", headerName: "Name", flex: 1 },
     { field: "subject", headerName: "Subject", minWidth: 100 },
     { field: "gender", headerName: "Gender", minWidth: 60 },
-    { field: "days_per_week", headerName: "Days/Week", minWidth: 40 },
+    { field: "days_per_week", headerName: "Days/Week", minWidth: 60 },
     { field: "charge_per_month", headerName: "Charge", minWidth: 60 },
     { field: "phone", headerName: "Phone", minWidth: 150 },
     {
         field: "actions",
         headerName: "Actions",
-        minWidth: 70, // Small width for the action column
-        flex: 0.1, // Takes as little space as possible
+        minWidth: 40,
         renderCell: (params) => (
+
             <Box display="flex" justifyContent="center" className="mt-3">
-                <BiSolidUserDetail
-                    title="View"
+
+                <BiSolidUserDetail title="View"
                     size={28}
-                    color="#f0523a"
+                     color="#f0523a"
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
-                    onClick={() => params.row.handleViewModal(params)}
-                />
+                    onClick={() => params.row.handleViewModal(params)} />
+
             </Box>
         ),
     },
@@ -54,7 +54,8 @@ const Tutor = () => {
             .then((res) => res.json())
             .then((data) => {
                 const formattedData = data.map((item) => ({
-                    id: item.tutor_personal_info.customized_user_id,
+                    id: item.tutor_personal_info.id,
+                    customizedId: item.tutor_personal_info.customized_user_id,
                     profile_picture: item.tutor_personal_info.profile_picture ? `${BASE_URL}${item.tutor_personal_info.profile_picture}` : null,
                     full_name: item.tutor_personal_info.full_name,
                     division: item.tutor_personal_info.division,
@@ -97,32 +98,19 @@ const Tutor = () => {
 
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-
-
-            <div className="flex flex-col md:flex-row lg:flex-row justify-between items-center  text-end gap-1">
-                <Typography variant="text-base" className="flex h5">
-                    <strong className="text-gray-500">Total:{rows.length} </strong>
-                </Typography>
-                <div className="flex justify-end">
-                    <TextField
-                        label="Search Tutors"
-                        variant="outlined"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        style={{ marginBottom: "1rem", width: "300px" }}
-                    />
-                </div>
+            <div className="flex justify-end">
+                <TextField
+                    label="Search Tutors"
+                    variant="outlined"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    style={{ marginBottom: "1rem", width: "300px" }}
+                />
             </div>
 
             {loading ? (
                 <Box sx={{ width: '100%' }}>
-                    <LinearProgress
-                        sx={{
-                            backgroundColor: "#0d2a4c",
-                            "& .MuiLinearProgress-bar": {
-                                background: "linear-gradient(90deg,#ef5239 ,#f9553c)", // Gradient effect
-                            },
-                        }} />
+                    <LinearProgress />
                 </Box>
             ) : (
                 <DataGrid
@@ -314,7 +302,7 @@ const Tutor = () => {
                                     <img
                                         src={view?.tutor_personal_info?.college_certificate ? `https://tutorwise-backend.vercel.app${view.tutor_personal_info.college_certificate}` : '/default-image.jpg'}
                                         alt="Nominee 1 NID"
-                                        style={{ width: 'auto', height: '200px', objectFit: 'cover' }}
+                                          style={{ width: 'auto', height: '200px', objectFit: 'cover' }}
                                     />
                                 </Typography>
 
@@ -388,7 +376,7 @@ const Tutor = () => {
                                     <img
                                         src={view?.tutor_personal_info?.nominee2_nidcard_picture ? `https://tutorwise-backend.vercel.app${view.tutor_personal_info.nominee2_nidcard_picture}` : '/default-image.jpg'}
                                         alt="Nominee 1 NID"
-                                        style={{ width: 'auto', height: '200px', objectFit: 'cover' }}
+                                          style={{ width: 'auto', height: '200px', objectFit: 'cover' }}
                                     />
                                 </Typography>
 

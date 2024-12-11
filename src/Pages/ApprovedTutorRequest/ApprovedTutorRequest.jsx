@@ -28,6 +28,8 @@ import { MdDelete } from "react-icons/md";
 import { BiSolidUserDetail } from "react-icons/bi";
 import { MdConnectWithoutContact } from "react-icons/md";
 import Protutor from "../TutorList/ProTutor/Protutor";
+import ConnectedTutor from "./ConnectedTutor";
+import { BorderLeft } from "@mui/icons-material";
 
 
 // Dummy subject options
@@ -85,7 +87,7 @@ const columns = [
 
                 <MdConnectWithoutContact title="connect"
                     size={29}
-                    color="#f0523a"
+                    color="#0c2849"
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => params.row.handleConnectModal(params.row)} />
 
@@ -114,45 +116,6 @@ const columns = [
 ];
 
 
-
-const ProTutorColumns = [
-    { field: "id", headerName: "ID", minWidth: 130 },
-    {
-        field: "profile_picture",
-        headerName: "Profile Picture",
-        minWidth: 80,
-        renderCell: (params) => (
-            <img src={params.value} alt="Profile" style={{ width: 50, height: 50, borderRadius: "50%" }} />
-        )
-    },
-    { field: "full_name", headerName: "Name", flex: 1, minWidth: 130 },
-    { field: "subject", headerName: "Subject", minWidth: 100 },
-    { field: "gender", headerName: "Gender", minWidth: 60 },
-    { field: "days_per_week", headerName: "Days/Week", minWidth: 40 },
-    { field: "charge_per_month", headerName: "Charge", minWidth: 60 },
-    { field: "phone", headerName: "Phone", minWidth: 150 },
-    {
-        field: "actions",
-        headerName: "Actions",
-        minWidth: 70, // Small width for the action column
-        flex: 0.1, // Takes as little space as possible
-        renderCell: (params) => (
-            <Box display="flex" justifyContent="center" className="mt-3">
-                <BiSolidUserDetail
-                    title="View"
-                    size={28}
-                    color="#f0523a"
-                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
-                    onClick={() => params.row.handleViewModal(params)}
-                />
-            </Box>
-        ),
-    },
-];
-
-
-
-
 const ApprovedTutorRequest = () => {
     const [rows, setRows] = useState([]);
     const [view, setView] = useState([]);
@@ -166,10 +129,16 @@ const ApprovedTutorRequest = () => {
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [openViewModal, setOpenViewModal] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
-    const [snackbarSeverity, setSnackbarSeverity] = useState("success"); 
+    const [snackbarSeverity, setSnackbarSeverity] = useState("success");
     const [connect, setConnect] = useState([]);
     const [openConnectModal, setOpenConnectModal] = useState(false);
-    // pro tutor status
+    const [selectedTutor, setSelectedTutor] = useState(null);
+
+    const handleTutorSelection = (tutor) => {
+        setSelectedTutor(tutor); // এখানে tutor হচ্ছে নির্বাচিত টিউটরের ডাটা
+    };
+
+   
 
 
 
@@ -199,6 +168,10 @@ const ApprovedTutorRequest = () => {
         );
         setFilteredRows(result);
     }, [searchQuery, rows]);
+
+
+
+
 
     const handleEditRequest = (row) => {
         setEditData({
@@ -263,9 +236,6 @@ const ApprovedTutorRequest = () => {
                 setOpenSnackbar(true);
             });
     };
-
-
-
 
 
     const handleSubmit = (e) => {
@@ -582,74 +552,71 @@ const ApprovedTutorRequest = () => {
 
             {/* view details modal */}
 
-            <Dialog open={openConnectModal} onClose={handleCloseConnectModal} maxWidth="lg" >
+            <Dialog open={openConnectModal} onClose={handleCloseConnectModal} maxWidth="lg" fullWidth >
 
 
-                <div className="flex justify-between items-center">
-                    
+                <div className="flex justify-between ">
 
+                    <ConnectedTutor tutor={selectedTutor} ></ConnectedTutor>
 
                     {/* Content */}
                     <DialogContent>
                         <div
+                            
                             sx={{
-                                padding: 5,
-                                display: 'flex',
-                                flexDirection: 'column',
+                                display: "flex",
+                                flexDirection: "column",
                                 gap: 2,
                                 borderRadius: 4,
-                                boxShadow: '0px 8px 20px rgba(0,0,0,0.1)',
-                                backgroundColor: '#f9f9f9',
-                                margin: ' auto',
+                                boxShadow: "0px 8px 20px rgba(0,0,0,0.1)",
+                                backgroundColor: "#f9f9f9",
+                                margin: "auto",
+                                
                             }}
                         >
                             {/* Header Section */}
                             <Box
                                 sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
                                     gap: 3,
-                                    paddingBottom: 2,
+                                    paddingBottom: 1,
                                     marginBottom: 1,
-                                    borderBottom: '1px solid #ddd',
+                                    borderBottom: "1px solid #ddd",
                                 }}
                             >
                                 {/* Left: Name and Phone */}
                                 <Box>
-                                    <Typography
-                                        variant="h6"
-                                        sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}
-                                    >
-                                        {connect?.name || ''}
+                                    <Typography variant="h6" sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+                                        {connect?.name || ""}
                                     </Typography>
                                     <Typography
                                         variant="body2"
                                         color="textSecondary"
-                                        sx={{ color: '#777' }}
+                                        sx={{ color: "#777" }}
                                     >
-                                        {connect?.phone || ''}
+                                        {connect?.phone || ""}
                                     </Typography>
                                 </Box>
 
-                                {/* Right:  */}
+                                {/* Right: ID and Created At */}
                                 <Box>
                                     <Typography
                                         variant="body2"
                                         color="textSecondary"
                                         sx={{
-                                            fontSize: '1rem',
-                                            color: '#555',
-                                            textAlign: 'right',
+                                            fontSize: "1rem",
+                                            color: "#555",
+                                            textAlign: "right",
                                         }}
                                     >
-                                        <strong>ID:</strong>{connect?.id || ''}
+                                        <strong>ID:</strong> {connect?.id || ""}
                                     </Typography>
                                     <Typography variant="body1">
-                                        {' '}
                                         {connect?.created_at
                                             ? new Date(connect.created_at).toLocaleString()
-                                            : ''}
+                                            : ""}
                                     </Typography>
                                 </Box>
                             </Box>
@@ -657,83 +624,56 @@ const ApprovedTutorRequest = () => {
                             {/* Body Section */}
                             <Box
                                 sx={{
-                                    display: 'flex',
-                                    gap: 3,
-                                    flexDirection: { xs: 'column', sm: 'row' },
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: 1,
                                 }}
                             >
-                                {/* Left Column */}
-                                <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-
-
-                                    <Typography variant="body1">
-                                        <strong>Subject:</strong> {connect?.subject || ''}
-                                    </Typography>
-                                    <Divider />
-                                    <Typography variant="body1">
-                                        <strong>Class Name:</strong> {connect?.class_name || ''}
-                                    </Typography>
-                                    <Divider />
-                                    <Typography variant="body1">
-                                        <strong>Lesson Type:</strong> {connect?.lesson_type || ''}
-                                    </Typography>
-                                    <Divider />
-                                    <Typography variant="body1">
-                                        <strong>Gender:</strong> {connect?.gender || ''}
-                                    </Typography>
-                                    <Divider />
-                                    <Typography variant="body1">
-                                        <strong>Details:</strong> {connect?.details || ''}
-                                    </Typography>
-                                    <Divider />
-
-
-                                </Box>
-
-                                {/* Right Column */}
-                                <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-
-                                    <Typography variant="body1">
-                                        <strong>Location:</strong> {connect?.location || ''}
-                                    </Typography>
-                                    <Divider />
-                                    <Typography variant="body1">
-                                        <strong>Days Per Week:</strong> {connect?.days_per_week || ''}
-                                    </Typography>
-                                    <Divider />
-                                    <Typography variant="body1">
-                                        <strong>Start Date:</strong> {connect?.start_date || ''}
-                                    </Typography>
-                                    <Divider />
-                                    <Typography variant="body1">
-                                        <strong>Budget:</strong> {connect?.budget || ''}
-                                    </Typography>
-                                    <Divider />
-                                    <Typography variant="body1">
-                                        <strong>Additional Comment:</strong> {connect?.additional_comment || ''}
-                                    </Typography>
-                                    <Divider />
-
-
-                                </Box>
+                                {/* Each Row */}
+                                {[
+                                    { label: "Subject", value: connect?.subject || "" },
+                                    { label: "Class Name", value: connect?.class_name || "" },
+                                    { label: "Lesson Type", value: connect?.lesson_type || "" },
+                                    { label: "Gender", value: connect?.gender || "" },
+                                    { label: "Location", value: connect?.location || "" },
+                                    { label: "Days Per Week", value: connect?.days_per_week || "" },
+                                    { label: "Start Date", value: connect?.start_date || "" },
+                                    { label: "Budget", value: connect?.budget || "" },
+                                ].map((item, index) => (
+                                    <Box
+                                        key={index}
+                                        sx={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            borderBottom: "1px solid #ddd",
+                                          
+                                        }}
+                                    >
+                                        <Typography
+                                            variant="body1"
+                                            sx={{ fontWeight: "bold", color: "#555" }}
+                                        >
+                                            {item.label}:
+                                        </Typography>
+                                        <Typography
+                                            variant="body1"
+                                            sx={{ color: "#333", textAlign: "right" }}
+                                        >
+                                            {item.value}
+                                        </Typography>
+                                    </Box>
+                                ))}
                             </Box>
 
                             {/* Footer Section: Checkboxes */}
                             <Box
                                 sx={{
-                                    display: 'flex',
-
+                                    display: "flex",
                                     gap: 2,
                                     paddingTop: 2,
-                                    borderTop: '1px solid #ddd',
+                                    borderTop: "1px solid #ddd",
                                 }}
                             >
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox checked={connect?.is_verified || false} disabled />
-                                    }
-                                    label="Verified"
-                                />
                                 <FormControlLabel
                                     control={
                                         <Checkbox checked={connect?.is_approve || false} disabled />
@@ -749,16 +689,16 @@ const ApprovedTutorRequest = () => {
                             </Box>
 
                             {/* Footer Section: Cancel Button */}
-                            <Box sx={{ textAlign: 'center', marginTop: 2 }}>
+                            <Box sx={{ textAlign: "end" }}>
                                 <Button
                                     variant="contained"
                                     sx={{
-                                        backgroundColor: '#ff5722',
-                                        color: '#fff',
-                                        fontWeight: 'bold',
-                                        padding: '0.5rem 2rem',
-                                        '&:hover': {
-                                            backgroundColor: '#e64a19',
+                                        backgroundColor: "#ff5722",
+                                        color: "#fff",
+                                        fontWeight: "bold",
+                                        padding: "0.5rem 2rem",
+                                        "&:hover": {
+                                            backgroundColor: "#e64a19",
                                         },
                                     }}
                                     onClick={handleCloseConnectModal}
@@ -768,6 +708,7 @@ const ApprovedTutorRequest = () => {
                             </Box>
                         </div>
                     </DialogContent>
+
                 </div>
             </Dialog>
 
@@ -779,7 +720,7 @@ const ApprovedTutorRequest = () => {
 
 
                 <div className="flex justify-between items-center">
-                    
+
 
                     {/* Content */}
                     <DialogContent>
@@ -991,6 +932,9 @@ const ApprovedTutorRequest = () => {
         </Box>
     );
 };
+
+
+
 
 export default ApprovedTutorRequest;
 

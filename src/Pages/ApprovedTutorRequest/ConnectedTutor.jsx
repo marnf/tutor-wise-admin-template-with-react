@@ -1,31 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Checkbox, Dialog, DialogContent, Divider, FormControlLabel, LinearProgress, TextField, Typography } from "@mui/material";
+import { Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, Divider, FormControlLabel, LinearProgress, TextField, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { BiSolidUserDetail } from "react-icons/bi";
+import { IoMdCheckboxOutline } from "react-icons/io";
+
 // Columns definition for DataGrid
 const columns = [
-    { field: "customizedId", headerName: "ID", minWidth: 130 },
-    {
-        field: "profile_picture",
-        headerName: "Profile Picture",
-        minWidth: 80,
-        renderCell: (params) => (
-            <img src={params.value} alt="Profile" style={{ width: 50, height: 50, borderRadius: "50%" }} />
-        )
-    },
-    { field: "full_name", headerName: "Name", flex: 1, minWidth: 130 },
-    { field: "subject", headerName: "Subject", minWidth: 100 },
-    { field: "gender", headerName: "Gender", minWidth: 60 },
-    { field: "days_per_week", headerName: "Days/Week", minWidth: 40 },
-    { field: "charge_per_month", headerName: "Charge", minWidth: 60 },
-    { field: "phone", headerName: "Phone", minWidth: 150 },
+    { field: "customizeId", headerName: "ID", flex: 0.1 },
+    // { field: "full_name", headerName: "Name", flex: 0.1 },
+    { field: "location", headerName: "Location", flex: 0.1 },
+    { field: "subject", headerName: "Subject", flex: 0.1 },
+    { field: "gender", headerName: "Gender", flex: 0.1 },
+    { field: "days_per_week", headerName: "Days/Week", flex: 0.1 },
+    { field: "charge_per_month", headerName: "Charge", flex: 0.1 },
     {
         field: "actions",
         headerName: "Actions",
-        minWidth: 70, // Small width for the action column
         flex: 0.1, // Takes as little space as possible
         renderCell: (params) => (
-            <Box display="flex" justifyContent="center" className="mt-3">
+            <Box className="flex justify-around mt-2">
                 <BiSolidUserDetail
                     title="View"
                     size={28}
@@ -33,19 +26,28 @@ const columns = [
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => params.row.handleViewModal(params)}
                 />
+
+                <IoMdCheckboxOutline
+                    title="View"
+                    size={28}
+                    color="green"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                    onClick={() => params.row.handleApproveModal(params)}
+                />
             </Box>
         ),
     },
 ];
 
-
-const StudentList = () => {
+const ConnectedTutor = () => {
     const [rows, setRows] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [filteredRows, setFilteredRows] = useState([]);
     const [loading, setLoading] = useState(false);
     const [view, setView] = useState([]);
     const [openViewModal, setOpenViewModal] = useState(false);
+    const [approve, setApprove] = useState([]);
+    const [openApproveModal, setOpenApproveModal] = useState(false);
 
     // Fetch data from the API
     useEffect(() => {
@@ -56,17 +58,16 @@ const StudentList = () => {
             .then((data) => {
                 const formattedData = data.map((item) => ({
                     id: item.tutor_personal_info.id,
-                    customizedId: item.tutor_personal_info.customized_user_id,
                     profile_picture: item.tutor_personal_info.profile_picture ? `${BASE_URL}${item.tutor_personal_info.profile_picture}` : null,
+                    customizeId: item.tutor_personal_info.customized_user_id,
                     full_name: item.tutor_personal_info.full_name,
-                    division: item.tutor_personal_info.division,
                     location: `${item.tutor_personal_info.district}, ${item.tutor_personal_info.location}`,
                     subject: item.tutor_tuition_info.subject,
                     gender: item.tutor_personal_info.gender,
                     days_per_week: item.tutor_tuition_info.days_per_week,
                     charge_per_month: item.tutor_tuition_info.charge_per_month,
-                    phone: item.tutor_personal_info.phone,
-                    handleViewModal: (params) => handleOpenViewModal(item)
+                    handleViewModal: (params) => handleOpenViewModal(item),
+                    handleApproveModal: handleOpenApproveModal
                 }));
                 setRows(formattedData);
                 setFilteredRows(formattedData);
@@ -84,6 +85,7 @@ const StudentList = () => {
     }, [searchQuery, rows]);
 
 
+
     const handleOpenViewModal = (item) => {
         setView(item)
         console.log(item)
@@ -97,14 +99,31 @@ const StudentList = () => {
 
 
 
+
+    const handleOpenApproveModal = (item) => {
+        setApprove(item)
+        console.log(item)
+        setOpenApproveModal(true)
+
+
+    }
+    const handleCloseApproveModal = () => {
+        setOpenApproveModal(false)
+    }
+
+    const handleApprove = () => {
+       
+    };
+
+
     return (
-        <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
+        <Box sx={{ height: "60vh", width: "70%", padding: 2 }}>
 
-
-            <div className="flex flex-col md:flex-row lg:flex-row justify-between items-center  text-end gap-1">
+            <div className="flex flex-col md:flex-row lg:flex-row justify-between items-center  text-end gap-1 mb-1">
                 <Typography variant="text-base" className="flex h5">
-                    <strong className="text-gray-500">Total Students:{rows.length} </strong>
+                    <strong className="text-gray-500">Total:{rows.length} </strong>
                 </Typography>
+
                 <div className="flex justify-end">
                     <TextField
                         label="Search Tutors"
@@ -112,7 +131,7 @@ const StudentList = () => {
                         size="small"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        style={{ marginBottom: "1rem", width: "300px" }}
+                        style={{ width: "300px" }}
                     />
                 </div>
             </div>
@@ -132,32 +151,46 @@ const StudentList = () => {
                     rows={filteredRows}
                     columns={columns.map((col) => ({
                         ...col,
-                        minWidth: col.minWidth || 150,
+                        minWidth: col.minWidth || 100, // প্রতিটি কলামের জন্য সর্বনিম্ন প্রস্থ নির্ধারণ
                     }))}
                     pageSize={10}
                     rowsPerPageOptions={[5, 10, 20]}
                     disableSelectionOnClick
 
                     sx={{
+                        "& .MuiDataGrid-root": {
+                            overflowX: "auto", // Horizontal scroll allow করে
+                        },
                         "& .MuiDataGrid-columnHeader": {
                             backgroundColor: "#f0f0f0",
                             fontWeight: "bold",
-                            borderBottom: "2px solid #1976d2", // Column header's bottom border
+                            borderBottom: "2px solid #1976d2",
+                            fontSize: "0.9rem", // ছোট স্ক্রিনে font size adjust
                         },
                         "& .MuiDataGrid-cell": {
-                            border: "1px solid #e0e0e0", // Border for each cell
-                            whiteSpace: "normal", // Allow text to wrap in cells
-                            wordWrap: "break-word", // Break long words if necessary
+                            border: "1px solid #e0e0e0",
+                            whiteSpace: "normal", // টেক্সট wrap করার জন্য
+                            wordWrap: "break-word",
+                            fontSize: "0.8rem", // ছোট স্ক্রিনে font size adjust
                         },
                         "& .MuiDataGrid-cell:focus": {
-                            outline: "none", // Remove default outline on focus
+                            outline: "none",
                         },
-
+                        "& .MuiDataGrid-virtualScroller": {
+                            overflowX: "auto", // Horizontal scroll support
+                        },
+                        "& .MuiDataGrid-footerContainer": {
+                            justifyContent: "center", // Pagination center-align
+                        },
                     }}
-                />)}
+                />
+            )}
 
 
-            <Dialog open={openViewModal} onClose={handleCloseViewModal} fullWidth maxWidth="lg">
+
+
+
+            <Dialog open={openViewModal} onClose={handleCloseViewModal} fullWidth maxWidth="md">
                 {/* Content */}
                 <DialogContent>
                     <div
@@ -269,55 +302,6 @@ const StudentList = () => {
                                     <strong>Location:</strong>{view?.tutor_personal_info?.district || 'N/A'} {view?.tutor_personal_info?.division || 'N/A'}
                                 </Typography>
 
-                                <Divider />
-                                <Typography variant="body1">
-                                    <strong>Pro Tutor Start Date:</strong> {view?.tutor_personal_info?.pro_tutor_start_date || 'N/A'}
-                                </Typography>
-                                <Divider />
-                                <Typography variant="body1">
-                                    <strong>Pro Tutor End Date:</strong> {view?.tutor_personal_info?.pro_tutor_end_date || 'N/A'}
-                                </Typography>
-                                <Divider />
-                                <Typography variant="body1">
-                                    <strong>Profile Headline:</strong> {view?.tutor_personal_info?.profile_headline || 'N/A'}
-                                </Typography>
-                                <Divider />
-                                <Typography variant="body1">
-                                    <strong>NID Card Number:</strong> {view?.tutor_personal_info?.nidcard_number || 'N/A'}
-                                </Typography>
-
-                                <Divider />
-
-                                <Typography variant="body1">
-                                    <strong>Nominee 1 Name:</strong> {view?.tutor_personal_info?.nominee1_name || 'N/A'}
-                                </Typography>
-                                <Divider />
-                                <Typography variant="body1">
-                                    <strong>Nominee 1 Address:</strong> {view?.tutor_personal_info?.nominee1_address || 'N/A'}
-                                </Typography>
-                                <Divider />
-                                <Typography variant="body1">
-                                    <strong>Nominee 1 NID Card Number:</strong> {view?.tutor_personal_info?.nominee1_nidcard_number || 'N/A'}
-                                </Typography>
-                                <Divider />
-                                <Typography variant="body1">
-                                    <strong>Nominee 1 NID Card Image:</strong>
-                                    <img
-                                        src={view?.tutor_personal_info?.nominee1_nidcard_picture ? `https://tutorwise-backend.vercel.app${view.tutor_personal_info.nominee1_nidcard_picture}` : '/default-image.jpg'}
-                                        alt="Nominee 1 NID"
-                                        style={{ width: 'auto', height: '200px', objectFit: 'cover' }}
-                                    />
-
-                                </Typography>
-                                <Divider />
-                                <Typography variant="body1">
-                                    <strong>College Certificate:</strong>
-                                    <img
-                                        src={view?.tutor_personal_info?.college_certificate ? `https://tutorwise-backend.vercel.app${view.tutor_personal_info.college_certificate}` : '/default-image.jpg'}
-                                        alt="Nominee 1 NID"
-                                        style={{ width: 'auto', height: '200px', objectFit: 'cover' }}
-                                    />
-                                </Typography>
 
                             </Box>
 
@@ -332,67 +316,15 @@ const StudentList = () => {
                                     <strong>College Name:</strong> {view?.tutor_personal_info?.college_name || 'N/A'}
                                 </Typography>
                                 <Divider />
-                                <Typography variant="body1">
-                                    <strong>College CGPA:</strong> {view?.tutor_personal_info?.college_cgpa || 'N/A'}
-                                </Typography>
-                                <Divider />
-                                <Typography variant="body1">
-                                    <strong>College Educational Background:</strong> {view?.tutor_personal_info?.college_educational_background || 'N/A'}
-                                </Typography>
                                 <Divider />
                                 <Typography variant="body1">
                                     <strong>University Name:</strong> {view?.tutor_personal_info?.university_name || 'N/A'}
                                 </Typography>
-                                <Divider />
-                                <Typography variant="body1">
-                                    <strong>University CGPA:</strong> {view?.tutor_personal_info?.university_cgpa || 'N/A'}
-                                </Typography>
+
                                 <Divider />
                                 <Typography variant="body1">
                                     <strong>University Level:</strong> {view?.tutor_personal_info?.university_educational_level || 'N/A'}
                                 </Typography>
-                                <Divider />
-                                <Typography variant="body1">
-                                    <strong>University Start Date:</strong> {view?.tutor_personal_info?.university_start_date || 'N/A'}
-                                </Typography>
-                                <Divider />
-                                <Typography variant="body1">
-                                    <strong>University End Date:</strong> {view?.tutor_personal_info?.university_ending_date || 'N/A'}
-                                </Typography>
-                                <Divider />
-
-
-
-
-
-                                <Divider />
-                                <Typography variant="body1">
-                                    <strong>Profile Description:</strong> {view?.tutor_personal_info?.profile_description || 'N/A'}
-                                </Typography>
-
-                                <Divider />
-                                <Typography variant="body1">
-                                    <strong>Nominee 2 Name:</strong> {view?.tutor_personal_info?.nominee2_name || 'N/A'}
-                                </Typography>
-                                <Divider />
-                                <Typography variant="body1">
-                                    <strong>Nominee 2 Address:</strong> {view?.tutor_personal_info?.nominee2_address || 'N/A'}
-                                </Typography>
-                                <Divider />
-                                <Typography variant="body1">
-                                    <strong>Nominee 2 NID Card Number:</strong> {view?.tutor_personal_info?.nominee2_nidcard_number || 'N/A'}
-                                </Typography>
-                                <Divider />
-                                <Typography variant="body1">
-                                    <strong>Nominee 2 NID Card Image:</strong>
-
-                                    <img
-                                        src={view?.tutor_personal_info?.nominee2_nidcard_picture ? `https://tutorwise-backend.vercel.app${view.tutor_personal_info.nominee2_nidcard_picture}` : '/default-image.jpg'}
-                                        alt="Nominee 1 NID"
-                                        style={{ width: 'auto', height: '200px', objectFit: 'cover' }}
-                                    />
-                                </Typography>
-
 
                             </Box>
                         </Box>
@@ -419,9 +351,19 @@ const StudentList = () => {
                 </DialogContent>
             </Dialog>
 
+            <Dialog open={openApproveModal} onClose={handleCloseApproveModal}>
+                <DialogTitle>Confirm Assigning</DialogTitle>
+                <DialogContent>
+                    <p>Are you sure you want to Assign this tutor for this student?</p>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseApproveModal}>Cancel</Button>
+                    <Button onClick={handleApprove} color="success">Approve</Button>
+                </DialogActions>
+            </Dialog>
 
         </Box>
     );
 };
 
-export default StudentList;
+export default ConnectedTutor;
