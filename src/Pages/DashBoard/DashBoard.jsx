@@ -6,6 +6,9 @@ import RadialBar from './RadialBar'; // RadialBar import
 import { Link } from 'react-router-dom';
 import { Doughnut } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
+import { Box, LinearProgress } from "@mui/material";
+import { MdViewList } from "react-icons/md";
+import { BiSolidMessageDetail } from "react-icons/bi";
 
 const Dashboard = () => {
     const [totalStudentData, setTotalStudentData] = useState(null);
@@ -132,19 +135,19 @@ const PaymentCard = ({ data }) => {
         // Chart Data তৈরি (API থেকে ডেটা ব্যবহার)
         const chartData = {
             labels: [
-                'Apply Limit Percentage', 
-                'Pro Tutor Subscription Percentage'
+                'Apply Limit',
+                'Pro Tutor Subscription'
             ], // Labels হিসেবে Apply Limit Percentage ও Pro Tutor Subscription Percentage
             datasets: [
                 {
                     label: 'Percentage Details',
                     data: [
-                        data.apply_limit_percentage, 
+                        data.apply_limit_percentage,
                         data.pro_tutor_subscription_percentage
                     ], // Values হিসেবে API ডেটা
                     backgroundColor: [
-                       '#f0523a', 
-                        '#0d2849', 
+                        '#f0523a',
+                        '#0d2849',
                     ],
                     hoverOffset: 4,
                 },
@@ -187,7 +190,7 @@ const PaymentCard = ({ data }) => {
 
     return (
         <div className="card bg-white shadow-xl rounded-lg p-6  flex flex-col gap-6">
-            <h4 className="text-lg font-semibold text-gray-700 mb-1 text-center">Percentage Details</h4>
+            <h2 className=" text-gray-700 mb-1 text-center font-bold">Percentage Details</h2>
             {data ? (
                 <div className="flex justify-between items-start ">
                     {/* Doughnut Chart */}
@@ -197,27 +200,35 @@ const PaymentCard = ({ data }) => {
 
                     {/* ডেটার বিবরণ */}
                     <div className="ml-6 flex flex-col justify-start space-y-3">
-                    <div className="text-sm space-y-1">
+                        <div className="text-sm space-y-1">
                             <p className="font-medium">
-                                <strong>Total Payment Number:</strong> {data.total_payment_number}
+                                <strong className='text-gray-500'>Total Payment Number:</strong> {data.total_payment_number}
                             </p>
                             <p className="font-medium">
-                                <strong>Total Apply Limit:</strong> {data.total_apply_limit}
+                                <strong className='text-gray-500'>Total Apply Limit:</strong> {data.total_apply_limit}
                             </p>
                             <p className="font-medium">
-                                <strong>Apply Limit Percentage:</strong> {data.apply_limit_percentage}%
+                                <strong className='text-gray-500'>Apply Limit Percentage:</strong> {data.apply_limit_percentage}%
                             </p>
                             <p className="font-medium">
-                                <strong>Total Pro Tutor Subscription:</strong> {data.total_pro_tutor_subscription}
+                                <strong className='text-gray-500'>Total Pro Tutor Subscription:</strong> {data.total_pro_tutor_subscription}
                             </p>
                             <p className="font-medium">
-                                <strong>Pro Tutor Subscription Percentage:</strong> {data.pro_tutor_subscription_percentage}%
+                                <strong className='text-gray-500'>Pro Tutor Subscription Percentage:</strong> {data.pro_tutor_subscription_percentage}%
                             </p>
                         </div>
                     </div>
                 </div>
             ) : (
-                <p className="text-center text-gray-500">Loading...</p>
+                <Box sx={{ width: '100%' }}>
+                    <LinearProgress
+                        sx={{
+                            backgroundColor: "#0d2a4c",
+                            "& .MuiLinearProgress-bar": {
+                                background: "linear-gradient(90deg,#ef5239 ,#f9553c)", // Gradient effect
+                            },
+                        }} />
+                </Box>
             )}
         </div>
     );
@@ -244,12 +255,13 @@ const InactiveUserCard = ({ title, value, percentage }) => {
                 </div>
             </div>
             <div className="flex justify-end gap-4 mt-4">
-                <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                    <Link to="/inactive-user">Show</Link>
-                </button>
-                <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
-                    Send Message
-                </button>
+
+                <Link to="/inactive-user"> <MdViewList size={40} color="#0d2849" title='Show Inactive User'
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer pb-1" /></Link>
+
+                <BiSolidMessageDetail size={40} color="#f0523a" title='Send Message'
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer" />
+
             </div>
         </div>
     );

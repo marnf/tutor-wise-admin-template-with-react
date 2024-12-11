@@ -93,7 +93,13 @@ const InactiveUser = () => {
 
             {loading ? (
                 <Box sx={{ width: '100%' }}>
-                    <LinearProgress />
+                    <LinearProgress
+                        sx={{
+                            backgroundColor: "#0d2a4c",
+                            "& .MuiLinearProgress-bar": {
+                                background: "linear-gradient(90deg,#ef5239 ,#f9553c)", // Gradient effect
+                            },
+                        }} />
                 </Box>
             ) : (
                 <DataGrid

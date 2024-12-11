@@ -5,7 +5,7 @@ import Select from "react-select";  // Import react-select
 import { BiSolidSelectMultiple, BiSolidUserDetail } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
 import { GoPlus } from "react-icons/go";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaUserEdit } from "react-icons/fa";
 import { GiCycle } from "react-icons/gi";
 import { Snackbar } from '@mui/material';
 import moment from "moment";
@@ -18,10 +18,10 @@ const isSuperAdmin = user?.user_type === "super_admin";
 
 
 const columns = [
-    { field: "id", headerName: "ID", flex: 0.5 },
+    { field: "customizeId", headerName: "ID", minWidth: 130 },
     { field: "username", headerName: "Name", flex: 1 },
     { field: "lastLogin", headerName: "Last login", flex: 1 },
-    { field: "joinDate", headerName: "Joining date", flex: 1 },
+    // { field: "joinDate", headerName: "Joining date", flex: 1 },
     { field: "phone", headerName: "Phone", flex: 1 },
     { field: "userType", headerName: "User Type", flex: 1 },
     { field: "rolesName", headerName: "Roles Name", flex: 2 },
@@ -35,9 +35,9 @@ const columns = [
 
             <Box display="flex" justifyContent="center" className="mt-3" gap={1}>
 
-                <BiSolidSelectMultiple title="Edit"
+                <FaUserEdit title="Edit"
                     size={25}
-                    color="green"
+                    color="black"
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => params.row.handleEdit(params.row)}
                 />
@@ -124,6 +124,7 @@ const UserList = () => {
 
                 const formattedUsers = usersData.map((user) => ({
                     id: user.id,
+                    customizeId: user.customized_user_id,
                     lastLogin: formData(user.last_login) || '',
                     joinDate: formData(user.join_date) || '',
                     username: user.username || "",
@@ -451,7 +452,7 @@ const UserList = () => {
     return (
 
 
-        <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
+        <Box sx={{ height: "80vh", width: "100%"}}>
 
             <div className="flex justify-between items-center mb-1">
 
@@ -499,7 +500,13 @@ const UserList = () => {
 
             {loading ? (
                 <Box sx={{ width: '100%' }}>
-                    <LinearProgress />
+                    <LinearProgress
+                        sx={{
+                            backgroundColor: "#0d2a4c",
+                            "& .MuiLinearProgress-bar": {
+                                background: "linear-gradient(90deg,#ef5239 ,#f9553c)", // Gradient effect
+                            },
+                        }} />
                 </Box>
             ) : (
 
@@ -508,7 +515,7 @@ const UserList = () => {
                     rows={filteredRows}
                     columns={columns.map((col) => ({
                         ...col,
-                        minWidth: 125, // Minimum width for each column (adjust as needed)
+                        minWidth:col.minWidth || 125
                     }))}
                     pageSize={10}
                     rowsPerPageOptions={[5, 10, 20]}

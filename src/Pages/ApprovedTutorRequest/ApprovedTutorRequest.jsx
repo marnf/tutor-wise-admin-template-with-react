@@ -4,7 +4,6 @@ import {
     Autocomplete,
     Box,
     Button,
-    Card,
     Checkbox,
     Dialog,
     DialogActions,
@@ -27,6 +26,9 @@ import { DataGrid } from "@mui/x-data-grid";
 import { FaUserEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { BiSolidUserDetail } from "react-icons/bi";
+import { MdConnectWithoutContact } from "react-icons/md";
+import Protutor from "../TutorList/ProTutor/Protutor";
+
 
 // Dummy subject options
 const subjectOptions = [
@@ -77,9 +79,15 @@ const columns = [
 
                 <BiSolidUserDetail title="View"
                     size={29}
-                     color="#f0523a"
+                    color="#f0523a"
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => params.row.handleViewModal(params.row)} />
+
+                <MdConnectWithoutContact title="connect"
+                    size={29}
+                    color="#f0523a"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                    onClick={() => params.row.handleConnectModal(params.row)} />
 
                 <MdDelete
                     title="Delete"
@@ -105,6 +113,46 @@ const columns = [
     },
 ];
 
+
+
+const ProTutorColumns = [
+    { field: "id", headerName: "ID", minWidth: 130 },
+    {
+        field: "profile_picture",
+        headerName: "Profile Picture",
+        minWidth: 80,
+        renderCell: (params) => (
+            <img src={params.value} alt="Profile" style={{ width: 50, height: 50, borderRadius: "50%" }} />
+        )
+    },
+    { field: "full_name", headerName: "Name", flex: 1, minWidth: 130 },
+    { field: "subject", headerName: "Subject", minWidth: 100 },
+    { field: "gender", headerName: "Gender", minWidth: 60 },
+    { field: "days_per_week", headerName: "Days/Week", minWidth: 40 },
+    { field: "charge_per_month", headerName: "Charge", minWidth: 60 },
+    { field: "phone", headerName: "Phone", minWidth: 150 },
+    {
+        field: "actions",
+        headerName: "Actions",
+        minWidth: 70, // Small width for the action column
+        flex: 0.1, // Takes as little space as possible
+        renderCell: (params) => (
+            <Box display="flex" justifyContent="center" className="mt-3">
+                <BiSolidUserDetail
+                    title="View"
+                    size={28}
+                    color="#f0523a"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                    onClick={() => params.row.handleViewModal(params)}
+                />
+            </Box>
+        ),
+    },
+];
+
+
+
+
 const ApprovedTutorRequest = () => {
     const [rows, setRows] = useState([]);
     const [view, setView] = useState([]);
@@ -118,7 +166,11 @@ const ApprovedTutorRequest = () => {
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [openViewModal, setOpenViewModal] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
-    const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // 'success' or 'error'
+    const [snackbarSeverity, setSnackbarSeverity] = useState("success"); 
+    const [connect, setConnect] = useState([]);
+    const [openConnectModal, setOpenConnectModal] = useState(false);
+    // pro tutor status
+
 
 
     useEffect(() => {
@@ -131,7 +183,8 @@ const ApprovedTutorRequest = () => {
                     start_immediate: item.start_immediate ? "Yes" : "No",
                     handleEdit: handleEditRequest,
                     handleDelete: handleDeleteRequest,
-                    handleViewModal: handleOpenViewModal
+                    handleViewModal: handleOpenViewModal,
+                    handleConnectModal: handleOpenConnectModal,
                 }));
                 setRows(formattedData);
                 setFilteredRows(formattedData);
@@ -169,6 +222,16 @@ const ApprovedTutorRequest = () => {
     }
     const handleCloseViewModal = () => {
         setOpenViewModal(false)
+    }
+
+    const handleOpenConnectModal = (row) => {
+        setOpenConnectModal(true)
+        setConnect(row)
+
+
+    }
+    const handleCloseConnectModal = () => {
+        setOpenConnectModal(false)
     }
 
     const handleDelete = (e) => {
@@ -251,20 +314,32 @@ const ApprovedTutorRequest = () => {
 
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-            <div className="flex justify-end">
-                <TextField
-                    label="Search Tutor Requests"
-                    variant="outlined"
-                    value={searchQuery}
-                    size="small"
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    style={{ marginBottom: "1rem", width: "300px" }}
-                />
+
+            <div className="flex flex-col md:flex-row lg:flex-row justify-between items-center  text-end gap-1">
+                <Typography variant="text-base" className="flex h5">
+                    <strong className="text-gray-500">Approved Request:{rows.length} </strong>
+                </Typography>
+                <div className="flex justify-end">
+                    <TextField
+                        label="Search Tutor Requests"
+                        variant="outlined"
+                        value={searchQuery}
+                        size="small"
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        style={{ marginBottom: "1rem", width: "300px" }}
+                    />
+                </div>
             </div>
 
             {loading ? (
                 <Box sx={{ width: '100%' }}>
-                    <LinearProgress />
+                    <LinearProgress
+                        sx={{
+                            backgroundColor: "#0d2a4c",
+                            "& .MuiLinearProgress-bar": {
+                                background: "linear-gradient(90deg,#ef5239 ,#f9553c)", // Gradient effect
+                            },
+                        }} />
                 </Box>
             ) : (
                 <DataGrid
@@ -507,189 +582,385 @@ const ApprovedTutorRequest = () => {
 
             {/* view details modal */}
 
-            <Dialog open={openViewModal} onClose={handleCloseViewModal} fullWidth>
+            <Dialog open={openConnectModal} onClose={handleCloseConnectModal} maxWidth="lg" >
 
 
-                {/* Content */}
-                <DialogContent>
-                    <div
-                        sx={{
-                            padding: 5,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: 2,
-                            borderRadius: 4,
-                            boxShadow: '0px 8px 20px rgba(0,0,0,0.1)',
-                            backgroundColor: '#f9f9f9',
-                            maxWidth: '700px',
-                            margin: ' auto',
-                        }}
-                    >
-                        {/* Header Section */}
-                        <Box
+                <div className="flex justify-between items-center">
+                    
+
+
+                    {/* Content */}
+                    <DialogContent>
+                        <div
                             sx={{
+                                padding: 5,
                                 display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                gap: 3,
-                                paddingBottom: 2,
-                                marginBottom: 1,
-                                borderBottom: '1px solid #ddd',
-                            }}
-                        >
-                            {/* Left: Name and Phone */}
-                            <Box>
-                                <Typography
-                                    variant="h6"
-                                    sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}
-                                >
-                                    {view?.name || ''}
-                                </Typography>
-                                <Typography
-                                    variant="body2"
-                                    color="textSecondary"
-                                    sx={{ color: '#777' }}
-                                >
-                                    {view?.phone || ''}
-                                </Typography>
-                            </Box>
-
-                            {/* Right:  */}
-                            <Box>
-                                <Typography
-                                    variant="body2"
-                                    color="textSecondary"
-                                    sx={{
-                                        fontSize: '1rem',
-                                        color: '#555',
-                                        textAlign: 'right',
-                                    }}
-                                >
-                                    <strong>ID:</strong>{view?.id || ''}
-                                </Typography>
-                                <Typography variant="body1">
-                                    {' '}
-                                    {view?.created_at
-                                        ? new Date(view.created_at).toLocaleString()
-                                        : ''}
-                                </Typography>
-                            </Box>
-                        </Box>
-
-                        {/* Body Section */}
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                gap: 3,
-                                flexDirection: { xs: 'column', sm: 'row' },
-                            }}
-                        >
-                            {/* Left Column */}
-                            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-
-
-                                <Typography variant="body1">
-                                    <strong>Subject:</strong> {view?.subject || ''}
-                                </Typography>
-                                <Divider />
-                                <Typography variant="body1">
-                                    <strong>Class Name:</strong> {view?.class_name || ''}
-                                </Typography>
-                                <Divider />
-                                <Typography variant="body1">
-                                    <strong>Lesson Type:</strong> {view?.lesson_type || ''}
-                                </Typography>
-                                <Divider />
-                                <Typography variant="body1">
-                                    <strong>Gender:</strong> {view?.gender || ''}
-                                </Typography>
-                                <Divider />
-                                <Typography variant="body1">
-                                    <strong>Details:</strong> {view?.details || ''}
-                                </Typography>
-                                <Divider />
-
-
-                            </Box>
-
-                            {/* Right Column */}
-                            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-
-                                <Typography variant="body1">
-                                    <strong>Location:</strong> {view?.location || ''}
-                                </Typography>
-                                <Divider />
-                                <Typography variant="body1">
-                                    <strong>Days Per Week:</strong> {view?.days_per_week || ''}
-                                </Typography>
-                                <Divider />
-                                <Typography variant="body1">
-                                    <strong>Start Date:</strong> {view?.start_date || ''}
-                                </Typography>
-                                <Divider />
-                                <Typography variant="body1">
-                                    <strong>Budget:</strong> {view?.budget || ''}
-                                </Typography>
-                                <Divider />
-                                <Typography variant="body1">
-                                    <strong>Additional Comment:</strong> {view?.additional_comment || ''}
-                                </Typography>
-                                <Divider />
-
-
-                            </Box>
-                        </Box>
-
-                        {/* Footer Section: Checkboxes */}
-                        <Box
-                            sx={{
-                                display: 'flex',
-
+                                flexDirection: 'column',
                                 gap: 2,
-                                paddingTop: 2,
-                                borderTop: '1px solid #ddd',
+                                borderRadius: 4,
+                                boxShadow: '0px 8px 20px rgba(0,0,0,0.1)',
+                                backgroundColor: '#f9f9f9',
+                                margin: ' auto',
                             }}
                         >
-                            <FormControlLabel
-                                control={
-                                    <Checkbox checked={view?.is_verified || false} disabled />
-                                }
-                                label="Verified"
-                            />
-                            <FormControlLabel
-                                control={
-                                    <Checkbox checked={view?.is_approve || false} disabled />
-                                }
-                                label="Approved"
-                            />
-                            <FormControlLabel
-                                control={
-                                    <Checkbox checked={view?.start_immediate || false} disabled />
-                                }
-                                label="Start Immediately"
-                            />
-                        </Box>
-
-                        {/* Footer Section: Cancel Button */}
-                        <Box sx={{ textAlign: 'center', marginTop: 2 }}>
-                            <Button
-                                variant="contained"
+                            {/* Header Section */}
+                            <Box
                                 sx={{
-                                    backgroundColor: '#ff5722',
-                                    color: '#fff',
-                                    fontWeight: 'bold',
-                                    padding: '0.5rem 2rem',
-                                    '&:hover': {
-                                        backgroundColor: '#e64a19',
-                                    },
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    gap: 3,
+                                    paddingBottom: 2,
+                                    marginBottom: 1,
+                                    borderBottom: '1px solid #ddd',
                                 }}
-                                onClick={handleCloseViewModal}
                             >
-                                Cancel
-                            </Button>
-                        </Box>
-                    </div>
-                </DialogContent>
+                                {/* Left: Name and Phone */}
+                                <Box>
+                                    <Typography
+                                        variant="h6"
+                                        sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}
+                                    >
+                                        {connect?.name || ''}
+                                    </Typography>
+                                    <Typography
+                                        variant="body2"
+                                        color="textSecondary"
+                                        sx={{ color: '#777' }}
+                                    >
+                                        {connect?.phone || ''}
+                                    </Typography>
+                                </Box>
+
+                                {/* Right:  */}
+                                <Box>
+                                    <Typography
+                                        variant="body2"
+                                        color="textSecondary"
+                                        sx={{
+                                            fontSize: '1rem',
+                                            color: '#555',
+                                            textAlign: 'right',
+                                        }}
+                                    >
+                                        <strong>ID:</strong>{connect?.id || ''}
+                                    </Typography>
+                                    <Typography variant="body1">
+                                        {' '}
+                                        {connect?.created_at
+                                            ? new Date(connect.created_at).toLocaleString()
+                                            : ''}
+                                    </Typography>
+                                </Box>
+                            </Box>
+
+                            {/* Body Section */}
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    gap: 3,
+                                    flexDirection: { xs: 'column', sm: 'row' },
+                                }}
+                            >
+                                {/* Left Column */}
+                                <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+
+
+                                    <Typography variant="body1">
+                                        <strong>Subject:</strong> {connect?.subject || ''}
+                                    </Typography>
+                                    <Divider />
+                                    <Typography variant="body1">
+                                        <strong>Class Name:</strong> {connect?.class_name || ''}
+                                    </Typography>
+                                    <Divider />
+                                    <Typography variant="body1">
+                                        <strong>Lesson Type:</strong> {connect?.lesson_type || ''}
+                                    </Typography>
+                                    <Divider />
+                                    <Typography variant="body1">
+                                        <strong>Gender:</strong> {connect?.gender || ''}
+                                    </Typography>
+                                    <Divider />
+                                    <Typography variant="body1">
+                                        <strong>Details:</strong> {connect?.details || ''}
+                                    </Typography>
+                                    <Divider />
+
+
+                                </Box>
+
+                                {/* Right Column */}
+                                <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+
+                                    <Typography variant="body1">
+                                        <strong>Location:</strong> {connect?.location || ''}
+                                    </Typography>
+                                    <Divider />
+                                    <Typography variant="body1">
+                                        <strong>Days Per Week:</strong> {connect?.days_per_week || ''}
+                                    </Typography>
+                                    <Divider />
+                                    <Typography variant="body1">
+                                        <strong>Start Date:</strong> {connect?.start_date || ''}
+                                    </Typography>
+                                    <Divider />
+                                    <Typography variant="body1">
+                                        <strong>Budget:</strong> {connect?.budget || ''}
+                                    </Typography>
+                                    <Divider />
+                                    <Typography variant="body1">
+                                        <strong>Additional Comment:</strong> {connect?.additional_comment || ''}
+                                    </Typography>
+                                    <Divider />
+
+
+                                </Box>
+                            </Box>
+
+                            {/* Footer Section: Checkboxes */}
+                            <Box
+                                sx={{
+                                    display: 'flex',
+
+                                    gap: 2,
+                                    paddingTop: 2,
+                                    borderTop: '1px solid #ddd',
+                                }}
+                            >
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox checked={connect?.is_verified || false} disabled />
+                                    }
+                                    label="Verified"
+                                />
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox checked={connect?.is_approve || false} disabled />
+                                    }
+                                    label="Approved"
+                                />
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox checked={connect?.start_immediate || false} disabled />
+                                    }
+                                    label="Start Immediately"
+                                />
+                            </Box>
+
+                            {/* Footer Section: Cancel Button */}
+                            <Box sx={{ textAlign: 'center', marginTop: 2 }}>
+                                <Button
+                                    variant="contained"
+                                    sx={{
+                                        backgroundColor: '#ff5722',
+                                        color: '#fff',
+                                        fontWeight: 'bold',
+                                        padding: '0.5rem 2rem',
+                                        '&:hover': {
+                                            backgroundColor: '#e64a19',
+                                        },
+                                    }}
+                                    onClick={handleCloseConnectModal}
+                                >
+                                    Cancel
+                                </Button>
+                            </Box>
+                        </div>
+                    </DialogContent>
+                </div>
+            </Dialog>
+
+
+
+
+
+            <Dialog open={openViewModal} onClose={handleCloseViewModal}  >
+
+
+                <div className="flex justify-between items-center">
+                    
+
+                    {/* Content */}
+                    <DialogContent>
+                        <div
+                            sx={{
+                                padding: 5,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 2,
+                                borderRadius: 4,
+                                boxShadow: '0px 8px 20px rgba(0,0,0,0.1)',
+                                backgroundColor: '#f9f9f9',
+                                margin: ' auto',
+                            }}
+                        >
+                            {/* Header Section */}
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    gap: 3,
+                                    paddingBottom: 2,
+                                    marginBottom: 1,
+                                    borderBottom: '1px solid #ddd',
+                                }}
+                            >
+                                {/* Left: Name and Phone */}
+                                <Box>
+                                    <Typography
+                                        variant="h6"
+                                        sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}
+                                    >
+                                        {view?.name || ''}
+                                    </Typography>
+                                    <Typography
+                                        variant="body2"
+                                        color="textSecondary"
+                                        sx={{ color: '#777' }}
+                                    >
+                                        {view?.phone || ''}
+                                    </Typography>
+                                </Box>
+
+                                {/* Right:  */}
+                                <Box>
+                                    <Typography
+                                        variant="body2"
+                                        color="textSecondary"
+                                        sx={{
+                                            fontSize: '1rem',
+                                            color: '#555',
+                                            textAlign: 'right',
+                                        }}
+                                    >
+                                        <strong>ID:</strong>{view?.id || ''}
+                                    </Typography>
+                                    <Typography variant="body1">
+                                        {' '}
+                                        {view?.created_at
+                                            ? new Date(view.created_at).toLocaleString()
+                                            : ''}
+                                    </Typography>
+                                </Box>
+                            </Box>
+
+                            {/* Body Section */}
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    gap: 3,
+                                    flexDirection: { xs: 'column', sm: 'row' },
+                                }}
+                            >
+                                {/* Left Column */}
+                                <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+
+
+                                    <Typography variant="body1">
+                                        <strong>Subject:</strong> {view?.subject || ''}
+                                    </Typography>
+                                    <Divider />
+                                    <Typography variant="body1">
+                                        <strong>Class Name:</strong> {view?.class_name || ''}
+                                    </Typography>
+                                    <Divider />
+                                    <Typography variant="body1">
+                                        <strong>Lesson Type:</strong> {view?.lesson_type || ''}
+                                    </Typography>
+                                    <Divider />
+                                    <Typography variant="body1">
+                                        <strong>Gender:</strong> {view?.gender || ''}
+                                    </Typography>
+                                    <Divider />
+                                    <Typography variant="body1">
+                                        <strong>Details:</strong> {view?.details || ''}
+                                    </Typography>
+                                    <Divider />
+
+
+                                </Box>
+
+                                {/* Right Column */}
+                                <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+
+                                    <Typography variant="body1">
+                                        <strong>Location:</strong> {view?.location || ''}
+                                    </Typography>
+                                    <Divider />
+                                    <Typography variant="body1">
+                                        <strong>Days Per Week:</strong> {view?.days_per_week || ''}
+                                    </Typography>
+                                    <Divider />
+                                    <Typography variant="body1">
+                                        <strong>Start Date:</strong> {view?.start_date || ''}
+                                    </Typography>
+                                    <Divider />
+                                    <Typography variant="body1">
+                                        <strong>Budget:</strong> {view?.budget || ''}
+                                    </Typography>
+                                    <Divider />
+                                    <Typography variant="body1">
+                                        <strong>Additional Comment:</strong> {view?.additional_comment || ''}
+                                    </Typography>
+                                    <Divider />
+
+
+                                </Box>
+                            </Box>
+
+                            {/* Footer Section: Checkboxes */}
+                            <Box
+                                sx={{
+                                    display: 'flex',
+
+                                    gap: 2,
+                                    paddingTop: 2,
+                                    borderTop: '1px solid #ddd',
+                                }}
+                            >
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox checked={view?.is_verified || false} disabled />
+                                    }
+                                    label="Verified"
+                                />
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox checked={view?.is_approve || false} disabled />
+                                    }
+                                    label="Approved"
+                                />
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox checked={view?.start_immediate || false} disabled />
+                                    }
+                                    label="Start Immediately"
+                                />
+                            </Box>
+
+                            {/* Footer Section: Cancel Button */}
+                            <Box sx={{ textAlign: 'center', marginTop: 2 }}>
+                                <Button
+                                    variant="contained"
+                                    sx={{
+                                        backgroundColor: '#ff5722',
+                                        color: '#fff',
+                                        fontWeight: 'bold',
+                                        padding: '0.5rem 2rem',
+                                        '&:hover': {
+                                            backgroundColor: '#e64a19',
+                                        },
+                                    }}
+                                    onClick={handleCloseViewModal}
+                                >
+                                    Cancel
+                                </Button>
+                            </Box>
+                        </div>
+                    </DialogContent>
+                </div>
             </Dialog>
 
 

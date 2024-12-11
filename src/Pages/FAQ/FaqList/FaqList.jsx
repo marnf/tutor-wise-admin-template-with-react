@@ -198,7 +198,12 @@ const FaqList = () => {
     <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
 
       {/* Search Bar */}
-      <Box display="flex" justifyContent="flex-end">
+
+      <div className="flex flex-col md:flex-row lg:flex-row justify-between items-center  text-end gap-1">
+        <Typography variant="text-base" className="flex h5">
+          <strong className="text-gray-500">Total:{rows.length} </strong>
+        </Typography>
+
         <TextField
           label="Search"
           variant="outlined"
@@ -208,34 +213,43 @@ const FaqList = () => {
           size="small"
           sx={{ marginBottom: "1rem", width: "300px" }}
         />
-      </Box>
+      </div>
 
-      {loading ? (
-        <Box sx={{ width: '100%' }}>
-          <LinearProgress />
-        </Box>
-      ) : (
-        <DataGrid
-          rows={filteredRows} // Use filteredRows instead of rows
-          columns={columns(handleDeleteClick, handleEditRequest)}
-          pageSize={10}
-          rowsPerPageOptions={[5, 10, 20]}
-          disableSelectionOnClick
-          sx={{
-            "& .MuiDataGrid-columnHeader": {
-              backgroundColor: "#f0f0f0",
-              fontWeight: "bold",
-              borderBottom: "2px solid #1976d2",
-            },
-            "& .MuiDataGrid-cell": {
-              border: "1px solid #e0e0e0",
-            },
-            "& .MuiDataGrid-cell:focus": {
-              outline: "none",
-            },
-          }}
-        />
-      )}
+
+      {
+        loading ? (
+          <Box sx={{ width: '100%' }}>
+            <LinearProgress
+                        sx={{
+                            backgroundColor: "#0d2a4c",
+                            "& .MuiLinearProgress-bar": {
+                                background: "linear-gradient(90deg,#ef5239 ,#f9553c)", // Gradient effect
+                            },
+                        }} />
+          </Box>
+        ) : (
+          <DataGrid
+            rows={filteredRows} // Use filteredRows instead of rows
+            columns={columns(handleDeleteClick, handleEditRequest)}
+            pageSize={10}
+            rowsPerPageOptions={[5, 10, 20]}
+            disableSelectionOnClick
+            sx={{
+              "& .MuiDataGrid-columnHeader": {
+                backgroundColor: "#f0f0f0",
+                fontWeight: "bold",
+                borderBottom: "2px solid #1976d2",
+              },
+              "& .MuiDataGrid-cell": {
+                border: "1px solid #e0e0e0",
+              },
+              "& .MuiDataGrid-cell:focus": {
+                outline: "none",
+              },
+            }}
+          />
+        )
+      }
 
       {/* Dialog for confirming deletion */}
 
@@ -325,7 +339,7 @@ const FaqList = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
-    </Box>
+    </Box >
   );
 };
 

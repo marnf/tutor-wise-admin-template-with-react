@@ -17,6 +17,12 @@ const menuItems = [
     role: 1,
   },
   {
+    key: '/student-list',
+    icon: <MailOutlined />,
+    label: <Link to="/student-list">Student List</Link>,
+    role: 11,
+  },
+  {
     icon: <AppstoreOutlined />,
     label: 'Tutor Request',
     key: 'tutor-request',
@@ -92,6 +98,7 @@ const menuItems = [
     label: <Link to="/testimonial">Testimonial</Link>,
     role: 10,
   },
+
 ];
 
 
@@ -105,19 +112,19 @@ const SideNavBar = ({ isSidebarOpen, toggleSidebar }) => {
 
 
 
-    // Filter menu items based on user roles
-    useEffect(() => {
-      const user = JSON.parse(localStorage.getItem("user"));
-      const userRoles = user?.roles || [];
-  
-      // Filter menu items by roles
-      const allowedItems = filterMenuItems(menuItems, userRoles);
-      setFilteredItems(allowedItems);
-    }, []);
+  // Filter menu items based on user roles
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const userRoles = user?.roles || [];
 
-    
+    // Filter menu items by roles
+    const allowedItems = filterMenuItems(menuItems, userRoles);
+    setFilteredItems(allowedItems);
+  }, []);
 
-    
+
+
+
   // Update openKeys based on the current route
   useEffect(() => {
     const path = location.pathname;
@@ -163,10 +170,10 @@ const SideNavBar = ({ isSidebarOpen, toggleSidebar }) => {
           padding: '20px',
         }}
       >
-        <img 
-          src={logo} 
-          alt="Logo" 
-          style={{ width: '100px', height: '50px' }} 
+        <img
+          src={logo}
+          alt="Logo"
+          style={{ width: '100px', height: '50px' }}
         />
         {/* Toggle Button */}
         <button

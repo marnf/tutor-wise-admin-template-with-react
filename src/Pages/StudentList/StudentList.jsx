@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Box, Button, Checkbox, Dialog, DialogContent, Divider, FormControlLabel, LinearProgress, TextField, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { BiSolidUserDetail } from "react-icons/bi";
-
 // Columns definition for DataGrid
 const columns = [
     { field: "id", headerName: "ID", minWidth: 130 },
@@ -39,7 +38,8 @@ const columns = [
     },
 ];
 
-const Protutor = () => {
+
+const StudentList = () => {
     const [rows, setRows] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [filteredRows, setFilteredRows] = useState([]);
@@ -51,7 +51,7 @@ const Protutor = () => {
     useEffect(() => {
         setLoading(true)
         const BASE_URL = "https://tutorwise-backend.vercel.app";
-        fetch("https://tutorwise-backend.vercel.app/api/admin/pro-tutor-list/")
+        fetch("https://tutorwise-backend.vercel.app/api/admin/non-pro-tutor-list")
             .then((res) => res.json())
             .then((data) => {
                 const formattedData = data.map((item) => ({
@@ -83,7 +83,6 @@ const Protutor = () => {
     }, [searchQuery, rows]);
 
 
-
     const handleOpenViewModal = (item) => {
         setView(item)
         console.log(item)
@@ -95,14 +94,16 @@ const Protutor = () => {
         setOpenViewModal(false)
     }
 
+
+
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
 
+
             <div className="flex flex-col md:flex-row lg:flex-row justify-between items-center  text-end gap-1">
                 <Typography variant="text-base" className="flex h5">
-                    <strong className="text-gray-500">Total:{rows.length} </strong>
+                    <strong className="text-gray-500">Total Students:{rows.length} </strong>
                 </Typography>
-
                 <div className="flex justify-end">
                     <TextField
                         label="Search Tutors"
@@ -130,7 +131,7 @@ const Protutor = () => {
                     rows={filteredRows}
                     columns={columns.map((col) => ({
                         ...col,
-                        minWidth: col.minWidth || 150, // Minimum width for each column (adjust as needed)
+                        minWidth: col.minWidth || 150,
                     }))}
                     pageSize={10}
                     rowsPerPageOptions={[5, 10, 20]}
@@ -150,14 +151,9 @@ const Protutor = () => {
                         "& .MuiDataGrid-cell:focus": {
                             outline: "none", // Remove default outline on focus
                         },
-                        "& .MuiDataGrid-virtualScroller": {
-                            overflowX: "auto", // Ensure horizontal scroll for table content
-                        },
+
                     }}
                 />)}
-
-
-
 
 
             <Dialog open={openViewModal} onClose={handleCloseViewModal} fullWidth maxWidth="lg">
@@ -423,10 +419,8 @@ const Protutor = () => {
             </Dialog>
 
 
-
-
         </Box>
     );
 };
 
-export default Protutor;
+export default StudentList;

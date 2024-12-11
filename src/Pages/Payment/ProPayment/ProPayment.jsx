@@ -6,9 +6,10 @@ import "react-date-range/dist/styles.css"; // main css file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import { BiSolidUserDetail } from "react-icons/bi";
 import moment from "moment/moment";
+import { BsFillCalendarDateFill } from "react-icons/bs";
 
 const columns = [
-    { field: "id", headerName: "ID", minWidth: 40 },
+    { field: "customized_user_id", headerName: "ID", minWidth: 130 },
     // { field: "created_at", headerName: "Payment Time", minWidth: 150 },
     { field: "name", headerName: "User ID", minWidth: 150 },
     { field: "user_type", headerName: "User Type", minWidth: 60 },
@@ -19,14 +20,15 @@ const columns = [
     {
         field: "actions",
         headerName: "Actions",
-        minWidth: 40,
+        minWidth: 80,
+        flex:0.1,
         renderCell: (params) => (
 
             <Box display="flex" justifyContent="center" className="mt-3">
 
                 <BiSolidUserDetail title="View"
                     size={28}
-                     color="#f0523a"
+                    color="#f0523a"
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => params.row.handleViewModal(params.row)} />
 
@@ -69,7 +71,7 @@ const ProPayment = () => {
                     amount: item.amount,
                     digital_bank_name: item.digital_bank_name,
                     created_at: item.created_at,
-                    phone : item.phone,
+                    phone: item.phone,
                     handleViewModal: handleOpenViewModal
                 }));
                 setRows(formattedData);
@@ -123,54 +125,72 @@ const ProPayment = () => {
 
 
             {/* Filters & Search */}
-            <div className="flex items-center justify-between mb-4">
-                {/* Date Range Picker */}
-                <div className="relative">
-                    <Button
-                        variant="contained"
-                        color="primary"
+            <div className="flex items-center justify-between mb-2">
+
+
+                <div className="flex items-center gap-2">
+                    <div className="relative flex items-center justify-start gap-1">
+                        <BsFillCalendarDateFill
+                            size={39}
+                            color="#f0523a"
+                            onClick={() => setShowDatePicker(!showDatePicker)}
+                            className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer pb-1"
+                        />
+
+
+                        {showDatePicker && (
+                            <div style={{ position: "absolute", zIndex: 100, top: "50px" }}>
+                                <DateRangePicker
+                                    onChange={(item) => setDateRange([item.selection])}
+                                    showSelectionPreview={true}
+                                    moveRangeOnFirstSelection={false}
+                                    ranges={dateRange}
+                                    direction="horizontal"
+                                />
+                                <Button
+                                    variant="contained"
+                                    color="success"
+                                    size="small"
+                                    onClick={handleDateFilter}
+                                    sx={{ marginTop: "10px" }}
+                                >
+                                    Apply Filter
+                                </Button>
+
+                            </div>
+
+                        )}
+                    </div>
+
+                    {/* Search Bar */}
+                    <TextField
+                        label="Search"
+                        variant="outlined"
                         size="small"
-                        onClick={() => setShowDatePicker(!showDatePicker)}
-                        sx={{ height: "40px" }}
-                    >
-                        Select Date Range
-                    </Button>
-                    {showDatePicker && (
-                        <div style={{ position: "absolute", zIndex: 100, top: "50px" }}>
-                            <DateRangePicker
-                                onChange={(item) => setDateRange([item.selection])}
-                                showSelectionPreview={true}
-                                moveRangeOnFirstSelection={false}
-                                ranges={dateRange}
-                                direction="horizontal"
-                            />
-                            <Button
-                                variant="contained"
-                                color="success"
-                                size="small"
-                                onClick={handleDateFilter}
-                                sx={{ marginTop: "10px" }}
-                            >
-                                Apply Filter
-                            </Button>
-                        </div>
-                    )}
+                        value={searchQuery}
+                        onChange={handleSearch}
+                        sx={{ width: "300px" }}
+                    />
                 </div>
 
-                {/* Search Bar */}
-                <TextField
-                    label="Search"
-                    variant="outlined"
-                    size="small"
-                    value={searchQuery}
-                    onChange={handleSearch}
-                    sx={{ width: "300px" }}
-                />
+
+                <Typography variant="text-base" className="flex h5">
+                    <strong className="text-gray-500">Total:{rows.length} </strong>
+                </Typography>
+
+
+
             </div>
 
             {loading ? (
                 <Box sx={{ width: "100%" }}>
-                    <LinearProgress />
+                    <LinearProgress
+                        sx={{
+                            backgroundColor: "#0d2a4c",
+                            "& .MuiLinearProgress-bar": {
+                                background: "linear-gradient(90deg,#ef5239 ,#f9553c)", // Gradient effect
+                            },
+                        }} />
                 </Box>
             ) : (
                 <DataGrid
@@ -220,7 +240,7 @@ const ProPayment = () => {
                                 alignItems: 'center',
                                 justifyContent: 'space-between',
                                 gap: 3,
-                                marginBottom:1,
+                                marginBottom: 1,
                                 borderBottom: '1px solid #ddd',
                             }}
                         >
@@ -233,9 +253,9 @@ const ProPayment = () => {
                                     {view?.name || 'N/A'}
                                 </Typography>
                                 <Typography variant="body1">
-                                  {view?.user_type || 'N/A'}
+                                    {view?.user_type || 'N/A'}
                                 </Typography>
-                              
+
                             </Box>
 
                             {/* Right: Location */}
@@ -249,7 +269,7 @@ const ProPayment = () => {
                                         textAlign: 'right',
                                     }}
                                 >
-                                  <strong>ID:</strong>  {view?.customized_user_id || ''}
+                                    <strong>ID:</strong>  {view?.customized_user_id || ''}
                                 </Typography>
                                 <Typography variant="body1">
                                     <strong></strong>{' '}
@@ -270,8 +290,8 @@ const ProPayment = () => {
                         >
                             {/* Left Column */}
                             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                               
-                                
+
+
                                 <Typography variant="body1">
                                     <strong>phone:</strong> {view?.phone || 'N/A'}
                                 </Typography>

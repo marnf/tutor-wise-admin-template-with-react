@@ -22,7 +22,8 @@ const columns = [
     {
         field: "actions",
         headerName: "Actions",
-        flex: 1,
+        minWidth: 145,
+        flex: 0.1,
         renderCell: (params) => (
 
 
@@ -219,11 +220,10 @@ const PendingTutorRequest = () => {
 
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-            <h2 className="text-center font-bold h3">Tutor Request List</h2>
 
-            <div className="flex justify-between items-center  text-end gap-1">
-                <Typography variant="text-base" className="flex justify-end">
-                    <strong className="text-gray-500"> Total Payment:{rows.length} </strong>
+            <div className="flex flex-col md:flex-row lg:flex-row justify-between items-center  text-end gap-1">
+                <Typography variant="text-base" className="flex h5">
+                    <strong className="text-gray-500">Pending Request:{rows.length} </strong>
                 </Typography>
                 <div className="flex justify-end mb-2">
                     <TextField
@@ -241,7 +241,13 @@ const PendingTutorRequest = () => {
 
             {loading ? (
                 <Box sx={{ width: '100%' }}>
-                    <LinearProgress />
+                    <LinearProgress
+                        sx={{
+                            backgroundColor: "#0d2a4c",
+                            "& .MuiLinearProgress-bar": {
+                                background: "linear-gradient(90deg,#ef5239 ,#f9553c)", // Gradient effect
+                            },
+                        }} />
                 </Box>
             ) : (
                 <DataGrid

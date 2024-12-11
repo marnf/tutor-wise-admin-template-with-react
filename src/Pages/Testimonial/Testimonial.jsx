@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Modal, Snackbar, Alert, TextField, LinearProgress, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
+import { Box, Button, Modal, Snackbar, Alert, TextField, LinearProgress, Dialog, DialogTitle, DialogContent, DialogActions, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { MdDelete } from "react-icons/md";
 
@@ -85,7 +85,7 @@ const Testimonial = () => {
             flex: 1,
             renderCell: (params) => (
                 <Box display="flex" justifyContent="end" className="mt-3">
-                    
+
                     <MdDelete
                         title="Delete"
                         size={25}
@@ -110,23 +110,34 @@ const Testimonial = () => {
 
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-            
+
             {/* Search Box */}
-            <Box display="flex" justifyContent="flex-end" mb={2}>
-                <TextField
-                    placeholder="Search..."
-                    value={searchText}
-                    onChange={handleSearch}
-                    variant="outlined"
-                    size="small"
-                    sx={{ width: "300px" }}
-                />
-            </Box>
+            <div className="flex flex-col md:flex-row lg:flex-row justify-between items-center  text-end gap-1">
+                <Typography variant="text-base" className="flex h5">
+                    <strong className="text-gray-500">Total:{rows.length} </strong>
+                </Typography>
+                <Box display="flex" justifyContent="flex-end" mb={2}>
+                    <TextField
+                        placeholder="Search..."
+                        value={searchText}
+                        onChange={handleSearch}
+                        variant="outlined"
+                        size="small"
+                        sx={{ width: "300px" }}
+                    />
+                </Box>
+            </div>
 
 
             {loading ? (
                 <Box sx={{ width: '100%' }}>
-                    <LinearProgress />
+                    <LinearProgress
+                        sx={{
+                            backgroundColor: "#0d2a4c",
+                            "& .MuiLinearProgress-bar": {
+                                background: "linear-gradient(90deg,#ef5239 ,#f9553c)", // Gradient effect
+                            },
+                        }} />
                 </Box>
             ) : (
                 <DataGrid

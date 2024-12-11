@@ -28,7 +28,7 @@ import { FaUserEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { BiSolidUserDetail } from "react-icons/bi";
 
-const columns = (handleEditClick, handleDeleteClick , handleOpenViewModal) => [
+const columns = (handleEditClick, handleDeleteClick, handleOpenViewModal) => [
     // { field: "serial", headerName: "Serial Number", minWidth: 40 },  // Default minWidth: 150
     { field: "id", headerName: "ID", minWidth: 130 },
     // { field: "created_at", headerName: "Create Date", minWidth: 200 },
@@ -45,7 +45,7 @@ const columns = (handleEditClick, handleDeleteClick , handleOpenViewModal) => [
     {
         field: "actions",
         headerName: "Actions",
-       
+
         flex: 1,
         renderCell: (params) => (
             <Box display="flex" justifyContent="center" marginTop={2} gap={1}>
@@ -64,7 +64,7 @@ const columns = (handleEditClick, handleDeleteClick , handleOpenViewModal) => [
                 />
                 <BiSolidUserDetail title="View"
                     size={28}
-                     color="#f0523a"
+                    color="#f0523a"
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => handleOpenViewModal(params.row)} />
 
@@ -244,23 +244,34 @@ const TutorPostAction = () => {
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
 
-            <Box display="flex" justifyContent="flex-end" mb={1}>
-                <TextField
-                    placeholder="Search..."
-                    value={searchText}
-                    onChange={handleSearch}
-                    variant="outlined"
+            <div className="flex flex-col md:flex-row lg:flex-row justify-between items-center  text-end gap-1">
+                <Typography variant="text-base" className="flex h5">
+                    <strong className="text-gray-500">Total:{rows.length} </strong>
+                </Typography>
+                <Box display="flex" justifyContent="flex-end" mb={1}>
+                    <TextField
+                        placeholder="Search..."
+                        value={searchText}
+                        onChange={handleSearch}
+                        variant="outlined"
 
-                    size="small"
-                    right
-                    fullWidth
-                    sx={{ width: '300px' }}
-                />
-            </Box>
+                        size="small"
+                        right
+                        fullWidth
+                        sx={{ width: '300px' }}
+                    />
+                </Box>
+            </div>
 
             {loading ? (
                 <Box sx={{ width: '100%' }}>
-                    <LinearProgress />
+                    <LinearProgress
+                        sx={{
+                            backgroundColor: "#0d2a4c",
+                            "& .MuiLinearProgress-bar": {
+                                background: "linear-gradient(90deg,#ef5239 ,#f9553c)", // Gradient effect
+                            },
+                        }} />
                 </Box>
             ) : (
 
@@ -567,7 +578,7 @@ const TutorPostAction = () => {
                                         textAlign: 'right',
                                     }}
                                 >
-                                   <strong>id:</strong> {view?.id || 'N/A'}
+                                    <strong>id:</strong> {view?.id || 'N/A'}
                                 </Typography>
                                 <Typography variant="body1">
                                     <strong></strong>{' '}
@@ -582,14 +593,14 @@ const TutorPostAction = () => {
                         <Box
                             sx={{
                                 display: 'flex',
-                                marginTop:'8px',
+                                marginTop: '8px',
                                 gap: 3,
                                 flexDirection: { xs: 'column', sm: 'row' },
                             }}
                         >
                             {/* Left Column */}
                             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                               
+
                                 <Typography variant="body1">
                                     <strong>Subject:</strong> {view?.subject || 'N/A'}
                                 </Typography>
@@ -617,7 +628,7 @@ const TutorPostAction = () => {
                                     <strong>Days Per Week:</strong> {view?.days_per_week || 'N/A'}
                                 </Typography>
                                 <Divider />
-                                
+
 
                             </Box>
                         </Box>

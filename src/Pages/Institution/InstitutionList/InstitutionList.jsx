@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Modal, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert } from "@mui/material";
+import { Box, Button, Modal, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { FaUserEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
@@ -9,7 +9,7 @@ const columns = (handleEditClick, handleDeleteClick) => {
     const user = JSON.parse(localStorage.getItem("user"));
     const isSuperAdmin = user?.user_type === "super_admin";
 
-    return[
+    return [
         { field: "id", headerName: "ID", flex: 0.5 },
         {
             field: "logo",
@@ -176,7 +176,13 @@ const InstitutionList = () => {
     };
 
     return (
+
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
+            <div className="flex flex-col md:flex-row lg:flex-row justify-between items-center  text-end gap-1">
+                <Typography variant="text-base" className="flex h5">
+                    <strong className="text-gray-500">Total:{rows.length} </strong>
+                </Typography>
+            </div>
             <DataGrid
                 rows={rows}
                 columns={columns(handleEditClick, handleDeleteClick)}
@@ -200,7 +206,7 @@ const InstitutionList = () => {
                 }}
             />
 
-          
+
 
             {/* Modal for editing institution */}
             <Modal

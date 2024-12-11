@@ -31,7 +31,8 @@ const columns = [
     {
         field: "actions",
         headerName: "Actions",
-        flex: 1,
+        minWidth: 80,
+        flex:0.1,
         renderCell: (params) => (
 
             <Box display="flex" justifyContent="center" className="mt-3">
@@ -187,8 +188,8 @@ const ProPayment = () => {
                 </div>
 
 
-                <Typography variant="text-base" className="strong">
-                    Total Payment: {rows.length}
+                <Typography variant="text-base" className="flex h5">
+                    <strong className="text-gray-500">Total:{rows.length} </strong>
                 </Typography>
 
 
@@ -197,7 +198,13 @@ const ProPayment = () => {
 
             {loading ? (
                 <Box sx={{ width: '100%' }}>
-                    <LinearProgress />
+                    <LinearProgress
+                        sx={{
+                            backgroundColor: "#0d2a4c",
+                            "& .MuiLinearProgress-bar": {
+                                background: "linear-gradient(90deg,#ef5239 ,#f9553c)", // Gradient effect
+                            },
+                        }} />
                 </Box>
             ) : (
                 <DataGrid

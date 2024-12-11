@@ -26,6 +26,7 @@ import TutorPostAction from './Pages/TutonPostAction/TutonPostAction.jsx';
 import InactiveUser from './Pages/InactiveUser/InactiveUser.jsx'
 import PrivateRoute from './../src/PrivateRoute/PrivateRoute.jsx'
 import ProtectedRoute from './Components/ProtectedRoute .jsx';
+import StudentList from './Pages/StudentList/StudentList.jsx';
 
 const router = createBrowserRouter([
   {
@@ -109,6 +110,10 @@ const router = createBrowserRouter([
       {
         path: "/testimonial",
         element:<PrivateRoute allowedRoles={[10]}> <Testimonial />,</PrivateRoute>
+      },
+      {
+        path: "/student-list",
+        element:<PrivateRoute allowedRoles={[11]}> <StudentList/> </PrivateRoute>
       },
     ],
   },

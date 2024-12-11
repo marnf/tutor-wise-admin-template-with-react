@@ -73,9 +73,10 @@ const columns = [
         field: "actions",
         headerName: "Actions",
         minWidth: 150,
+        flex: 0.1,
         renderCell: (params) => (
 
-            <Box display="flex" justifyContent="end" className="mt-3" gap={1}>
+            <Box display="flex" justifyContent="center" className="mt-3" gap={1}>
 
                 <FaUserEdit title="Edit"
                     size={25}
@@ -83,9 +84,9 @@ const columns = [
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => params.row.handleEdit(params.row)} />
 
-                <BiSolidUserDetail title="View" 
+                <BiSolidUserDetail title="View"
                     size={36}
-                     color="#f0523a"
+                    color="#f0523a"
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer pb-2"
                     onClick={() => params.row.handleViewModal(params.row)} />
 
@@ -251,20 +252,32 @@ const ApprovedHigherTutorRequest = () => {
 
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-            <div className="flex justify-end">
-                <TextField
-                    label="Search Requests"
-                    variant="outlined"
-                    value={searchQuery}
-                    size="small"
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    style={{ marginBottom: "1rem", width: "300px" }}
-                />
+
+            <div className="flex flex-col md:flex-row lg:flex-row justify-between items-center  text-end gap-1">
+                <Typography variant="text-base" className="flex h5">
+                    <strong className="text-gray-500">Approved Higher Request:{rows.length} </strong>
+                </Typography>
+                <div className="flex justify-end">
+                    <TextField
+                        label="Search Requests"
+                        variant="outlined"
+                        value={searchQuery}
+                        size="small"
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        style={{ marginBottom: "1rem", width: "300px" }}
+                    />
+                </div>
             </div>
 
             {loading ? (
                 <Box sx={{ width: '100%' }}>
-                    <LinearProgress />
+                    <LinearProgress
+                        sx={{
+                            backgroundColor: "#0d2a4c",
+                            "& .MuiLinearProgress-bar": {
+                                background: "linear-gradient(90deg,#ef5239 ,#f9553c)", // Gradient effect
+                            },
+                        }} />
                 </Box>
             ) : (
                 <DataGrid
