@@ -21,12 +21,12 @@ import { BsFillCalendarDateFill } from "react-icons/bs";
 const columns = [
     { field: "customized_user_id", headerName: "ID", minWidth: 130 },
     { field: "name", headerName: "Name", minWidth: 170 },
-    // { field: "user_type", headerName: "User Type", minWidth: 60 },
+     { field: "created_at", headerName: "Date", minWidth: 220 },
     // { field: "email", headerName: "Email", minWidth: 1 },
     { field: "phone", headerName: "Phone", minWidth: 130 },
     { field: "transaction_id", headerName: "Transaction ID", minWidth: 160 },
     { field: "package", headerName: "Package", minWidth: 50 },
-    { field: "digital_bank_name", headerName: "Digital Banking", minWidth: 100 },
+    { field: "digital_bank_name", headerName: "Wallet", minWidth: 80 , maxWidth:80 },
     { field: "amount", headerName: "Amount", minWidth: 70 },
     {
         field: "actions",
@@ -81,7 +81,7 @@ const ProPayment = () => {
                     package: item.package,
                     amount: item.amount,
                     digital_bank_name: item.digital_bank_name,
-                    created_at: item.created_at,
+                    created_at: formattedDate(item.created_at),
                     phone: item.phone,
                     handleViewModal: handleOpenViewModal
                 }));
@@ -96,7 +96,7 @@ const ProPayment = () => {
 
     const formattedDate = (dateString) => {
         if (!dateString) return "N/A";
-        return moment(dateString).format("MMMM Do YYYY");
+        return moment(dateString).format("MMMM Do YYYY, h:mm a");
     };
 
     const handleOpenViewModal = (item) => {

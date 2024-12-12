@@ -10,7 +10,7 @@ import { BsFillCalendarDateFill } from "react-icons/bs";
 
 const columns = [
     { field: "customized_user_id", headerName: "ID", minWidth: 130 },
-    // { field: "created_at", headerName: "Payment Time", minWidth: 150 },
+     { field: "created_at", headerName: "Payment Time", minWidth: 220 },
     { field: "name", headerName: "User ID", minWidth: 150 },
     { field: "user_type", headerName: "User Type", minWidth: 60 },
     { field: "transaction_id", headerName: "Transaction ID", flex: 1 },
@@ -70,7 +70,7 @@ const ProPayment = () => {
                     package: item.package,
                     amount: item.amount,
                     digital_bank_name: item.digital_bank_name,
-                    created_at: item.created_at,
+                    created_at: formattedDate( item.created_at) ,
                     phone: item.phone,
                     handleViewModal: handleOpenViewModal
                 }));
@@ -105,7 +105,7 @@ const ProPayment = () => {
 
     const formattedDate = (dateString) => {
         if (!dateString) return "N/A";
-        return moment(dateString).format("MMMM Do YYYY");
+        return moment(dateString).format("MMMM Do YYYY, h:mm a");
     };
 
     const handleOpenViewModal = (item) => {
@@ -212,7 +212,7 @@ const ProPayment = () => {
                         },
                         "& .MuiDataGrid-columnHeader:focus-within": {
                             outline: "none", // Remove outline when child element inside column header is focused
-                        },
+                        },  
                     }}
                 />
             )}
