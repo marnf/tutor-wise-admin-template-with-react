@@ -274,10 +274,17 @@ const PendingTutorRequest = () => {
                         "& .MuiDataGrid-cell:focus": {
                             outline: "none", // Remove default outline on focus
                         },
+                        "& .MuiDataGrid-columnHeader:focus": {
+                            outline: "none", // Remove outline on column header focus
+                        },
+                        "& .MuiDataGrid-columnHeader:focus-within": {
+                            outline: "none", // Remove outline when child element inside column header is focused
+                        },
                         "& .MuiDataGrid-virtualScroller": {
                             overflowX: "auto", // Ensure horizontal scroll for table content
                         },
                     }}
+                    
                 />
             )}
 

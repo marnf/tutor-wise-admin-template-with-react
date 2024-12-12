@@ -132,14 +132,28 @@ const ApprovedTutorRequest = () => {
     const [snackbarSeverity, setSnackbarSeverity] = useState("success");
     const [connect, setConnect] = useState([]);
     const [openConnectModal, setOpenConnectModal] = useState(false);
-    const [selectedTutor, setSelectedTutor] = useState(null);
+    const [approvedUser, setApprovedUser] = useState(null);
+    const [showUser, setShowUser] = useState(null);
 
-    const handleTutorSelection = (tutor) => {
-        setSelectedTutor(tutor); // এখানে tutor হচ্ছে নির্বাচিত টিউটরের ডাটা
+
+    const handleUserApproval = (user) => {
+        setApprovedUser(user);
+        setShowUser(user)
+        const TutorId = approvedUser;
+        const StudentId = connect;
+        console.log(TutorId, StudentId)
+        setSnackbarMessage("Tutor assigned successfully");
+        setSnackbarSeverity("success");
+        setOpenSnackbar(true);
     };
 
-   
 
+    const handleAssignSubmit = () => {
+        const TutorId = approvedUser;
+        const StudentId = connect;
+        console.log(TutorId, StudentId)
+       
+    }
 
 
     useEffect(() => {
@@ -200,7 +214,6 @@ const ApprovedTutorRequest = () => {
     const handleOpenConnectModal = (row) => {
         setOpenConnectModal(true)
         setConnect(row)
-
 
     }
     const handleCloseConnectModal = () => {
@@ -336,10 +349,17 @@ const ApprovedTutorRequest = () => {
                         "& .MuiDataGrid-cell:focus": {
                             outline: "none", // Remove default outline on focus
                         },
+                        "& .MuiDataGrid-columnHeader:focus": {
+                            outline: "none", // Remove outline on column header focus
+                        },
+                        "& .MuiDataGrid-columnHeader:focus-within": {
+                            outline: "none", // Remove outline when child element inside column header is focused
+                        },
                         "& .MuiDataGrid-virtualScroller": {
                             overflowX: "auto", // Ensure horizontal scroll for table content
                         },
                     }}
+                    
                 />
             )}
 
@@ -555,14 +575,18 @@ const ApprovedTutorRequest = () => {
             <Dialog open={openConnectModal} onClose={handleCloseConnectModal} maxWidth="lg" fullWidth >
 
 
-                <div className="flex justify-between ">
+                <div className="flex flex-col md:flex-row lg:flex-row justify-between gap-1 ">
 
-                    <ConnectedTutor tutor={selectedTutor} ></ConnectedTutor>
+
+                        <ConnectedTutor onApprove={handleUserApproval} ></ConnectedTutor>
+
+                       
+
 
                     {/* Content */}
-                    <DialogContent>
+                    <DialogContent  className="md:mt-0 lg:mt-0 sm:mt-12">
                         <div
-                            
+
                             sx={{
                                 display: "flex",
                                 flexDirection: "column",
@@ -571,7 +595,7 @@ const ApprovedTutorRequest = () => {
                                 boxShadow: "0px 8px 20px rgba(0,0,0,0.1)",
                                 backgroundColor: "#f9f9f9",
                                 margin: "auto",
-                                
+
                             }}
                         >
                             {/* Header Section */}
@@ -646,7 +670,7 @@ const ApprovedTutorRequest = () => {
                                             display: "flex",
                                             justifyContent: "space-between",
                                             borderBottom: "1px solid #ddd",
-                                          
+
                                         }}
                                     >
                                         <Typography
@@ -689,7 +713,22 @@ const ApprovedTutorRequest = () => {
                             </Box>
 
                             {/* Footer Section: Cancel Button */}
-                            <Box sx={{ textAlign: "end" }}>
+                            <Box className="flex justify-end gap-2 items-center">
+                                <Button
+                                    variant="contained"
+                                    sx={{
+                                        backgroundColor: "blue",
+                                        color: "#fff",
+                                        fontWeight: "bold",
+                                        padding: "0.5rem 2rem",
+                                        "&:hover": {
+                                            backgroundColor: "#e64a19",
+                                        },
+                                    }}
+                                    onClick={handleAssignSubmit}
+                                >
+                                    submit
+                                </Button>
                                 <Button
                                     variant="contained"
                                     sx={{

@@ -210,6 +210,9 @@ const ProPayment = () => {
                         "& .MuiDataGrid-cell": {
                             border: "1px solid #e0e0e0",
                         },
+                        "& .MuiDataGrid-columnHeader:focus-within": {
+                            outline: "none", // Remove outline when child element inside column header is focused
+                        },
                     }}
                 />
             )}

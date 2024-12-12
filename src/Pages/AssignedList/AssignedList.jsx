@@ -114,7 +114,7 @@ const columns = [
     },
 ];
 
-const ApprovedHigherTutorRequest = () => {
+const AssignedList = () => {
 
     const [rows, setRows] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
@@ -255,7 +255,7 @@ const ApprovedHigherTutorRequest = () => {
 
             <div className="flex flex-col md:flex-row lg:flex-row justify-between items-center  text-end gap-1">
                 <Typography variant="text-base" className="flex h5">
-                    <strong className="text-gray-500">Approved Higher Request:{rows.length} </strong>
+                    <strong className="text-gray-500">Assigned Tutor:{rows.length} </strong>
                 </Typography>
                 <div className="flex justify-end">
                     <TextField
@@ -669,4 +669,4 @@ const ApprovedHigherTutorRequest = () => {
     );
 };
 
-export default ApprovedHigherTutorRequest;
+export default AssignedList;

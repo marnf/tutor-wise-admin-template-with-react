@@ -27,6 +27,8 @@ import InactiveUser from './Pages/InactiveUser/InactiveUser.jsx'
 import PrivateRoute from './../src/PrivateRoute/PrivateRoute.jsx'
 import ProtectedRoute from './Components/ProtectedRoute .jsx';
 import StudentList from './Pages/StudentList/StudentList.jsx';
+import AssignedList from './Pages/AssignedList/AssignedList.jsx'
+import SendMessagePage from './Pages/SendMessagePage/SendMessagePage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -114,6 +116,14 @@ const router = createBrowserRouter([
       {
         path: "/student-list",
         element:<PrivateRoute allowedRoles={[11]}> <StudentList/> </PrivateRoute>
+      },
+      {
+        path: "/assigned-list",
+        element:<PrivateRoute allowedRoles={[12]}> <AssignedList/> </PrivateRoute>
+      },
+      {
+        path: "/send-message",
+        element:<PrivateRoute allowedRoles={[12]}> <SendMessagePage></SendMessagePage> </PrivateRoute>
       },
     ],
   },

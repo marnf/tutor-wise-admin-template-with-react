@@ -539,6 +539,9 @@ const UserList = () => {
                         "& .MuiDataGrid-virtualScroller": {
                             overflowX: "auto", // Ensure horizontal scroll for table content
                         },
+                        "& .MuiDataGrid-columnHeader:focus-within": {
+                            outline: "none", // Remove outline when child element inside column header is focused
+                        },
                     }}
                 />
             )}

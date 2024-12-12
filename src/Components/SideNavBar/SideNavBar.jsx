@@ -45,6 +45,12 @@ const menuItems = [
     ],
   },
   {
+    key: '/assigned-list',
+    icon: <MailOutlined />,
+    label: <Link to="/assigned-list">Assigned List</Link>,
+    role: 11,
+  },
+  {
     key: '/tutor-post',
     icon: <MailOutlined />,
     label: <Link to="/tutor-post">Tuition Post</Link>,
@@ -170,11 +176,13 @@ const SideNavBar = ({ isSidebarOpen, toggleSidebar }) => {
           padding: '20px',
         }}
       >
-        <img
-          src={logo}
-          alt="Logo"
-          style={{ width: '100px', height: '50px' }}
-        />
+        <Link to="/">
+          <img
+            src={logo}
+            alt="Logo"
+            style={{ width: '100px', height: '50px' }}
+          />
+        </Link>
         {/* Toggle Button */}
         <button
           onClick={toggleSidebar}

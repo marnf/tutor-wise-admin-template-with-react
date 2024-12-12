@@ -9,6 +9,8 @@ import Chart from 'chart.js/auto';
 import { Box, LinearProgress } from "@mui/material";
 import { MdViewList } from "react-icons/md";
 import { BiSolidMessageDetail } from "react-icons/bi";
+import { TbListDetails } from "react-icons/tb";
+
 
 const Dashboard = () => {
     const [totalStudentData, setTotalStudentData] = useState(null);
@@ -99,6 +101,8 @@ const Dashboard = () => {
                     title="Total Student"
                     value={totalStudentData ? totalStudentData.total_student : '0'}
                     percentage={chartPercentages.totalStudent}
+                    link="/student-list"
+
                 />
 
                 {/* Pro Tutor Card */}
@@ -106,6 +110,7 @@ const Dashboard = () => {
                     title="Pro Tutor"
                     value={proTutorData ? proTutorData.total_pro_tutor : '0'}
                     percentage={chartPercentages.proTutor}
+                    link="/pro-tutor-list"
                 />
 
                 {/* Referrer Card */}
@@ -113,6 +118,7 @@ const Dashboard = () => {
                     title="Referrer"
                     value={referrerData ? referrerData.total_referer : '0'}
                     percentage={chartPercentages.referrer}
+
                 />
 
                 {/* Active User Card */}
@@ -120,6 +126,7 @@ const Dashboard = () => {
                     title="Active User"
                     value={activeUserData ? activeUserData.active_user : '0'}
                     percentage={chartPercentages.activeUser}
+
                 />
             </div>
         </div>
@@ -190,7 +197,7 @@ const PaymentCard = ({ data }) => {
 
     return (
         <div className="card bg-white shadow-xl rounded-lg p-6  flex flex-col gap-6">
-            <h2 className=" text-gray-700 mb-1 text-center font-bold">Percentage Details</h2>
+            <h2 className=" text-gray-700 mb-1 text-center font-bold">Payment Percentage Details</h2>
             {data ? (
                 <div className="flex justify-between items-start ">
                     {/* Doughnut Chart */}
@@ -244,7 +251,7 @@ const PaymentCard = ({ data }) => {
 // Inactive User Card Component
 const InactiveUserCard = ({ title, value, percentage }) => {
     return (
-        <div className="card bg-white shadow-md rounded-lg p-6 flex flex-col gap-6">
+        <div className="card bg-white shadow-md rounded-lg p-6 flex flex-col gap-3">
             <div className="flex justify-between items-center">
                 <div>
                     <h4 className="text-xl font-semibold text-gray-700">{title}</h4>
@@ -258,31 +265,54 @@ const InactiveUserCard = ({ title, value, percentage }) => {
 
                 <Link to="/inactive-user"> <MdViewList size={40} color="#0d2849" title='Show Inactive User'
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer pb-1" /></Link>
-
+                <Link to="/send-message">
                 <BiSolidMessageDetail size={40} color="#f0523a" title='Send Message'
-                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer" />
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer" /></Link>
 
-            </div>
         </div>
+        </div >
     );
 };
 
 // Card Component
-const Card = ({ title, value, percentage }) => {
+// Card Component
+const Card = ({ title, value, percentage, link }) => {
     return (
-        <div className="card bg-white shadow-md rounded-lg px-2">
-            <div className="flex justify-around items-center">
-                <div className="flex flex-col justify-end">
-                    <h4 className="text-lg font-semibold text-gray-700">{title}</h4>
-                    <h2 className="text-xl font-bold">{value}</h2>
+        <div className="card bg-white shadow-lg rounded-lg p-2 transition-transform transform hover:scale-105 hover:shadow-xl duration-300 ease-in-out">
+            <div className="flex justify-between items-center">
+                <div className="flex flex-col justify-center">
+                    <div className="flex flex-col items-center space-x-2">
+                        <h2 className="text-3xl font-bold text-gray-900">{value}</h2>
+                        <h4 className="text-lg font-semibold text-gray-800">{title}</h4>
+                    </div>
+                    {/* Add a small description or label */}
+
                 </div>
                 <div className="w-32 h-32">
                     <RadialBar percentage={percentage} />
                 </div>
             </div>
+
+            {/* Add a footer with a unique action */}
+            <div className="mt-2 flex justify-between items-center">
+
+                <p className="text-sm text-gray-500 ">view all the details --</p>
+
+                <Link to={link}>
+
+                    <TbListDetails size={40}
+                        color="#f0523a"
+                        className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer pb-2" />
+                </Link>
+            </div>
+            <div className="mt-1">
+                {/* Decorative gradient line */}
+                <div className="h-1 w-full bg-gradient-to-r to-orange-700 from-blue-700 rounded-full"></div>
+            </div>
         </div>
     );
 };
+
 
 export default Dashboard;
 

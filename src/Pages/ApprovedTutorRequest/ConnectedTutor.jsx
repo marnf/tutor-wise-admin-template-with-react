@@ -8,15 +8,17 @@ import { IoMdCheckboxOutline } from "react-icons/io";
 const columns = [
     { field: "customizeId", headerName: "ID", flex: 0.1 },
     // { field: "full_name", headerName: "Name", flex: 0.1 },
-    { field: "location", headerName: "Location", flex: 0.1 },
-    { field: "subject", headerName: "Subject", flex: 0.1 },
-    { field: "gender", headerName: "Gender", flex: 0.1 },
-    { field: "days_per_week", headerName: "Days/Week", flex: 0.1 },
-    { field: "charge_per_month", headerName: "Charge", flex: 0.1 },
+    { field: "location", headerName: "Location", flex: 0.1 ,  minWidth:120 },
+    { field: "phone", headerName: "Phone", maxWidth: 120, minWidth:120 },
+    { field: "label", headerName: "Class",  maxWidth: 70 , minWidth:70 },
+    { field: "subject", headerName: "Subject", flex: 0.1 , minWidth:120 },
+    { field: "gender", headerName: "Gender",  maxWidth: 70, minWidth:70 },
+    { field: "days_per_week", headerName: "Days/Week",  maxWidth: 10  },
+    { field: "charge_per_month", headerName: "Charge",  maxWidth: 65 , minWidth:60},
     {
         field: "actions",
         headerName: "Actions",
-        flex: 0.1, // Takes as little space as possible
+        maxWidth: 120 , minWidth:120,
         renderCell: (params) => (
             <Box className="flex justify-around mt-2">
                 <BiSolidUserDetail
@@ -39,7 +41,7 @@ const columns = [
     },
 ];
 
-const ConnectedTutor = () => {
+const ConnectedTutor = ({ onApprove }) => {
     const [rows, setRows] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [filteredRows, setFilteredRows] = useState([]);
@@ -59,13 +61,15 @@ const ConnectedTutor = () => {
                 const formattedData = data.map((item) => ({
                     id: item.tutor_personal_info.id,
                     profile_picture: item.tutor_personal_info.profile_picture ? `${BASE_URL}${item.tutor_personal_info.profile_picture}` : null,
+                    phone: item.tutor_personal_info.phone,
                     customizeId: item.tutor_personal_info.customized_user_id,
                     full_name: item.tutor_personal_info.full_name,
                     location: `${item.tutor_personal_info.district}, ${item.tutor_personal_info.location}`,
                     subject: item.tutor_tuition_info.subject,
                     gender: item.tutor_personal_info.gender,
+                    label: item.tutor_tuition_info.i_will_teach,
                     days_per_week: item.tutor_tuition_info.days_per_week,
-                    charge_per_month: item.tutor_tuition_info.charge_per_month,
+                    charge_per_month:Number(Number(item.tutor_tuition_info.charge_per_month).toFixed(0)),
                     handleViewModal: (params) => handleOpenViewModal(item),
                     handleApproveModal: handleOpenApproveModal
                 }));
@@ -88,7 +92,6 @@ const ConnectedTutor = () => {
 
     const handleOpenViewModal = (item) => {
         setView(item)
-        console.log(item)
         setOpenViewModal(true)
 
 
@@ -102,7 +105,6 @@ const ConnectedTutor = () => {
 
     const handleOpenApproveModal = (item) => {
         setApprove(item)
-        console.log(item)
         setOpenApproveModal(true)
 
 
@@ -111,13 +113,16 @@ const ConnectedTutor = () => {
         setOpenApproveModal(false)
     }
 
-    const handleApprove = () => {
-       
+    const handleApprove = (approve) => {
+        if (onApprove) {
+            onApprove(approve);
+            setOpenApproveModal(false)
+        }
     };
 
 
     return (
-        <Box sx={{ height: "60vh", width: "70%", padding: 2 }}>
+        <Box className="w-70 sm:w-100 h-96  p-2 " >
 
             <div className="flex flex-col md:flex-row lg:flex-row justify-between items-center  text-end gap-1 mb-1">
                 <Typography variant="text-base" className="flex h5">
@@ -151,7 +156,8 @@ const ConnectedTutor = () => {
                     rows={filteredRows}
                     columns={columns.map((col) => ({
                         ...col,
-                        minWidth: col.minWidth || 100, // প্রতিটি কলামের জন্য সর্বনিম্ন প্রস্থ নির্ধারণ
+                        minWidth: col.minWidth ,
+                         maxWidth:col.maxWidth
                     }))}
                     pageSize={10}
                     rowsPerPageOptions={[5, 10, 20]}
@@ -175,6 +181,9 @@ const ConnectedTutor = () => {
                         },
                         "& .MuiDataGrid-cell:focus": {
                             outline: "none",
+                        },
+                        "& .MuiDataGrid-columnHeader:focus-within": {
+                            outline: "none", // Remove outline when child element inside column header is focused
                         },
                         "& .MuiDataGrid-virtualScroller": {
                             overflowX: "auto", // Horizontal scroll support
@@ -358,7 +367,7 @@ const ConnectedTutor = () => {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseApproveModal}>Cancel</Button>
-                    <Button onClick={handleApprove} color="success">Approve</Button>
+                    <Button onClick={() => handleApprove(approve)} color="success">Approve</Button>
                 </DialogActions>
             </Dialog>
 
