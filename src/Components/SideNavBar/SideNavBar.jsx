@@ -3,27 +3,40 @@ import { AppstoreOutlined, MailOutlined, MenuOutlined } from '@ant-design/icons'
 import { Menu } from 'antd';
 import { Link, useLocation } from 'react-router-dom';
 import logo from '../../../public/images/TutorwiseLogo.png';
+import { MdSpaceDashboard } from "react-icons/md";
+import { PiUserListFill } from "react-icons/pi";
+import { PiStudentFill } from "react-icons/pi";
+import { FaChalkboardTeacher } from "react-icons/fa";
+import { SiGitconnected } from "react-icons/si";
+import { MdOutlinePostAdd } from "react-icons/md";
+import { MdAirplanemodeInactive } from "react-icons/md";
+import { BiSolidSchool } from "react-icons/bi";
+import { FaQuestionCircle } from "react-icons/fa";
+import { MdOutlinePayment } from "react-icons/md";
+import { MdReviews } from "react-icons/md";
+import { MdRateReview } from "react-icons/md";
+import { MdOutlineTask } from "react-icons/md";
 
 const menuItems = [
   {
     key: '/',
-    icon: <MailOutlined />,
+    icon: <MdSpaceDashboard size={25} />,
     label: <Link to="/">Dashboard</Link>,
   },
   {
     key: '/userlist',
-    icon: <MailOutlined />,
+    icon: <PiUserListFill size={25} />,
     label: <Link to="/userlist">User List</Link>,
     role: 1,
   },
   {
     key: '/student-list',
-    icon: <MailOutlined />,
+    icon: <PiStudentFill size={25}/>,
     label: <Link to="/student-list">Student List</Link>,
     role: 11,
   },
   {
-    icon: <AppstoreOutlined />,
+    icon: <MdOutlineTask size={25}/>,
     label: 'Tutor Request',
     key: 'tutor-request',
     role: 2, // Unique key for this group
@@ -36,7 +49,7 @@ const menuItems = [
   },
   {
     key: 'tutor-list',
-    icon: <AppstoreOutlined />,
+    icon: <FaChalkboardTeacher size={25}/>,
     label: 'Tutor List',
     role: 3,
     children: [
@@ -46,25 +59,25 @@ const menuItems = [
   },
   {
     key: '/assigned-list',
-    icon: <MailOutlined />,
+    icon: <SiGitconnected size={25}/>,
     label: <Link to="/assigned-list">Assigned List</Link>,
     role: 11,
   },
   {
     key: '/tutor-post',
-    icon: <MailOutlined />,
+    icon: <MdOutlinePostAdd size={25}/>,
     label: <Link to="/tutor-post">Tuition Post</Link>,
     role: 4,
   },
   {
     key: '/inactive-user',
-    icon: <MailOutlined />,
+    icon: <MdAirplanemodeInactive size={25}/>,
     label: <Link to="/inactive-user">Inactive Users</Link>,
     role: 5,
   },
   {
     key: 'institution',
-    icon: <AppstoreOutlined />,
+    icon: <BiSolidSchool size={25}/>,
     label: 'Institution',
     role: 6,
     children: [
@@ -74,7 +87,7 @@ const menuItems = [
   },
   {
     key: 'faq',
-    icon: <AppstoreOutlined />,
+    icon: <FaQuestionCircle size={25}/>,
     label: 'FAQ',
     role: 7,
     children: [
@@ -84,7 +97,7 @@ const menuItems = [
   },
   {
     key: 'payment',
-    icon: <AppstoreOutlined />,
+    icon: <MdOutlinePayment size={25}/>,
     label: 'Payment',
     role: 8,
     children: [
@@ -94,13 +107,13 @@ const menuItems = [
   },
   {
     key: '/review',
-    icon: <MailOutlined />,
+    icon: < MdRateReview size={25}/>,
     label: <Link to="/review">Review</Link>,
     role: 9,
   },
   {
     key: '/testimonial',
-    icon: <MailOutlined />,
+    icon: <MdReviews size={25}/>,
     label: <Link to="/testimonial">Testimonial</Link>,
     role: 10,
   },

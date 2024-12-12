@@ -206,7 +206,7 @@ const PaymentCard = ({ data }) => {
                     </div>
 
                     {/* ডেটার বিবরণ */}
-                    <div className="ml-6 flex flex-col justify-start space-y-3">
+                    <div className="ml-6 flex flex-col  space-y-5">
                         <div className="text-sm space-y-1">
                             <p className="font-medium">
                                 <strong className='text-gray-500'>Total Payment Number:</strong> {data.total_payment_number}
@@ -224,7 +224,15 @@ const PaymentCard = ({ data }) => {
                                 <strong className='text-gray-500'>Pro Tutor Subscription Percentage:</strong> {data.pro_tutor_subscription_percentage}%
                             </p>
                         </div>
+                        <div className='flex justify-end'>
+                            <Link to="/pro-payment">
+                                <TbListDetails size={40}
+                                    color="#f0523a"
+                                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer pb-2" />
+                            </Link>
+                        </div>
                     </div>
+
                 </div>
             ) : (
                 <Box sx={{ width: '100%' }}>
@@ -254,8 +262,8 @@ const InactiveUserCard = ({ title, value, percentage }) => {
         <div className="card bg-white shadow-md rounded-lg p-6 flex flex-col gap-3">
             <div className="flex justify-between items-center">
                 <div>
-                    <h4 className="text-xl font-semibold text-gray-700">{title}</h4>
                     <h2 className="text-3xl font-bold">{value}</h2>
+                    <h4 className="text-xl font-semibold text-gray-700 text-nowrap">{title}</h4>
                 </div>
                 <div className="w-40 h-40">
                     <RadialBar percentage={percentage} size="200" />
@@ -266,10 +274,10 @@ const InactiveUserCard = ({ title, value, percentage }) => {
                 <Link to="/inactive-user"> <MdViewList size={40} color="#0d2849" title='Show Inactive User'
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer pb-1" /></Link>
                 <Link to="/send-message">
-                <BiSolidMessageDetail size={40} color="#f0523a" title='Send Message'
-                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer" /></Link>
+                    <BiSolidMessageDetail size={40} color="#f0523a" title='Send Message'
+                        className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer" /></Link>
 
-        </div>
+            </div>
         </div >
     );
 };
