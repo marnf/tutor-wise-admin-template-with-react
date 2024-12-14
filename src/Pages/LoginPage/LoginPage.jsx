@@ -91,6 +91,7 @@ const LoginPage = () => {
       setSnackbarMessage("Something wrong !");
       setSnackbarSeverity("error");
       setOpenSnackbar(true);
+      console.log(error)
 
     }
   };
