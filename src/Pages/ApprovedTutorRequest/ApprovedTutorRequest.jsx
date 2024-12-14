@@ -589,7 +589,7 @@ const ApprovedTutorRequest = () => {
                 <div className="flex flex-col md:flex-row lg:flex-row justify-between gap-1 ">
 
 
-                        <ConnectedTutor onApprove={handleUserApproval} ></ConnectedTutor>
+                        <ConnectedTutor onApprove={handleUserApproval} budgetLimit={connect?.budget} label={connect?.class_name} gender={connect?.gender} ></ConnectedTutor>
 
                        
 
@@ -724,22 +724,8 @@ const ApprovedTutorRequest = () => {
                             </Box>
 
                             {/* Footer Section: Cancel Button */}
-                            <Box className="flex justify-end gap-2 items-center">
-                                <Button
-                                    variant="contained"
-                                    sx={{
-                                        backgroundColor: "blue",
-                                        color: "#fff",
-                                        fontWeight: "bold",
-                                        padding: "0.5rem 2rem",
-                                        "&:hover": {
-                                            backgroundColor: "#e64a19",
-                                        },
-                                    }}
-                                    onClick={handleAssignSubmit}
-                                >
-                                    submit
-                                </Button>
+                            <Box className="flex justify-end  items-center">
+                               
                                 <Button
                                     variant="contained"
                                     sx={{

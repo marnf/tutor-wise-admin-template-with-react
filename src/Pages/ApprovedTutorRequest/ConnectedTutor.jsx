@@ -6,20 +6,20 @@ import { IoMdCheckboxOutline } from "react-icons/io";
 
 // Columns definition for DataGrid
 const columns = [
-    { field: "customizeId", headerName: "ID",  maxWidth: 120, minWidth:120 },
+    { field: "customizeId", headerName: "ID", maxWidth: 120, minWidth: 120 },
     // { field: "full_name", headerName: "Name", flex: 0.1 },
-    { field: "location", headerName: "Location", flex: 0.1 ,  minWidth:120 },
+    { field: "location", headerName: "Location", flex: 0.1, minWidth: 120 },
     // { field: "phone", headerName: "Phone", maxWidth: 120, minWidth:120 },
-    { field: "", headerName: "Online/offline", maxWidth: 90, minWidth:90 },
-    { field: "label", headerName: "Class",  maxWidth: 70 , minWidth:70 },
-    { field: "subject", headerName: "Subject", flex: 0.1 , minWidth:120 },
-    { field: "gender", headerName: "Gender",  maxWidth: 70, minWidth:70 },
-    { field: "days_per_week", headerName: "Days/Week",  maxWidth: 10  },
-    { field: "charge_per_month", headerName: "Amount",  maxWidth: 65 , minWidth:60},
+    { field: "", headerName: "Online/offline", maxWidth: 90, minWidth: 90 },
+    { field: "label", headerName: "Class", maxWidth: 70, minWidth: 70 },
+    { field: "subject", headerName: "Subject", flex: 0.1, minWidth: 120 },
+    { field: "gender", headerName: "Gender", maxWidth: 70, minWidth: 70 },
+    { field: "days_per_week", headerName: "Days/Week", maxWidth: 10 },
+    { field: "charge_per_month", headerName: "Amount", maxWidth: 65, minWidth: 60 },
     {
         field: "actions",
         headerName: "Actions",
-        maxWidth: 120 , minWidth:120,
+        maxWidth: 120, minWidth: 120,
         renderCell: (params) => (
             <Box className="flex justify-around mt-2">
                 <BiSolidUserDetail
@@ -42,26 +42,42 @@ const columns = [
     },
 ];
 
-const ConnectedTutor = ({ onApprove }) => {
+const ConnectedTutor = ({ onApprove, budgetLimit, label, gender }) => {
     const [rows, setRows] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [filteredRows, setFilteredRows] = useState([]);
     const [loading, setLoading] = useState(false);
     const [view, setView] = useState([]);
     const [openViewModal, setOpenViewModal] = useState(false);
-    const [approve, setApprove] = useState([]);
     const [openApproveModal, setOpenApproveModal] = useState(false);
+    const [approve, setApprove] = useState([]);
 
-    // Fetch data from the API
+
+
     useEffect(() => {
-        setLoading(true)
+        setLoading(true);
         const BASE_URL = "https://tutorwise-backend.vercel.app";
+
+
         fetch("https://tutorwise-backend.vercel.app/api/admin/non-pro-tutor-list")
             .then((res) => res.json())
             .then((data) => {
-                const formattedData = data.map((item) => ({
+
+                
+
+
+                const filteredData = data.filter((item) =>
+                    item.tutor_tuition_info.charge_per_month <= budgetLimit &&
+                    item.tutor_tuition_info.i_will_teach === label && item.tutor_personal_info.gender.toLowerCase() === gender.toLowerCase()
+
+                );
+                console.log(filteredData)
+
+                const formattedData = filteredData.map((item) => ({
                     id: item.tutor_personal_info.id,
-                    profile_picture: item.tutor_personal_info.profile_picture ? `${BASE_URL}${item.tutor_personal_info.profile_picture}` : null,
+                    profile_picture: item.tutor_personal_info.profile_picture
+                        ? `${BASE_URL}${item.tutor_personal_info.profile_picture}`
+                        : null,
                     phone: item.tutor_personal_info.phone,
                     customizeId: item.tutor_personal_info.customized_user_id,
                     full_name: item.tutor_personal_info.full_name,
@@ -70,16 +86,21 @@ const ConnectedTutor = ({ onApprove }) => {
                     gender: item.tutor_personal_info.gender,
                     label: item.tutor_tuition_info.i_will_teach,
                     days_per_week: item.tutor_tuition_info.days_per_week,
-                    charge_per_month:Number(Number(item.tutor_tuition_info.charge_per_month).toFixed(0)),
+                    charge_per_month: Number(Number(item.tutor_tuition_info.charge_per_month).toFixed(0)),
                     handleViewModal: (params) => handleOpenViewModal(item),
-                    handleApproveModal: handleOpenApproveModal
+                    handleApproveModal: handleOpenApproveModal,
                 }));
+
+
                 setRows(formattedData);
                 setFilteredRows(formattedData);
-                setLoading(false)
+                setLoading(false);
             })
-            .catch((error) => console.error("Error fetching data:", error));
-    }, []);
+            .catch((error) => {
+                console.error("Error fetching data:", error);
+                setLoading(false);
+            });
+    }, [budgetLimit, label, gender]);
 
     // Filter data based on search query
     useEffect(() => {
@@ -89,6 +110,7 @@ const ConnectedTutor = ({ onApprove }) => {
         setFilteredRows(result);
     }, [searchQuery, rows]);
 
+    
 
 
     const handleOpenViewModal = (item) => {
@@ -157,8 +179,8 @@ const ConnectedTutor = ({ onApprove }) => {
                     rows={filteredRows}
                     columns={columns.map((col) => ({
                         ...col,
-                        minWidth: col.minWidth ,
-                         maxWidth:col.maxWidth
+                        minWidth: col.minWidth,
+                        maxWidth: col.maxWidth
                     }))}
                     pageSize={10}
                     rowsPerPageOptions={[5, 10, 20]}
