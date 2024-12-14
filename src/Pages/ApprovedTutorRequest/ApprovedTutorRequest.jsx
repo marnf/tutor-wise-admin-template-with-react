@@ -647,7 +647,7 @@ const ApprovedTutorRequest = () => {
                                     >
                                         <strong>ID:</strong> {connect?.id || ""}
                                     </Typography>
-                                    <Typography variant="body1">
+                                    <Typography className="text-nowrap" variant="body1">
                                         {connect?.created_at
                                             ? new Date(connect.created_at).toLocaleString()
                                             : ""}

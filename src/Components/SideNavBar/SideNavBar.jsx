@@ -37,18 +37,6 @@ const menuItems = [
     role: 11,
   },
   {
-    key: '/assigned-list',
-    icon: <SiGitconnected size={25} />,
-    label: <Link to="/assigned-list">Assigned List</Link>,
-    role: 12,
-  },
-  {
-    key: '/send-message',
-    icon: <SiGitconnected size={25} />,
-    label: <Link to="/send-message">Send message</Link>,
-    role: 13,
-  },
-  {
     icon: <MdOutlineTask size={25} />,
     label: 'Tutor Request',
     key: 'tutor-request',
@@ -71,67 +59,67 @@ const menuItems = [
       { key: '/tutor-list', label: <Link to="/tutor-list"> Tutor</Link>, role: 3, },
     ],
   },
-  
   {
-    key: '/tutor-post',
-    icon: <MdOutlinePostAdd size={25} />,
-    label: <Link to="/tutor-post">Tuition Post</Link>,
-    role: 4,
+    key: '/assigned-list',
+    icon: <SiGitconnected size={25} />,
+    label: <Link to="/assigned-list">Assigned List</Link>,
+    role: 10,
   },
   {
     key: '/inactive-user',
     icon: <MdAirplanemodeInactive size={25} />,
     label: <Link to="/inactive-user">Inactive Users</Link>,
-    role: 5,
+    role: 12,
   },
   {
     key: '/send-message',
     icon: <MdMessage size={25} />,
-    label: <Link to="/send-message">send messages</Link>,
-    role: 10,
+    label: <Link to="/send-message">Send message</Link>,
+    role: 9,
+  },
+  {
+    key: 'payment',
+    icon: <MdOutlinePayment size={25} />,
+    label: 'Payment',
+    role: 6,
+    children: [
+      { key: '/all-payment', label: <Link to="/all-payment">All Payment</Link>, role: 6, },
+      { key: '/pro-payment', label: <Link to="/pro-payment">Pro Payment</Link>, role: 6, },
+      { key: '/payment', label: <Link to="/payment">Payment</Link>, role: 6, },
+    ],
   },
   {
     key: 'institution',
     icon: <BiSolidSchool size={25} />,
     label: 'Institution',
-    role: 6,
+    role: 4,
     children: [
-      { key: '/add-institution', label: <Link to="/add-institution">Add Institution</Link>, role: 6, },
-      { key: '/institution-list', label: <Link to="/institution-list">Institution List</Link>, role: 6, },
+      { key: '/add-institution', label: <Link to="/add-institution">Add Institution</Link>, role: 4, },
+      { key: '/institution-list', label: <Link to="/institution-list">Institution List</Link>, role: 4, },
     ],
   },
   {
     key: 'faq',
     icon: <FaQuestionCircle size={25} />,
     label: 'FAQ',
-    role: 7,
+    role: 5,
     children: [
-      { key: '/add-faq', label: <Link to="/add-faq">Add FAQ</Link>, role: 7, },
-      { key: '/faq-list', label: <Link to="/faq-list">FAQ List</Link>, role: 7, },
+      { key: '/add-faq', label: <Link to="/add-faq">Add FAQ</Link>, role: 5, },
+      { key: '/faq-list', label: <Link to="/faq-list">FAQ List</Link>, role: 5, },
     ],
   },
-  {
-    key: 'payment',
-    icon: <MdOutlinePayment size={25} />,
-    label: 'Payment',
-    role: 8,
-    children: [
-      { key: '/all-payment', label: <Link to="/all-payment">All Payment</Link>, role: 8, },
-      { key: '/pro-payment', label: <Link to="/pro-payment">Pro Payment</Link>, role: 8, },
-      { key: '/payment', label: <Link to="/payment">Payment</Link>, role: 8, },
-    ],
-  },
+
   {
     key: '/review',
     icon: < MdRateReview size={25} />,
     label: <Link to="/review">Review</Link>,
-    role: 9,
+    role: 7,
   },
   {
     key: '/testimonial',
     icon: <MdReviews size={25} />,
     label: <Link to="/testimonial">Testimonial</Link>,
-    role: 10,
+    role: 8,
   },
 
 ];

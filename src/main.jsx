@@ -81,64 +81,60 @@ const router = createBrowserRouter([
         element:<PrivateRoute allowedRoles={[3]}> <Tutor />,</PrivateRoute>
       },
       {
-        path: "/tutor-post",
-        element:<PrivateRoute allowedRoles={[4]}> <TutorPostAction></TutorPostAction></PrivateRoute>
-      },
-      {
-        path: "/inactive-user",
-        element:<PrivateRoute allowedRoles={[5]}> <InactiveUser></InactiveUser></PrivateRoute>
-      },
-      {
         path: "/add-institution",
-        element:<PrivateRoute allowedRoles={[6]}> <AddInstitution />,</PrivateRoute>
+        element:<PrivateRoute allowedRoles={[4]}> <AddInstitution />,</PrivateRoute>
       },
       {
         path: "/institution-list",
-        element:<PrivateRoute allowedRoles={[6]}><InstitutionList />,</PrivateRoute>
+        element:<PrivateRoute allowedRoles={[4]}><InstitutionList />,</PrivateRoute>
       },
       {
         path: "/add-faq",
-        element: <PrivateRoute allowedRoles={[7]}> <AddFaq />,</PrivateRoute>
+        element: <PrivateRoute allowedRoles={[5]}> <AddFaq />,</PrivateRoute>
       },
       {
         path: "/faq-list",
-        element:<PrivateRoute allowedRoles={[7]}> <FaqList />,</PrivateRoute>
+        element:<PrivateRoute allowedRoles={[5]}> <FaqList />,</PrivateRoute>
       },
       {
         path: "/all-payment",
-        element:<PrivateRoute allowedRoles={[8]}> <AllPayment />,</PrivateRoute>
+        element:<PrivateRoute allowedRoles={[6]}> <AllPayment />,</PrivateRoute>
       },
       {
         path: "/pro-payment",
-        element:<PrivateRoute allowedRoles={[8]}> <ProPayment />,</PrivateRoute>
+        element:<PrivateRoute allowedRoles={[6]}> <ProPayment />,</PrivateRoute>
       },
       {
         path: "/payment",
-        element:<PrivateRoute allowedRoles={[8]}> <Payment />,</PrivateRoute>
+        element:<PrivateRoute allowedRoles={[6]}> <Payment />,</PrivateRoute>
       },
       {
         path: "/review",
-        element: <PrivateRoute allowedRoles={[9]}><Review />,</PrivateRoute>
+        element: <PrivateRoute allowedRoles={[7]}><Review />,</PrivateRoute>
       },
       {
         path: "/testimonial",
-        element:<PrivateRoute allowedRoles={[10]}> <Testimonial />,</PrivateRoute>
+        element:<PrivateRoute allowedRoles={[8]}> <Testimonial />,</PrivateRoute>
+      },
+      {
+        path: "/send-message",
+        element:<PrivateRoute allowedRoles={[9]}> <SendMessagePage></SendMessagePage> </PrivateRoute>
+      },
+      {
+        path: "/assigned-list",
+        element:<PrivateRoute allowedRoles={[10]}> <AssignedList/> </PrivateRoute>
       },
       {
         path: "/student-list",
         element:<PrivateRoute allowedRoles={[11]}> <StudentList/> </PrivateRoute>
       },
       {
-        path: "/assigned-list",
-        element:<PrivateRoute allowedRoles={[12]}> <AssignedList/> </PrivateRoute>
-      },
-      {
-        path: "/send-message",
-        element:<PrivateRoute allowedRoles={[10]}> <SendMessagePage></SendMessagePage> </PrivateRoute>
-      },
-      {
         path: "/inactive-user",
-        element:<PrivateRoute allowedRoles={[10]}> <InactiveUser></InactiveUser> </PrivateRoute>
+        element:<PrivateRoute allowedRoles={[12]}> <InactiveUser></InactiveUser> </PrivateRoute>
+      },
+      {
+        path: "/tutor-post",
+        element:<PrivateRoute allowedRoles={[13]}> <TutorPostAction></TutorPostAction></PrivateRoute>
       },
     ],
   },

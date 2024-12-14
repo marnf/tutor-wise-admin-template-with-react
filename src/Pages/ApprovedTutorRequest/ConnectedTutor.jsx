@@ -6,15 +6,16 @@ import { IoMdCheckboxOutline } from "react-icons/io";
 
 // Columns definition for DataGrid
 const columns = [
-    { field: "customizeId", headerName: "ID", flex: 0.1 },
+    { field: "customizeId", headerName: "ID",  maxWidth: 120, minWidth:120 },
     // { field: "full_name", headerName: "Name", flex: 0.1 },
     { field: "location", headerName: "Location", flex: 0.1 ,  minWidth:120 },
-    { field: "phone", headerName: "Phone", maxWidth: 120, minWidth:120 },
+    // { field: "phone", headerName: "Phone", maxWidth: 120, minWidth:120 },
+    { field: "", headerName: "Online/offline", maxWidth: 90, minWidth:90 },
     { field: "label", headerName: "Class",  maxWidth: 70 , minWidth:70 },
     { field: "subject", headerName: "Subject", flex: 0.1 , minWidth:120 },
     { field: "gender", headerName: "Gender",  maxWidth: 70, minWidth:70 },
     { field: "days_per_week", headerName: "Days/Week",  maxWidth: 10  },
-    { field: "charge_per_month", headerName: "Charge",  maxWidth: 65 , minWidth:60},
+    { field: "charge_per_month", headerName: "Amount",  maxWidth: 65 , minWidth:60},
     {
         field: "actions",
         headerName: "Actions",
