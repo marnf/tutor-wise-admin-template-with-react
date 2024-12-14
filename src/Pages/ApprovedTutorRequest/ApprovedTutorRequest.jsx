@@ -22,6 +22,7 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
+import { SiGitconnected } from "react-icons/si";
 import { DataGrid } from "@mui/x-data-grid";
 import { FaUserEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
@@ -95,7 +96,7 @@ const columns = [
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => params.row.handleViewModal(params.row)} />
 
-                <MdConnectWithoutContact title="connect"
+                <SiGitconnected title="connect"
                     size={29}
                     color="#0c2849"
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"

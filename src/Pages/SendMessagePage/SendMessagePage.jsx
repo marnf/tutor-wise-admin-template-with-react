@@ -91,7 +91,7 @@ const columns = [
             <Box display="flex" justifyContent="end" className="mt-3" gap={1}>
 
 
-                <BiSolidUserDetail title="View"
+                <BiSolidMessageDetail title="View"
                     size={29}
                     color="#f0523a"
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
