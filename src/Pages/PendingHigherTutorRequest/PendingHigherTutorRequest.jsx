@@ -22,6 +22,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { FaUserEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { BiSolidSelectMultiple, BiSolidUserDetail } from "react-icons/bi";
+import { decryptData } from "../../EncryptedPage";
 
 
 // Dummy subject options
@@ -38,7 +39,17 @@ const subjectOptions = [
 ];
 
 
-const user = JSON.parse(localStorage.getItem("user"));
+
+ const encryptedUser = localStorage.getItem("user");
+
+  let user;
+  if (encryptedUser) {
+    try {
+      user = decryptData(encryptedUser);
+    } catch (error) {
+      console.error("Error decrypting user data:", error);
+    }
+  }
 const isSuperAdmin = user?.user_type === "super_admin";
 
 

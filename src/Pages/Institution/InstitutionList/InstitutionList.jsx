@@ -3,10 +3,22 @@ import { Box, Button, Modal, TextField, Dialog, DialogTitle, DialogContent, Dial
 import { DataGrid } from "@mui/x-data-grid";
 import { FaUserEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
+import { decryptData } from "../../../EncryptedPage";
 
 const columns = (handleEditClick, handleDeleteClick) => {
 
-    const user = JSON.parse(localStorage.getItem("user"));
+
+    const encryptedUser = localStorage.getItem("user");
+
+    let user;
+    if (encryptedUser) {
+        try {
+            user = decryptData(encryptedUser);
+        } catch (error) {
+            console.error("Error decrypting user data:", error);
+        }
+    }
+    
     const isSuperAdmin = user?.user_type === "super_admin";
 
     return [
@@ -204,8 +216,8 @@ const InstitutionList = () => {
                         outline: "none", // Remove default outline on focus
                     },
                     "& .MuiDataGrid-columnHeader:focus-within": {
-                            outline: "none", // Remove outline when child element inside column header is focused
-                        },
+                        outline: "none", // Remove outline when child element inside column header is focused
+                    },
                 }}
             />
 

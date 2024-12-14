@@ -6,6 +6,8 @@ import animationData from '../../assets/LogInPageLottie.json';
 import logo from '../../../public/images/TutorwiseLogo.png';
 import headerImage from '../../../public/images/TutorwiseLogo.png';
 import { Alert, Snackbar } from "@mui/material";
+import { encryptData } from "../../EncryptedPage";
+
 
 const LoginPage = () => {
   const [gmail, setGmail] = useState("");
@@ -69,15 +71,17 @@ const LoginPage = () => {
       const data = await response.json();
 
       if (response.ok) {
-
-        localStorage.setItem("user", JSON.stringify({
+        const encryptedUser = encryptData({
           user_id: data.user_id,
           user_type: data.user_type,
           roles: data.roles,
           token: data.token,
-        }));
+        });
+
+        localStorage.setItem("user", encryptedUser);
         navigate("/");
-      } else {
+      }
+      else {
 
         setSnackbarMessage("Something wrong !");
         setSnackbarSeverity("error");
@@ -85,9 +89,9 @@ const LoginPage = () => {
 
       }
     } catch (error) {
-       setSnackbarMessage("Something wrong !");
-        setSnackbarSeverity("error");
-        setOpenSnackbar(true);
+      setSnackbarMessage("Something wrong !");
+      setSnackbarSeverity("error");
+      setOpenSnackbar(true);
 
     }
   };
@@ -183,7 +187,7 @@ const LoginPage = () => {
 
 
     const formData = { gmail: gmail };
-   
+
 
     fetch("https://tutorwise-backend.vercel.app/api/account/admin/resend-otp/", {
       method: "POST",
@@ -247,7 +251,7 @@ const LoginPage = () => {
             setOpenSnackbar(true);
             setShowSetPasswordPopup(false);
 
-           
+
             navigate("/login");
           } else {
             console.log("Failed to resend OTP.");
@@ -312,7 +316,7 @@ const LoginPage = () => {
                   </div>
                 </div>
               </div>
-            
+
               <button type="submit" className="login-btn button-color">Login</button>
             </form>
             <p className="forgot-password" onClick={handleForgotPassword}>Forgot Password?</p>

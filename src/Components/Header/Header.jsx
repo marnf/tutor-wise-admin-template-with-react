@@ -2,17 +2,30 @@ import React, { useEffect, useState } from 'react';
 import { Navbar } from 'react-bootstrap';
 import { MenuOutlined } from '@ant-design/icons';
 import { LuLogOut } from "react-icons/lu";
+import { decryptData } from '../../EncryptedPage';
 
 const Header = ({ isSidebarOpen, toggleSidebar }) => {
   const [userType, setUserType] = useState(null);
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
+
+    const encryptedUser = localStorage.getItem("user");
+
+    let user;
+    if (encryptedUser) {
+      try {
+        user = decryptData(encryptedUser);
+      } catch (error) {
+        console.error("Error decrypting user data:", error);
+      }
+    }
+    const isSuperAdmin = user?.user_type === "super_admin";
+
     if (user && user.user_type) {
       setUserType(user.user_type);
       setUserId(user.user_id);
-      
+
     }
   }, []);
 
@@ -46,7 +59,7 @@ const Header = ({ isSidebarOpen, toggleSidebar }) => {
                 <span className="text-lg font-semibold text-gray-700">{userType}</span>
                 <span className="text-lg font-semibold text-gray-700">{userId}</span>
                 <LuLogOut
-                 
+
                   size={25}
                   color="black"
                   className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"

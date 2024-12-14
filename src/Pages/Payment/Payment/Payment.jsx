@@ -20,7 +20,7 @@ import { BsFillCalendarDateFill } from "react-icons/bs";
 
 const columns = [
     { field: "customized_user_id", headerName: "ID", minWidth: 130 },
-    { field: "name", headerName: "Name", minWidth: 170 },
+    // { field: "name", headerName: "Name", minWidth: 170 },
      { field: "created_at", headerName: "Date", minWidth: 220 },
     // { field: "email", headerName: "Email", minWidth: 1 },
     { field: "phone", headerName: "Phone", minWidth: 130 },

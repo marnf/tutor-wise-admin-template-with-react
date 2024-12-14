@@ -39,7 +39,7 @@ const columns = [
     },
 ];
 
-const InactiveUser = () => {
+const AllTutorList = () => {
     const [rows, setRows] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [filteredRows, setFilteredRows] = useState([]);
@@ -432,4 +432,4 @@ const InactiveUser = () => {
     );
 };
 
-export default InactiveUser;
+export default AllTutorList;

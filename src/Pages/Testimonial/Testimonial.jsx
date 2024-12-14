@@ -2,10 +2,21 @@ import React, { useState, useEffect } from "react";
 import { Box, Button, Modal, Snackbar, Alert, TextField, LinearProgress, Dialog, DialogTitle, DialogContent, DialogActions, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { MdDelete } from "react-icons/md";
+import { decryptData } from "../../EncryptedPage";
 
 
 
-const user = JSON.parse(localStorage.getItem("user"));
+
+ const encryptedUser = localStorage.getItem("user");
+
+  let user;
+  if (encryptedUser) {
+    try {
+      user = decryptData(encryptedUser);
+    } catch (error) {
+      console.error("Error decrypting user data:", error);
+    }
+  }
 const isSuperAdmin = user?.user_type === "super_admin";
 
 

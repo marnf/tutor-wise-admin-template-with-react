@@ -30,6 +30,7 @@ import { MdConnectWithoutContact } from "react-icons/md";
 import Protutor from "../TutorList/ProTutor/Protutor";
 import ConnectedTutor from "./ConnectedTutor";
 import { BorderLeft } from "@mui/icons-material";
+import { decryptData } from "../../EncryptedPage";
 
 
 // Dummy subject options
@@ -46,7 +47,16 @@ const subjectOptions = [
 ];
 
 
-const user = JSON.parse(localStorage.getItem("user"));
+ const encryptedUser = localStorage.getItem("user");
+
+  let user;
+  if (encryptedUser) {
+    try {
+      user = decryptData(encryptedUser);
+    } catch (error) {
+      console.error("Error decrypting user data:", error);
+    }
+  }
 const isSuperAdmin = user?.user_type === "super_admin";
 
 const columns = [

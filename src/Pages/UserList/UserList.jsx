@@ -9,10 +9,21 @@ import { FaEye, FaEyeSlash, FaUserEdit } from "react-icons/fa";
 import { GiCycle } from "react-icons/gi";
 import { Snackbar } from '@mui/material';
 import moment from "moment";
+import { decryptData } from "../../EncryptedPage";
 
 
 
-const user = JSON.parse(localStorage.getItem("user"));
+
+ const encryptedUser = localStorage.getItem("user");
+
+  let user;
+  if (encryptedUser) {
+    try {
+      user = decryptData(encryptedUser);
+    } catch (error) {
+      console.error("Error decrypting user data:", error);
+    }
+  }
 const isSuperAdmin = user?.user_type === "super_admin";
 
 

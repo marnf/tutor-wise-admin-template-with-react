@@ -29,6 +29,9 @@ import ProtectedRoute from './Components/ProtectedRoute .jsx';
 import StudentList from './Pages/StudentList/StudentList.jsx';
 import AssignedList from './Pages/AssignedList/AssignedList.jsx'
 import SendMessagePage from './Pages/SendMessagePage/SendMessagePage.jsx';
+import AllTutorList from './Pages/TutorList/AllTutor/AllTutorList.jsx';
+import AllPayment from './Pages/Payment/AllPayment/AllPayment.jsx';
+
 
 const router = createBrowserRouter([
   {
@@ -66,6 +69,10 @@ const router = createBrowserRouter([
         element:<PrivateRoute allowedRoles={[2]}> <ApprovedHigherTutorRequest />,</PrivateRoute>
       },
       {
+        path: "/all-tutor-list",
+        element:<PrivateRoute allowedRoles={[3]}> <AllTutorList />,</PrivateRoute>
+      },
+      {
         path: "/pro-tutor-list",
         element:<PrivateRoute allowedRoles={[3]}> <Protutor />,</PrivateRoute>
       },
@@ -98,6 +105,10 @@ const router = createBrowserRouter([
         element:<PrivateRoute allowedRoles={[7]}> <FaqList />,</PrivateRoute>
       },
       {
+        path: "/all-payment",
+        element:<PrivateRoute allowedRoles={[8]}> <AllPayment />,</PrivateRoute>
+      },
+      {
         path: "/pro-payment",
         element:<PrivateRoute allowedRoles={[8]}> <ProPayment />,</PrivateRoute>
       },
@@ -123,7 +134,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/send-message",
-        element:<PrivateRoute allowedRoles={[12]}> <SendMessagePage></SendMessagePage> </PrivateRoute>
+        element:<PrivateRoute allowedRoles={[10]}> <SendMessagePage></SendMessagePage> </PrivateRoute>
+      },
+      {
+        path: "/inactive-user",
+        element:<PrivateRoute allowedRoles={[10]}> <InactiveUser></InactiveUser> </PrivateRoute>
       },
     ],
   },
