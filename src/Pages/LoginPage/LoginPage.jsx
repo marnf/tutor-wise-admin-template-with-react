@@ -71,14 +71,15 @@ const LoginPage = () => {
 
       const data = await response.json();
 
-
       if (response.ok) {
+
         const encryptedUser = encryptData({
           user_id: data.user_id,
           user_type: data.user_type,
           roles: data.roles,
           token: data.token,
         });
+
 
         localStorage.setItem("user", encryptedUser);
         navigate("/");
@@ -91,6 +92,9 @@ const LoginPage = () => {
 
       }
     } catch (error) {
+      setSnackbarMessage("Something wrong !");
+      setSnackbarSeverity("error");
+      setOpenSnackbar(true);
 
       console.log(error)
 
