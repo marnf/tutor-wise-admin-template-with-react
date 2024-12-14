@@ -75,8 +75,7 @@ const LoginPage = () => {
           user_id: data.user_id,
           user_type: data.user_type,
           roles: data.roles,
-          token: data.token,
-        });
+          token: data.token, });
 
         localStorage.setItem("user", encryptedUser);
         navigate("/");
