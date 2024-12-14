@@ -9,6 +9,7 @@ import { Alert, Snackbar } from "@mui/material";
 import { encryptData } from "../../EncryptedPage";
 
 
+
 const LoginPage = () => {
   const [gmail, setGmail] = useState("");
   const [password, setPassword] = useState("");
@@ -69,37 +70,28 @@ const LoginPage = () => {
       });
 
       const data = await response.json();
-      console.log("response:",data);
 
-      // if (response.ok) {
-      //   const encryptedUser = encryptData({
-      //     user_id: data.user_id,
-      //     user_type: data.user_type,
-      //     roles: data.roles,
-      //     token: data.token, });
 
-      //   localStorage.setItem("user", encryptedUser);
-      //   navigate("/");
-      // }
-      // else {
+      if (response.ok) {
+        const encryptedUser = encryptData({
+          user_id: data.user_id,
+          user_type: data.user_type,
+          roles: data.roles,
+          token: data.token,
+        });
 
-      //   setSnackbarMessage("Something wrong !");
-      //   setSnackbarSeverity("error");
-      //   setOpenSnackbar(true);
+        localStorage.setItem("user", encryptedUser);
+        navigate("/");
+      }
+      else {
 
-      // }
-      const encryptedUser = encryptData({
-        user_id: data.user_id,
-        user_type: data.user_type,
-        roles: data.roles,
-        token: data.token, });
+        setSnackbarMessage("Something wrong !");
+        setSnackbarSeverity("error");
+        setOpenSnackbar(true);
 
-      localStorage.setItem("user", encryptedUser);
-      navigate("/");
+      }
     } catch (error) {
-      setSnackbarMessage("Something wrong !");
-      setSnackbarSeverity("error");
-      setOpenSnackbar(true);
+
       console.log(error)
 
     }
