@@ -157,8 +157,8 @@ const Review = () => {
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
 
 
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                <TextField
+            <Box display="flex" justifyContent="end" alignItems="center" mb={2}>
+                {/* <TextField
                     select
                     label="Rows per page"
                     value={pageSize}
@@ -172,7 +172,7 @@ const Review = () => {
                             {option}
                         </option>
                     ))}
-                </TextField>
+                </TextField> */}
 
 
                 {/* Search Box */}

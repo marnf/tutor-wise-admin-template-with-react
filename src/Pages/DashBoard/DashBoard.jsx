@@ -225,7 +225,7 @@ const PaymentCard = ({ data }) => {
                             </p>
                         </div>
                         <div className='flex justify-end'>
-                            <Link to="/pro-payment">
+                            <Link to="/all-payment">
                                 <TbListDetails size={40}
                                     color="#f0523a"
                                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer pb-2" />
