@@ -31,6 +31,7 @@ import AssignedList from './Pages/AssignedList/AssignedList.jsx'
 import SendMessagePage from './Pages/SendMessagePage/SendMessagePage.jsx';
 import AllTutorList from './Pages/TutorList/AllTutor/AllTutorList.jsx';
 import AllPayment from './Pages/Payment/AllPayment/AllPayment.jsx';
+import DynamicPricing from './Pages/DynamicPricing/DynamicPricing.jsx';
 
 
 const router = createBrowserRouter([
@@ -135,6 +136,10 @@ const router = createBrowserRouter([
       {
         path: "/tutor-post",
         element:<PrivateRoute allowedRoles={[13]}> <TutorPostAction></TutorPostAction></PrivateRoute>
+      },
+      {
+        path: "/dynamic-pricing",
+        element:<PrivateRoute allowedRoles={[10]}> <DynamicPricing></DynamicPricing></PrivateRoute>
       },
     ],
   },

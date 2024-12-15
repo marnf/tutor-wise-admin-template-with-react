@@ -719,8 +719,8 @@ const UserList = () => {
                     }}>
                     <form onSubmit={handleCreateRoleSubmit} className="p-3">
                         <h2 className="text-center mb-4" style={{
-                            fontSize: '1.8rem', fontWeight: 'bold', color: '#1976d2',
-                            borderBottom: '2px solid #1976d2', paddingBottom: '8px',
+                            fontSize: '1.8rem', fontWeight: 'bold', color: 'black',
+                            borderBottom: '2px solid black', paddingBottom: '8px',
                         }} >
                             Create Role
                         </h2>

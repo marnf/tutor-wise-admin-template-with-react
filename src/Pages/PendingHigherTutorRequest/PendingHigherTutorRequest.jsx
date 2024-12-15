@@ -21,8 +21,11 @@ import {
 import { DataGrid } from "@mui/x-data-grid";
 import { FaUserEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import { BiSolidSelectMultiple, BiSolidUserDetail } from "react-icons/bi";
+import { BiNotification, BiNotificationOff, BiSolidSelectMultiple, BiSolidUserDetail } from "react-icons/bi";
 import { decryptData } from "../../EncryptedPage";
+import { BiSolidNotification } from "react-icons/bi";
+import { MdNotificationsActive } from "react-icons/md";
+
 
 
 // Dummy subject options
@@ -40,16 +43,16 @@ const subjectOptions = [
 
 
 
- const encryptedUser = localStorage.getItem("user");
+const encryptedUser = localStorage.getItem("user");
 
-  let user;
-  if (encryptedUser) {
+let user;
+if (encryptedUser) {
     try {
-      user = decryptData(encryptedUser);
+        user = decryptData(encryptedUser);
     } catch (error) {
-      console.error("Error decrypting user data:", error);
+        console.error("Error decrypting user data:", error);
     }
-  }
+}
 const isSuperAdmin = user?.user_type === "super_admin";
 
 
@@ -84,7 +87,7 @@ const columns = [
         field: "actions",
         headerName: "Actions",
         minWidth: 150,
-        flex:0.1,
+        flex: 0.1,
         renderCell: (params) => (
 
             <Box display="flex" justifyContent="end" className="mt-3" gap={1}>
@@ -94,6 +97,12 @@ const columns = [
                     color="green"
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => params.row.handleApprove(params.row)} />
+
+                <MdNotificationsActive
+                    size={25}
+                    color="gray"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                    onClick={() => params.row.handleNotify(params.row)} />
 
                 <FaUserEdit title="Edit"
                     size={25}
@@ -147,7 +156,8 @@ const PendingHigherTutorRequest = () => {
     const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // 'success' or 'error'
     const [view, setView] = useState([]);
     const [openViewModal, setOpenViewModal] = useState(false);
-
+    const [notifyData, setNotifyData] = useState({});
+    const [openNotifyModal, setOpenNotifyModal] = useState(false);
 
     useEffect(() => {
         setLoading(true)
@@ -158,6 +168,8 @@ const PendingHigherTutorRequest = () => {
                     ...item,
                     location: `${item.tutor_division}, ${item.tutor_district}`,
                     handleApprove: handleApproveRequest,
+                    handleNotify: handleNotifyRequest,
+
                     handleEdit: handleEditRequest,
                     handleDelete: handleDeleteRequest,
                     handleViewModal: handleOpenViewModal
@@ -182,6 +194,19 @@ const PendingHigherTutorRequest = () => {
 
     }
 
+
+    const handleNotifyRequest = (row) => {
+        setNotifyData(row)
+        setOpenNotifyModal(true)
+
+
+    }
+
+    const handleCloseNotifyModal = () => {
+        setOpenNotifyModal(false)
+    }
+
+
     const handleEditRequest = (row) => {
         setEditData(row);
         setFormData(row); // Initialize formData with row data for editing
@@ -195,7 +220,7 @@ const PendingHigherTutorRequest = () => {
 
 
     const handleApprove = () => {
-        fetch(`https://tutorwise-backend.vercel.app//api/admin/approve-request/${approveData.id}/`, {
+        fetch(`https://tutorwise-backend.vercel.app/api/admin/approve-request/${approveData.id}/`, {
             method: "POST", // or PUT if needed
             headers: {
                 "Content-Type": "application/json",
@@ -221,6 +246,39 @@ const PendingHigherTutorRequest = () => {
                 setSnackbarMessage("Error approving request.");
                 setSnackbarSeverity("error");
                 setOpenSnackbar(true);
+            });
+    };
+
+
+
+
+    const handleSendNotification = () => {
+        fetch(`http://192.168.0.154:8000/api/admin/send-notification/${notifyData.id}/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+            .then((res) => {
+                if (res.ok) {
+                    setSnackbarMessage("Request approved successfully!");
+                    setSnackbarSeverity("success");
+                    setOpenSnackbar(true);
+                    setOpenNotifyModal(false)
+
+                } else {
+                    setSnackbarMessage("Failed to approve request.");
+                    setSnackbarSeverity("error");
+                    setOpenSnackbar(true);
+                    setOpenNotifyModal(false)
+                }
+            })
+            .catch((error) => {
+                console.error("Error approving request:", error);
+                setSnackbarMessage("Error approving request.");
+                setSnackbarSeverity("error");
+                setOpenSnackbar(true);
+                setOpenNotifyModal(false)
             });
     };
 
@@ -315,7 +373,7 @@ const PendingHigherTutorRequest = () => {
             overflowX: "auto", // Ensure horizontal scroll for all devices
         }}>
 
-<div className="flex flex-col md:flex-row lg:flex-row justify-between items-center  text-end gap-1">
+            <div className="flex flex-col md:flex-row lg:flex-row justify-between items-center  text-end gap-1">
                 <Typography variant="text-base" className="flex h5">
                     <strong className="text-gray-500">Pending Higher Request:{rows.length} </strong>
                 </Typography>
@@ -712,6 +770,22 @@ const PendingHigherTutorRequest = () => {
                     <Button onClick={handleApprove} color="error">Approve</Button>
                 </DialogActions>
             </Dialog>
+
+
+
+
+            <Dialog open={openNotifyModal} onClose={handleCloseNotifyModal}>
+                <DialogTitle>Notify</DialogTitle>
+                <DialogContent>
+                    <p>Are you sure you want to send notification this user</p>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseNotifyModal}>Cancel</Button>
+                    <Button onClick={handleSendNotification} color="error">Send</Button>
+                </DialogActions>
+            </Dialog>
+
+
 
 
             <Dialog open={openDeleteModal} onClose={handleCloseDeleteModal}>

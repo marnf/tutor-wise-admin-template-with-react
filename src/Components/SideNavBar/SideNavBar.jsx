@@ -3,7 +3,7 @@ import { AppstoreOutlined, MailOutlined, MenuOutlined } from '@ant-design/icons'
 import { Menu } from 'antd';
 import { Link, useLocation } from 'react-router-dom';
 import logo from '../../../public/images/TutorwiseLogo.png';
-import { MdMessage, MdSpaceDashboard } from "react-icons/md";
+import { MdMessage, MdPriceChange, MdSpaceDashboard } from "react-icons/md";
 import { PiUserListFill } from "react-icons/pi";
 import { PiStudentFill } from "react-icons/pi";
 import { FaChalkboardTeacher } from "react-icons/fa";
@@ -70,6 +70,12 @@ const menuItems = [
     icon: <MdAirplanemodeInactive size={25} />,
     label: <Link to="/inactive-user">Inactive Users</Link>,
     role: 12,
+  },
+  {
+    key: '/dynamic-pricing',
+    icon: <MdPriceChange size={25} />,
+    label: <Link to="/dynamic-pricing">Dynamic pricing</Link>,
+    role: 10,
   },
   {
     key: '/send-message',
