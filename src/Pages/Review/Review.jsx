@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Modal, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, LinearProgress, Pagination } from "@mui/material";
+import { Box, Button, Modal, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, LinearProgress, Pagination, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { BiSolidSelectMultiple } from "react-icons/bi";
 import { FaUserEdit } from "react-icons/fa";
@@ -158,21 +158,9 @@ const Review = () => {
 
 
             <Box display="flex" justifyContent="end" alignItems="center" mb={2}>
-                {/* <TextField
-                    select
-                    label="Rows per page"
-                    value={pageSize}
-                    onChange={(e) => setPageSize(Number(e.target.value))}
-                    variant="outlined"
-                    size="small"
-                    sx={{ width: "150px" }}
-                >
-                    {[5, 10, 20].map((option) => (
-                        <option key={option} value={option}>
-                            {option}
-                        </option>
-                    ))}
-                </TextField> */}
+                <Typography variant="text-base" className="flex h5">
+                    <strong className="text-gray-500">All users:{rows.length} </strong>
+                </Typography>
 
 
                 {/* Search Box */}
@@ -225,7 +213,7 @@ const Review = () => {
                         },
                     }}
                 />)}
-                
+
 
             {/* Modal for editing review */}
             <Modal

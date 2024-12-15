@@ -42,7 +42,7 @@ const columns = [
     },
 ];
 
-const ConnectedTutor = ({ onApprove, budgetLimit, label, gender }) => {
+const ConnectedTutor = ({ onApprove, budgetLimit, label, gender, subject }) => {
     const [rows, setRows] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [filteredRows, setFilteredRows] = useState([]);
@@ -68,7 +68,7 @@ const ConnectedTutor = ({ onApprove, budgetLimit, label, gender }) => {
 
                 const filteredData = data.filter((item) =>
                     item.tutor_tuition_info.charge_per_month <= budgetLimit &&
-                    item.tutor_tuition_info.i_will_teach === label && item.tutor_personal_info.gender.toLowerCase() === gender.toLowerCase()
+                    item.tutor_tuition_info.i_will_teach === label && item.tutor_personal_info.gender.toLowerCase() === gender.toLowerCase() && item.tutor_tuition_info.subject.toLowerCase() === subject.toLowerCase()
 
                 );
                 console.log(filteredData)
@@ -100,7 +100,7 @@ const ConnectedTutor = ({ onApprove, budgetLimit, label, gender }) => {
                 console.error("Error fetching data:", error);
                 setLoading(false);
             });
-    }, [budgetLimit, label, gender]);
+    }, [budgetLimit, label, gender, subject]);
 
     // Filter data based on search query
     useEffect(() => {

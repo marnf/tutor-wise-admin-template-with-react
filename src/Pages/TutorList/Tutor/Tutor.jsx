@@ -9,6 +9,7 @@ const columns = [
         field: "profile_picture",
         headerName: "Profile Picture",
         minWidth: 80,
+        maxWidth: 80,
         renderCell: (params) => (
             <img src={params.value} alt="Profile" style={{ width: 50, height: 50, borderRadius: "50%" }} />
         )

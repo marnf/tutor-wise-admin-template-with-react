@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Box, Button, Checkbox, Dialog, DialogContent, Divider, FormControlLabel, LinearProgress, TextField, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { BiSolidUserDetail } from "react-icons/bi";
+import { BsFillCalendarDateFill } from "react-icons/bs";
+import { DateRangePicker } from "react-date-range";
 
 // Columns definition for DataGrid
 const columns = [
@@ -10,16 +12,18 @@ const columns = [
         field: "profile_picture",
         headerName: "Profile Picture",
         minWidth: 80,
+        maxWidth: 80,
         renderCell: (params) => (
             <img src={params.value} alt="Profile" style={{ width: 50, height: 50, borderRadius: "50%" }} />
         )
     },
     { field: "full_name", headerName: "Name", flex: 1, minWidth: 130 },
+
     { field: "subject", headerName: "Subject", minWidth: 100 },
     { field: "gender", headerName: "Gender", minWidth: 60 },
     { field: "days_per_week", headerName: "Days/Week", minWidth: 40 },
     { field: "charge_per_month", headerName: "Charge", minWidth: 60 },
-    { field: "phone", headerName: "Phone", minWidth: 150 },
+    { field: "start_date", headerName: "Phone", minWidth: 100 },
     {
         field: "actions",
         headerName: "Actions",
@@ -46,6 +50,15 @@ const Protutor = () => {
     const [loading, setLoading] = useState(false);
     const [view, setView] = useState([]);
     const [openViewModal, setOpenViewModal] = useState(false);
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [dateRange, setDateRange] = useState([
+        {
+            startDate: new Date(),
+            endDate: new Date(),
+            key: "selection",
+        },
+    ]);
+
 
     // Fetch data from the API
     useEffect(() => {
@@ -65,6 +78,7 @@ const Protutor = () => {
                     days_per_week: item.tutor_tuition_info.days_per_week,
                     charge_per_month: item.tutor_tuition_info.charge_per_month,
                     phone: item.tutor_personal_info.phone,
+                    start_date: item?.tutor_personal_info?.pro_tutor_start_date,
                     handleViewModal: (params) => handleOpenViewModal(item)
                 }));
                 setRows(formattedData);
@@ -95,24 +109,76 @@ const Protutor = () => {
         setOpenViewModal(false)
     }
 
+    const handleDateFilter = () => {
+        const startDate = new Date(dateRange[0].startDate).setHours(0, 0, 0, 0); // Start of the day
+        const endDate = new Date(dateRange[0].endDate).setHours(23, 59, 59, 999); // End of the day
+
+        console.log("Start Date:", startDate, "End Date:", endDate);
+
+        const filteredData = rows.filter((row) => {
+            const rowDate = new Date(row.start_date).getTime(); // Use raw `created_at`
+            console.log("Row Date:", rowDate); // Debug
+            return rowDate >= startDate && rowDate <= endDate;
+        });
+
+        console.log("Filtered Data:", filteredData); // Debug filtered rows
+        setFilteredRows(filteredData);
+        setShowDatePicker(false); // Close the date picker after filtering
+    };
+
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-
             <div className="flex flex-col md:flex-row lg:flex-row justify-between items-center  text-end gap-1">
+
+                <div className="flex items-center justify-center gap-1">
+                    <div className="relative flex items-center justify-start gap-1">
+                        <BsFillCalendarDateFill
+                            size={40}
+                            color="#f0523a"
+                            onClick={() => setShowDatePicker(!showDatePicker)}
+                            className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer pb-1"
+                        />
+
+                        {showDatePicker && (
+                            <div style={{ position: "absolute", zIndex: 100, top: "50px" }}>
+                                <DateRangePicker
+                                    onChange={(item) => setDateRange([item.selection])}
+                                    showSelectionPreview={true}
+                                    moveRangeOnFirstSelection={false}
+                                    ranges={dateRange}
+                                    direction="horizontal"
+                                />
+                                <Button
+                                    variant="contained"
+                                    color="success"
+                                    size="small"
+                                    onClick={handleDateFilter}
+                                    sx={{ marginTop: "10px" }}
+                                >
+                                    Apply Filter
+                                </Button>
+
+                            </div>
+
+                        )}
+                    </div>
+                    <div className="flex justify-end">
+                        <TextField className="mb-1"
+                            label="Search Tutors"
+                            variant="outlined"
+                            size="small"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            style={{ width: "300px" }}
+                        />
+                    </div>
+                </div>
+
+
                 <Typography variant="text-base" className="flex h5">
                     <strong className="text-gray-500">Total Pro Tutor:{rows.length} </strong>
                 </Typography>
 
-                <div className="flex justify-end">
-                    <TextField
-                        label="Search Tutors"
-                        variant="outlined"
-                        size="small"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        style={{ marginBottom: "1rem", width: "300px" }}
-                    />
-                </div>
             </div>
 
             {loading ? (

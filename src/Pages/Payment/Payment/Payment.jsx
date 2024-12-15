@@ -21,7 +21,7 @@ import { BsFillCalendarDateFill } from "react-icons/bs";
 const columns = [
     { field: "customized_user_id", headerName: "ID", minWidth: 130 },
     // { field: "name", headerName: "Name", minWidth: 170 },
-     { field: "created_at", headerName: "Date", minWidth: 220 },
+     { field: "formatted_created_at", headerName: "Date", minWidth: 220 },
     // { field: "email", headerName: "Email", minWidth: 1 },
     { field: "phone", headerName: "Phone", minWidth: 130 },
     { field: "transaction_id", headerName: "Transaction ID", minWidth: 160 },
@@ -81,7 +81,8 @@ const ProPayment = () => {
                     package: item.package,
                     amount: item.amount,
                     digital_bank_name: item.digital_bank_name,
-                    created_at: formattedDate(item.created_at),
+                    created_at: item.created_at,
+                    formatted_created_at: formattedDate(item.created_at),
                     phone: item.phone,
                     handleViewModal: handleOpenViewModal
                 }));

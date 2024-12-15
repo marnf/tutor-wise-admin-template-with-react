@@ -589,7 +589,7 @@ const ApprovedTutorRequest = () => {
                 <div className="flex flex-col md:flex-row lg:flex-row justify-between gap-1 ">
 
 
-                        <ConnectedTutor onApprove={handleUserApproval} budgetLimit={connect?.budget} label={connect?.class_name} gender={connect?.gender} ></ConnectedTutor>
+                        <ConnectedTutor onApprove={handleUserApproval} budgetLimit={connect?.budget} label={connect?.class_name} gender={connect?.gender} subject={connect?.subject} ></ConnectedTutor>
 
                        
 
@@ -719,7 +719,7 @@ const ApprovedTutorRequest = () => {
                                     control={
                                         <Checkbox checked={connect?.start_immediate || false} disabled />
                                     }
-                                    label="Start Immediately"
+                                    label="Immediately"
                                 />
                             </Box>
 

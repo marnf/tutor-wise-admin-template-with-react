@@ -21,7 +21,7 @@ import { BsFillCalendarDateFill } from "react-icons/bs";
 const columns = [
     { field: "customized_user_id", headerName: "ID", minWidth: 130 },
     // { field: "name", headerName: "Name", minWidth: 170 },
-     { field: "created_at", headerName: "Date", minWidth: 220 },
+     { field: "formatted_created_at", headerName: "Date", minWidth: 220 },
     // { field: "email", headerName: "Email", minWidth: 1 },
     { field: "phone", headerName: "Phone", minWidth: 130 },
     { field: "transaction_id", headerName: "Transaction ID", minWidth: 160 },
@@ -79,25 +79,25 @@ const AllPayment = () => {
                     user_type: item.user_type,
                     transaction_id: item.transaction_id,
                     package: item.package,
-                    amount: item.amount,
                     digital_bank_name: item.digital_bank_name,
-                    created_at: formattedDate(item.created_at),
+                    created_at: item.created_at, 
+                    formatted_created_at: formattedDate(item.created_at), 
                     phone: item.phone,
-                    handleViewModal: handleOpenViewModal
+                    handleViewModal: handleOpenViewModal,
                 }));
-
                 setRows(formattedData);
                 setFilteredRows(formattedData);
-                setLoading(false)
-            })
-            .catch((error) => console.error("Error fetching data:", error));
+                setLoading(false);
+            });
+            
     }, []);
 
 
     const formattedDate = (dateString) => {
         if (!dateString) return "N/A";
-        return moment(dateString).format("MMMM Do YYYY, h:mm a");
+        return moment(dateString).format("MMMM Do YYYY"); // Keep it for UI
     };
+    
 
     const handleOpenViewModal = (item) => {
         setView(item)
@@ -123,16 +123,23 @@ const AllPayment = () => {
     };
 
     const handleDateFilter = () => {
-        const startDate = dateRange[0].startDate;
-        const endDate = dateRange[0].endDate;
-
+        const startDate = new Date(dateRange[0].startDate).setHours(0, 0, 0, 0); // Start of the day
+        const endDate = new Date(dateRange[0].endDate).setHours(23, 59, 59, 999); // End of the day
+    
+        console.log("Start Date:", startDate, "End Date:", endDate);
+    
         const filteredData = rows.filter((row) => {
-            const rowDate = new Date(row.created_at);
+            const rowDate = new Date(row.created_at).getTime(); // Use raw `created_at`
+            console.log("Row Date:", rowDate); // Debug
             return rowDate >= startDate && rowDate <= endDate;
         });
+    
+        console.log("Filtered Data:", filteredData); // Debug filtered rows
         setFilteredRows(filteredData);
         setShowDatePicker(false); // Close the date picker after filtering
     };
+    
+    
 
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
