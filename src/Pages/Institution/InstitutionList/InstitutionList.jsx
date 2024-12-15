@@ -192,7 +192,7 @@ const InstitutionList = () => {
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
             <div className="flex flex-col md:flex-row lg:flex-row justify-between items-center  text-end gap-1">
                 <Typography variant="text-base" className="flex h5">
-                    <strong className="text-gray-500">Total:{rows.length} </strong>
+                    <strong className="text-gray-500">Total Institution:{rows.length} </strong>
                 </Typography>
             </div>
             <DataGrid

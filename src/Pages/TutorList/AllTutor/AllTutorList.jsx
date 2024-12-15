@@ -100,7 +100,7 @@ const AllTutorList = () => {
 
             <div className="flex flex-col md:flex-row lg:flex-row justify-between items-center  text-end gap-1">
                 <Typography variant="text-base" className="flex h5">
-                    <strong className="text-gray-500">Total:{rows.length} </strong>
+                    <strong className="text-gray-500">Total Teacher:{rows.length} </strong>
                 </Typography>
 
                 <div className="flex justify-end">

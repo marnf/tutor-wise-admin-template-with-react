@@ -494,7 +494,7 @@ const UserList = () => {
 
                 <div className="flex flex-col  text-end gap-1">
                     <Typography variant="text-base" className="flex justify-end">
-                     <strong className="text-gray-500"> Total Payment:{rows.length} </strong>
+                     <strong className="text-gray-500"> Total user:{rows.length} </strong>
                     </Typography>
                     <TextField
                         label="Search Users"

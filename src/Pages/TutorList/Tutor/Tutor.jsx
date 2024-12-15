@@ -29,7 +29,7 @@ const columns = [
 
                 <BiSolidUserDetail title="View"
                     size={28}
-                     color="#f0523a"
+                    color="#f0523a"
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => params.row.handleViewModal(params)} />
 
@@ -98,14 +98,20 @@ const Tutor = () => {
 
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-            <div className="flex justify-end">
-                <TextField
-                    label="Search Tutors"
-                    variant="outlined"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    style={{ marginBottom: "1rem", width: "300px" }}
-                />
+
+            <div className="flex flex-col md:flex-row lg:flex-row justify-between items-center  text-end gap-1">
+                <Typography variant="text-base" className="flex h5">
+                    <strong className="text-gray-500">Total Tutor:{rows.length} </strong>
+                </Typography>
+                <div className="flex justify-end">
+                    <TextField
+                        label="Search Tutors"
+                        variant="outlined"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        style={{ marginBottom: "1rem", width: "300px" }}
+                    />
+                </div>
             </div>
 
             {loading ? (
@@ -305,7 +311,7 @@ const Tutor = () => {
                                     <img
                                         src={view?.tutor_personal_info?.college_certificate ? `https://tutorwise-backend.vercel.app${view.tutor_personal_info.college_certificate}` : '/default-image.jpg'}
                                         alt="Nominee 1 NID"
-                                          style={{ width: 'auto', height: '200px', objectFit: 'cover' }}
+                                        style={{ width: 'auto', height: '200px', objectFit: 'cover' }}
                                     />
                                 </Typography>
 
@@ -379,7 +385,7 @@ const Tutor = () => {
                                     <img
                                         src={view?.tutor_personal_info?.nominee2_nidcard_picture ? `https://tutorwise-backend.vercel.app${view.tutor_personal_info.nominee2_nidcard_picture}` : '/default-image.jpg'}
                                         alt="Nominee 1 NID"
-                                          style={{ width: 'auto', height: '200px', objectFit: 'cover' }}
+                                        style={{ width: 'auto', height: '200px', objectFit: 'cover' }}
                                     />
                                 </Typography>
 

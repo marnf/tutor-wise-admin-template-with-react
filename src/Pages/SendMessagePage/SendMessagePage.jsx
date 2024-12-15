@@ -244,7 +244,7 @@ const SendMessagePage = () => {
 
             <div className="flex flex-col md:flex-row lg:flex-row justify-between items-center  text-end gap-1">
                 <Typography variant="text-base" className="flex h5">
-                    <strong className="text-gray-500">inactive users:{rows.length} </strong>
+                    <strong className="text-gray-500">All users:{rows.length} </strong>
                 </Typography>
                 <div className="flex justify-end items-center gap-2">
                     <BiSolidMessageDetail

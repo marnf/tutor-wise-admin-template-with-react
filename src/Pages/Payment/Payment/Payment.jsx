@@ -189,7 +189,7 @@ const ProPayment = () => {
 
 
                 <Typography variant="text-base" className="flex h5">
-                    <strong className="text-gray-500">Total:{rows.length} </strong>
+                    <strong className="text-gray-500">Payment:{rows.length} </strong>
                 </Typography>
 
 
