@@ -17,12 +17,12 @@ import { MdDelete } from 'react-icons/md';
 
 const DynamicPricing = () => {
     const [rows, setRows] = useState([
-        { id: 1, category: 'One Month', presentAmount: 500, discountAmount: 50 },
-        { id: 2, category: 'Two Month', presentAmount: 900, discountAmount: 100 },
-        { id: 3, category: 'Three Month', presentAmount: 1200, discountAmount: 150 },
-        { id: 4, category: 'One Month', presentAmount: 400, discountAmount: 40 },
-        { id: 5, category: 'Two Month', presentAmount: 800, discountAmount: 90 },
-        { id: 6, category: 'Three Month', presentAmount: 1100, discountAmount: 140 },
+        { id: 1, category: "premium" , package: 'One Month', presentAmount: 500, discountAmount: 50 },
+        { id: 2, category: "premium" , package: 'Two Month', presentAmount: 900, discountAmount: 100 },
+        { id: 3, category: "premium" , package: 'six Month', presentAmount: 1200, discountAmount: 150 },
+        { id: 4, category: "limit" , package: 'One Month', presentAmount: 400, discountAmount: 40 },
+        { id: 5, category: "limit" , package: 'Two Month', presentAmount: 800, discountAmount: 90 },
+        { id: 6, category: "limit" , package: 'six Month', presentAmount: 1100, discountAmount: 140 },
     ]);
 
     const [formData, setFormData] = useState({
@@ -85,6 +85,7 @@ const DynamicPricing = () => {
     const columns = [
         { field: 'id', headerName: 'ID', flex: 0.5 },
         { field: 'category', headerName: 'Category', flex: 1 },
+        { field: 'package', headerName: 'Package', flex: 1 },
         { field: 'presentAmount', headerName: 'Present Amount', flex: 1 },
         { field: 'discountAmount', headerName: 'Discount Amount', flex: 1 },
         {
