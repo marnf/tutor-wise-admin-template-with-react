@@ -72,6 +72,12 @@ const menuItems = [
     role: 12,
   },
   {
+    key: '/tutor-post',
+    icon: <MdOutlinePostAdd size={25} />,
+    label: <Link to="/tutor-post">Tutor Post</Link>,
+    role: 13,
+  },
+  {
     key: '/dynamic-pricing',
     icon: <MdPriceChange size={25} />,
     label: <Link to="/dynamic-pricing">Dynamic pricing</Link>,

@@ -14,16 +14,16 @@ import { decryptData } from "../../EncryptedPage";
 
 
 
- const encryptedUser = localStorage.getItem("user");
+const encryptedUser = localStorage.getItem("user");
 
-  let user;
-  if (encryptedUser) {
+let user;
+if (encryptedUser) {
     try {
-      user = decryptData(encryptedUser);
+        user = decryptData(encryptedUser);
     } catch (error) {
-      console.error("Error decrypting user data:", error);
+        console.error("Error decrypting user data:", error);
     }
-  }
+}
 const isSuperAdmin = user?.user_type === "super_admin";
 
 
@@ -463,7 +463,7 @@ const UserList = () => {
     return (
 
 
-        <Box sx={{ height: "80vh", width: "100%"}}>
+        <Box sx={{ height: "80vh", width: "100%" }}>
 
             <div className="flex justify-between items-center mb-1">
 
@@ -494,7 +494,7 @@ const UserList = () => {
 
                 <div className="flex flex-col  text-end gap-1">
                     <Typography variant="text-base" className="flex justify-end">
-                     <strong className="text-gray-500"> Total user:{rows.length} </strong>
+                        <strong className="text-gray-500"> Total user:{rows.length} </strong>
                     </Typography>
                     <TextField
                         label="Search Users"
@@ -526,7 +526,7 @@ const UserList = () => {
                     rows={filteredRows}
                     columns={columns.map((col) => ({
                         ...col,
-                        minWidth:col.minWidth || 125
+                        minWidth: col.minWidth || 125
                     }))}
                     pageSize={10}
                     rowsPerPageOptions={[5, 10, 20]}
@@ -687,7 +687,7 @@ const UserList = () => {
                                     <Button
                                         onClick={generatePassword}
                                         style={{
-                                            marginTop: '10px',
+                                            marginTop: '20px',
                                             background: 'success',
                                             border: '1px solid #ccc',
                                             padding: '7px 15px',
@@ -830,15 +830,70 @@ const UserList = () => {
                             />
                         </div>
 
-                        <div className="mb-4">
-                            <label htmlFor="phone" className="form-label">Phone:</label>
-                            <input
-                                type="text"
-                                id="phone"
-                                className="form-control"
-                                value={currentRow?.phone || ""}
-                                onChange={(e) => setCurrentRow({ ...currentRow, phone: e.target.value })}
-                            />
+                        <div className="flex gap-2">
+
+                            <div className="mb-4 col-md-6">
+                                <label htmlFor="phone" className="form-label">Phone:</label>
+                                <input
+                                    type="number"
+                                    id="phone"
+                                    
+                                    className="form-control"
+                                    value={currentRow?.phone || ""}
+                                    onChange={(e) => setCurrentRow({ ...currentRow, phone: e.target.value })}
+                                />
+                            </div>
+
+                            <div className="col-md-6 flex flex-row items-center gap-2">
+                                <div className="col-md-4 w-75 input-group" aria-describedby="basic-addon1">
+                                    <label htmlFor="password" className="form-label">Password:</label>
+                                    <div className="flex flex-row" style={{ position: 'relative', width: '100%' }}>
+                                        <input
+                                            type={showPassword ? "text" : "password"}
+                                            value={password}
+                                            id="password"
+                                            style={{
+                                                height: '37px',
+                                                padding: '5px 10px',
+                                                fontSize: '14px',
+                                                flexGrow: 1,
+                                                paddingRight: '40px',
+                                            }}
+                                            className="form-control"
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            required
+                                        />
+                                        <div
+                                            className="cursor-pointer mt-1"
+                                            onClick={togglePasswordVisibility}
+                                            style={{
+                                                position: 'absolute',
+                                                right: '10px',
+                                                top: '50%',
+                                                transform: 'translateY(-50%)',
+                                                background: 'transparent',
+                                                border: 'none',
+                                            }}
+                                        >
+                                            {showPassword ? <FaEyeSlash size={15} /> : <FaEye size={15} />}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="input-group-prepend w-25" id="basic-addon1">
+                                    <Button
+                                        onClick={generatePassword}
+                                        style={{
+                                            marginTop: '20px',
+                                            background: 'success',
+                                            border: '1px solid #ccc',
+                                            padding: '7px 15px',
+                                        }}
+                                    >
+                                        <GiCycle size={20} />
+                                    </Button>
+                                </div>
+                            </div>
+
                         </div>
 
                         <div className="text-center">
@@ -849,6 +904,8 @@ const UserList = () => {
                     </form>
                 </Box>
             </Modal>
+
+
 
             {/* Delete Confirmation Modal */}
             <Modal open={openDeleteModal} onClose={handleCancelDelete}>

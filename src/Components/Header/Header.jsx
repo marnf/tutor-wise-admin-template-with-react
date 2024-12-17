@@ -60,6 +60,7 @@ const Header = ({ isSidebarOpen, toggleSidebar }) => {
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
+                fontSize: '24px',
                 position: 'absolute',
                 left: '10px',
               }}

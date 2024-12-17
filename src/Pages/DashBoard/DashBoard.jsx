@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { Pie } from 'react-chartjs-2'; // Pie Chart import
 import 'chart.js/auto'; // Chart.js auto register
 import RadialBar from './RadialBar'; // RadialBar import
 import { Link } from 'react-router-dom';
-import { Doughnut } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
 import { Box, LinearProgress } from "@mui/material";
 import { MdViewList } from "react-icons/md";
@@ -200,12 +198,12 @@ const PaymentCard = ({ data }) => {
             <h2 className=" text-gray-700 mb-1 text-center font-bold">Payment Percentage Details</h2>
             {data ? (
                 <div className="flex justify-between items-start ">
-                    {/* Doughnut Chart */}
+                  
                     <div className="w-48 h-48">
                         <canvas ref={chartRef}></canvas>
                     </div>
 
-                    {/* ডেটার বিবরণ */}
+                  
                     <div className="ml-6 flex flex-col  space-y-5">
                         <div className="text-sm space-y-1">
                             <p className="font-medium">

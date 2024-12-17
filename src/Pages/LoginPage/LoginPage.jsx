@@ -18,7 +18,7 @@ const LoginPage = () => {
   const [showOtpPopup, setShowOtpPopup] = useState(false);
   const [otp, setOtp] = useState("");
   const [showSetPasswordPopup, setShowSetPasswordPopup] = useState(false);
-  const [timer, setTimer] = useState(5);
+  const [timer, setTimer] = useState(120);
   const [apiMessageFromOtp, setApiMessageFromOtp] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -178,7 +178,7 @@ const LoginPage = () => {
   const handleResendOtp = () => {
 
     if (timer === 0) {
-      setTimer(5);
+      setTimer(120);
       const newOtpTimer = setInterval(() => {
         setTimer((prev) => {
           if (prev <= 1) {

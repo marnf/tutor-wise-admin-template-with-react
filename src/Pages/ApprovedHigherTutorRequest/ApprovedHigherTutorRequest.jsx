@@ -383,7 +383,7 @@ const ApprovedHigherTutorRequest = () => {
                             {/* Location */}
                             <Grid item xs={12} sm={6}>
                                 <TextField
-                                    label="Location"
+                                    label=" Tutor Location"
                                     name="location"
                                     variant="outlined"
                                     fullWidth
@@ -413,12 +413,13 @@ const ApprovedHigherTutorRequest = () => {
                             {/* Charge */}
                             <Grid item xs={12} sm={6}>
                                 <TextField
-                                    label="Charge"
+                                    label="Tutor Charge"
                                     name="tutor_charge"  // Make sure the name matches the field in formData
                                     variant="outlined"
                                     fullWidth
                                     value={formData.tutor_charge || ""}  // Controlled by formData
                                     onChange={handleChange}  // Updates formData when the value changes
+                                    disabled
                                 />
                             </Grid>
 

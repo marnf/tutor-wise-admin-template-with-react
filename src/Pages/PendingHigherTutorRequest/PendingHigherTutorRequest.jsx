@@ -253,7 +253,7 @@ const PendingHigherTutorRequest = () => {
 
 
     const handleSendNotification = () => {
-        fetch(`http://192.168.0.154:8000/api/admin/send-notification/${notifyData.id}/`, {
+        fetch(`https://tutorwise-backend.vercel.app/api/admin/send-notification/${notifyData.id}/`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -286,6 +286,7 @@ const PendingHigherTutorRequest = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        console.log(formData)
         fetch(`https://tutorwise-backend.vercel.app/api/admin/edit-hire-tutor-request/${formData.id}/`, {
             method: "PUT",
             headers: {
@@ -450,9 +451,7 @@ const PendingHigherTutorRequest = () => {
                                     variant="outlined"
                                     fullWidth
                                     value={formData.id || ""}
-                                    InputProps={{
-                                        readOnly: true,
-                                    }}
+                                   
                                     disabled
                                 />
                             </Grid>
@@ -493,7 +492,7 @@ const PendingHigherTutorRequest = () => {
                             {/* Location */}
                             <Grid item xs={12} sm={6}>
                                 <TextField
-                                    label="Location"
+                                    label="Tutor Location"
                                     name="location"
                                     variant="outlined"
                                     fullWidth
@@ -523,12 +522,13 @@ const PendingHigherTutorRequest = () => {
                             {/* Charge */}
                             <Grid item xs={12} sm={6}>
                                 <TextField
-                                    label="Charge"
+                                    label=" Tutor Charge"
                                     name="tutor_charge"  // Make sure the name matches the field in formData
                                     variant="outlined"
                                     fullWidth
                                     value={formData.tutor_charge || ""}  // Controlled by formData
                                     onChange={handleChange}  // Updates formData when the value changes
+                                    disabled
                                 />
                             </Grid>
 
