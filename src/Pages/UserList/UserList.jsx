@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { Alert, Box, Button, Dialog, DialogContent, Divider, LinearProgress, Modal, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, LinearProgress, Modal, TextField, Typography } from "@mui/material";
 import Select from "react-select";  // Import react-select
 import { BiSolidSelectMultiple, BiSolidUserDetail } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
@@ -90,17 +90,19 @@ const UserList = () => {
     const [rolesOptions, setRolesOptions] = useState([]);  // State for roles options
     const [openDeleteModal, setOpenDeleteModal] = useState(false); // Delete confirmation modal state
     const [openCreateModal, setOpenCreateModal] = useState(false); // Create modal state
-    const [originalRolesOptions, setOriginalRolesOptions] = useState([]); // Keep original list
-    const [password, setPassword] = useState("");  // Password state
+    const [originalRolesOptions, setOriginalRolesOptions] = useState([]); 
+    const [password, setPassword] = useState(""); 
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [openCreateRoleModal, setOpenCreateRoleModal] = useState(false);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarErrorMessage, setSnackbarErrorMessage] = useState('');
     const [selectedOptions, setSelectedOptions] = useState('')
     const [view, setView] = useState([]);
     const [openViewModal, setOpenViewModal] = useState(false);
+    const [editPassword, setEditPassword] = useState("");
 
 
 
@@ -113,6 +115,7 @@ const UserList = () => {
             generatedPassword += charset.charAt(Math.floor(Math.random() * charset.length));
         }
         setPassword(generatedPassword);
+        setEditPassword(generatedPassword);
     };
 
     // password visible or not
@@ -154,18 +157,12 @@ const UserList = () => {
     }, []);
 
     // Filter rows based on search query
-    useEffect(() => {
-        if (searchQuery) {
-            const filtered = rows.filter((row) =>
-                row.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                row.phone.includes(searchQuery) ||
-                row.userType.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-            setFilteredRows(filtered);
-        } else {
-            setFilteredRows(rows);
-        }
-    }, [searchQuery, rows]);
+      useEffect(() => {
+           const result = rows.filter((row) =>
+               Object.values(row).join(" ").toLowerCase().includes(searchQuery.toLowerCase())
+           );
+           setFilteredRows(result);
+       }, [searchQuery, rows]);
 
 
 
@@ -432,32 +429,54 @@ const UserList = () => {
             username: currentRow.username,
             phone: currentRow.phone,
             user_type: currentRow.userType,
-            role_ids: roleIds,  // Pass as array for API
+            roles: roleIds,  
+            password: editPassword || "" ,
         };
+
+        const encryptedUser = localStorage.getItem("user");
+
+        let user;
+        if (encryptedUser) {
+            try {
+                user = decryptData(encryptedUser);
+            } catch (error) {
+                console.error("Error decrypting user data:", error);
+            }
+        }
+        const token = user?.token;
+        console.log(token)
+
 
         console.log(updatedData)
 
         // API PUT Request to update user
-        fetch(`https://tutorwise-backend.vercel.app/api/admin/edit-approved-request-tutor/${currentRow.id}`, {
+        fetch(`https://tutorwise-backend.vercel.app/api/admin/edit-users-list/${currentRow.id}/`, {
 
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                Authorization: `Token ${token}`,
+
             },
             body: JSON.stringify(updatedData),
         })
             .then(() => {
                 // Update the user in the rows state
-                setRows(rows.map(row => row.id === currentRow.id ? { ...row, ...updatedData } : row));
-                setFilteredRows(filteredRows.map(row => row.id === currentRow.id ? { ...row, ...updatedData } : row));
+                // setRows(rows.map(row => row.id === currentRow.id ? { ...row, ...updatedData } : row));
+                // setFilteredRows(filteredRows.map(row => row.id === currentRow.id ? { ...row, ...updatedData } : row));
 
-                setSnackbarMessage("data submitted successfully!");
-                setOpenSnackbar(true);
+                // setSnackbarMessage("data submitted successfully!");
+                // setOpenSnackbar(true);
+                setOpenModal(false)
+                // window.location.reload();
             })
-            .catch((error) => console.error("Error updating user:", error));
+            .catch((error) => {
 
-        setSnackbarMessage("failed to submit!");
-        setOpenErrorSnackbar(true);
+                setSnackbarErrorMessage("failed to submit!");
+                setOpenErrorSnackbar(true);
+                setOpenModal(false)
+
+            })
     };
 
     return (
@@ -784,11 +803,13 @@ const UserList = () => {
                 <Box sx={{ ...modalStyle, width: 600 }}>
                     <form onSubmit={handleSubmit} className="p-3">
                         <h2 className="text-center mb-4" style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Edit User</h2>
+
                         <div className="mb-4">
                             <label htmlFor="userType" className="form-label">User Type:</label>
                             <select
                                 id="userType"
-                                className="form-select"
+                                className="form-select w-full"
+                                style={{ height: '40px' }}
                                 value={currentRow?.userType || ""}
                                 onChange={(e) => setCurrentRow({ ...currentRow, userType: e.target.value })}
                                 required
@@ -801,7 +822,6 @@ const UserList = () => {
                         <div className="mb-4">
                             <label htmlFor="rolesName" className="form-label">Access:</label>
                             <Select
-
                                 isMulti
                                 name="role_ids"
                                 options={rolesOptions}
@@ -809,13 +829,11 @@ const UserList = () => {
                                     value: role,
                                     label: role,
                                 })) || []}
-
                                 onChange={handleRolesChange}
                                 closeMenuOnSelect={false}
                                 className="basic-multi-select"
                                 classNamePrefix="select"
                             />
-
                         </div>
 
                         <div className="mb-4">
@@ -824,44 +842,46 @@ const UserList = () => {
                                 type="text"
                                 id="username"
                                 className="form-control"
-
+                                style={{ height: '40px' }}
                                 value={currentRow?.username || ""}
                                 onChange={(e) => setCurrentRow({ ...currentRow, username: e.target.value })}
                             />
                         </div>
 
-                        <div className="flex gap-2">
-
-                            <div className="mb-4 col-md-6">
+                        <div className="flex gap-2 items-center">
+                            <div className={`mb-4 col-md-6`}>
                                 <label htmlFor="phone" className="form-label">Phone:</label>
                                 <input
                                     type="number"
                                     id="phone"
-                                    
                                     className="form-control"
+                                    style={{ height: '40px' }}
                                     value={currentRow?.phone || ""}
                                     onChange={(e) => setCurrentRow({ ...currentRow, phone: e.target.value })}
                                 />
                             </div>
 
-                            <div className="col-md-6 flex flex-row items-center gap-2">
-                                <div className="col-md-4 w-75 input-group" aria-describedby="basic-addon1">
+                            <div className={`col-md-6 flex flex-row items-center gap-2 mb-2 ${!isSuperAdmin ? "opacity-50 pointer-events-none" : ""
+                                }`}>
+                                <div className="col-md-4 w-75 input-group">
                                     <label htmlFor="password" className="form-label">Password:</label>
                                     <div className="flex flex-row" style={{ position: 'relative', width: '100%' }}>
                                         <input
                                             type={showPassword ? "text" : "password"}
-                                            value={password}
-                                            id="password"
+                                            value={editPassword}
+                                            placeholder="Change password"
+                                            id="EditPassword"
+                                            required={isSuperAdmin}
                                             style={{
-                                                height: '37px',
+                                                height: '40px',
                                                 padding: '5px 10px',
                                                 fontSize: '14px',
                                                 flexGrow: 1,
                                                 paddingRight: '40px',
                                             }}
                                             className="form-control"
-                                            onChange={(e) => setPassword(e.target.value)}
-                                            required
+                                            onChange={(e) => setEditPassword(e.target.value)}
+
                                         />
                                         <div
                                             className="cursor-pointer mt-1"
@@ -884,7 +904,6 @@ const UserList = () => {
                                         onClick={generatePassword}
                                         style={{
                                             marginTop: '20px',
-                                            background: 'success',
                                             border: '1px solid #ccc',
                                             padding: '7px 15px',
                                         }}
@@ -893,7 +912,6 @@ const UserList = () => {
                                     </Button>
                                 </div>
                             </div>
-
                         </div>
 
                         <div className="text-center">
@@ -907,16 +925,20 @@ const UserList = () => {
 
 
 
+
+
             {/* Delete Confirmation Modal */}
-            <Modal open={openDeleteModal} onClose={handleCancelDelete}>
-                <Box sx={modalStyle}  >
-                    <h2 className="p-5">Are you sure you want to delete this user?</h2>
-                    <div className=" p-4 " style={{ textAlign: "center" }}>
-                        <Button variant="contained" color="error" onClick={handleConfirmDelete}>Yes, Delete</Button>
-                        <Button variant="contained" color="default" onClick={handleCancelDelete} style={{ marginLeft: "8px" }}>Cancel</Button>
-                    </div>
-                </Box>
-            </Modal>
+
+            <Dialog open={openDeleteModal} onClose={handleCancelDelete}>
+                <DialogTitle>Confirm Deletion</DialogTitle>
+                <DialogContent>
+                    <p>Are you sure you want to delete this user?</p>
+                </DialogContent>
+                <DialogActions>
+                    <Button  onClick={handleCancelDelete}>Cancel</Button>
+                    <Button onClick={handleConfirmDelete} color="error">Delete</Button>
+                </DialogActions>
+            </Dialog>
 
 
             {/* view modal */}
@@ -1042,7 +1064,7 @@ const UserList = () => {
             {/* Snackbar component */}
             <Snackbar
                 open={openSnackbar}
-                autoHideDuration={6000}
+                autoHideDuration={200}
                 onClose={handleCloseSnackbar}
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             >
@@ -1053,7 +1075,7 @@ const UserList = () => {
 
             <Snackbar
                 open={openErrorSnackbar}
-                autoHideDuration={6000}
+                autoHideDuration={200}
                 onClose={handleCloseErrorSnackbar}
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             >

@@ -126,12 +126,27 @@ const DynamicPricing = () => {
                     rowsPerPageOptions={[5]}
                     rowHeight={70}
                     sx={{
-                        '& .MuiDataGrid-columnHeader': {
-                            backgroundColor: '#f0f0f0',
-                            fontWeight: 'bold',
+                        "& .MuiDataGrid-columnHeader": {
+                            backgroundColor: "#f0f0f0",
+                            fontWeight: "bold",
+                            borderBottom: "2px solid #1976d2", // Column header's bottom border
                         },
-                        '& .MuiDataGrid-cell': {
-                            border: '1px solid #e0e0e0',
+                        "& .MuiDataGrid-cell": {
+                            border: "1px solid #e0e0e0", // Border for each cell
+                            whiteSpace: "normal", // Allow text to wrap in cells
+                            wordWrap: "break-word", // Break long words if necessary
+                        },
+                        "& .MuiDataGrid-cell:focus": {
+                            outline: "none", // Remove default outline on focus
+                        },
+                        "& .MuiDataGrid-columnHeader:focus": {
+                            outline: "none", // Remove outline on column header focus
+                        },
+                        "& .MuiDataGrid-columnHeader:focus-within": {
+                            outline: "none", // Remove outline when child element inside column header is focused
+                        },
+                        "& .MuiDataGrid-virtualScroller": {
+                            overflowX: "auto", // Ensure horizontal scroll for table content
                         },
                     }}
                 />

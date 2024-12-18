@@ -12,16 +12,16 @@ import { decryptData } from "../../EncryptedPage";
 
 
 
- const encryptedUser = localStorage.getItem("user");
+const encryptedUser = localStorage.getItem("user");
 
-  let user;
-  if (encryptedUser) {
+let user;
+if (encryptedUser) {
     try {
-      user = decryptData(encryptedUser);
+        user = decryptData(encryptedUser);
     } catch (error) {
-      console.error("Error decrypting user data:", error);
+        console.error("Error decrypting user data:", error);
     }
-  }
+}
 const isSuperAdmin = user?.user_type === "super_admin";
 
 const columns = [
@@ -131,18 +131,12 @@ const PendingTutorRequest = () => {
             .catch((error) => console.error("Error fetching data:", error));
     }, []);
 
+    // Filter rows based on search query
     useEffect(() => {
-        if (searchQuery) {
-            const filtered = rows.filter((row) =>
-                row.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                row.phone.includes(searchQuery) ||
-                row.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                row.details.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-            setFilteredRows(filtered);
-        } else {
-            setFilteredRows(rows);
-        }
+        const result = rows.filter((row) =>
+            Object.values(row).join(" ").toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredRows(result);
     }, [searchQuery, rows]);
 
     const handleOpenEditModal = (row) => {
@@ -295,7 +289,7 @@ const PendingTutorRequest = () => {
                             overflowX: "auto", // Ensure horizontal scroll for table content
                         },
                     }}
-                    
+
                 />
             )}
 
