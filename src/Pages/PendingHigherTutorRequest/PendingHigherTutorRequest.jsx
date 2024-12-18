@@ -98,7 +98,7 @@ const columns = [
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => params.row.handleApprove(params.row)} />
 
-                <MdNotificationsActive
+                <MdNotificationsActive title="send notification"
                     size={25}
                     color="gray"
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
