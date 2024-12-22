@@ -1,0 +1,23 @@
+/* Active Link */
+.custom-menu .ant-menu-item-selected {
+ 
+ 
+  background-color: #f0523a !important; 
+  color: white !important; 
+ 
+}
+
+/* Hover Effect */
+.custom-menu .ant-menu-item:hover {
+  background-color: #ee7d6c !important;
+ 
+
+}
+
+
+/* Submenu Open Background */
+.custom-menu .ant-menu-submenu-open {
+
+  background-color: #d3d0d0 !important; 
+ 
+}

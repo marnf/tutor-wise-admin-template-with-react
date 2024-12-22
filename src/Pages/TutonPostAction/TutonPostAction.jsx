@@ -52,14 +52,14 @@ const columns = (handleEditClick, handleDeleteClick, handleOpenViewModal) => [
                 <FaUserEdit
                     title="Edit"
                     size={25}
-                    className="cursor-pointer"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => handleEditClick(params.row)}
                 />
                 <MdDelete
                     title="Delete"
                     size={25}
                     color="red"
-                    className="cursor-pointer"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => handleDeleteClick(params.row.id)}
                 />
                 <BiSolidUserDetail title="View"

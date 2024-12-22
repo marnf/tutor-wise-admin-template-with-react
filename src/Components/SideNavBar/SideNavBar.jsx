@@ -17,6 +17,7 @@ import { MdReviews } from "react-icons/md";
 import { MdRateReview } from "react-icons/md";
 import { MdOutlineTask } from "react-icons/md";
 import { decryptData } from '../../EncryptedPage';
+import '../SideNavBar/SideNavBar.css'
 
 const menuItems = [
   {
@@ -243,6 +244,7 @@ const SideNavBar = ({ isSidebarOpen, toggleSidebar }) => {
         onOpenChange={handleOpenChange} // Update open keys on user interaction
         style={{ width: '100%' }}
         items={filteredItems}
+        className="custom-menu"
       />
     </div>
   );

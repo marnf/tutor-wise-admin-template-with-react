@@ -86,7 +86,7 @@ const Dashboard = () => {
                 </div>
 
                 {/* Inactive User Card (Smaller Size) */}
-                <div className="md:col-span-1 lg:col-span-1">
+                <div className="md:col-span-2 lg:col-span-1">
                     <InactiveUserCard
                         title="Inactive User"
                         value={inactiveUserData ? inactiveUserData.inactive_user : '0'}
@@ -258,14 +258,15 @@ const PaymentCard = ({ data }) => {
 const InactiveUserCard = ({ title, value, percentage }) => {
     return (
         <div className="card bg-white shadow-md rounded-lg p-6 flex flex-col gap-3">
-            <div className="flex justify-between items-center">
-                <div>
-                    <h2 className="text-3xl font-bold">{value}</h2>
-                    <h4 className="text-xl font-semibold text-gray-700 text-nowrap">{title}</h4>
+            <div className="flex flex-col md:flex-row lg:flex-row justify-between items-center">
+                <div className=''>
+                    <h2 className="text-3xl font-bold ">{value}</h2>
+                    <h4 className="text-xl font-semibold text-gray-700 ">{title}</h4>
                 </div>
-                <div className="w-40 h-40">
-                    <RadialBar percentage={percentage} size="200" />
+                <div className="w-40 h-40 ">
+                    <RadialBar percentage={percentage} size={200} />
                 </div>
+                
             </div>
             <div className="flex justify-end gap-4 mt-4">
 
