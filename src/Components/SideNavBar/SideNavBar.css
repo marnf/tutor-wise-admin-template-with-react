@@ -2,14 +2,14 @@
 .custom-menu .ant-menu-item-selected {
  
  
-  background-color: #f0523a !important; 
+  background-color: #022457 !important; 
   color: white !important; 
  
 }
 
 /* Hover Effect */
 .custom-menu .ant-menu-item:hover {
-  background-color: #ee7d6c !important;
+  background-color: #7d7e83 !important;
  
 
 }
@@ -21,3 +21,4 @@
   background-color: #d3d0d0 !important; 
  
 }
+
