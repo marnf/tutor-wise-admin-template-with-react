@@ -9,7 +9,7 @@
 
 /* Hover Effect */
 .custom-menu .ant-menu-item:hover {
-  background-color: #7d7e83 !important;
+  background-color: #b8c2f3 !important;
  
 
 }
@@ -18,7 +18,7 @@
 /* Submenu Open Background */
 .custom-menu .ant-menu-submenu-open {
 
-  background-color: #d3d0d0 !important; 
+  background-color: #f1eded !important; 
  
 }
 
