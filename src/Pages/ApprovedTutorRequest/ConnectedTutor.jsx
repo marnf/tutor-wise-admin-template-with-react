@@ -10,7 +10,7 @@ const columns = [
     // { field: "full_name", headerName: "Name", flex: 0.1 },
     { field: "location", headerName: "Location", flex: 0.1, minWidth: 120 },
     // { field: "phone", headerName: "Phone", maxWidth: 120, minWidth:120 },
-    { field: "", headerName: "Online/offline", maxWidth: 90, minWidth: 90 },
+    // { field: "", headerName: "Online/offline", maxWidth: 90, minWidth: 90 },
     { field: "label", headerName: "Class", maxWidth: 70, minWidth: 70 },
     { field: "subject", headerName: "Subject", flex: 0.1, minWidth: 120 },
     { field: "gender", headerName: "Gender", maxWidth: 70, minWidth: 70 },

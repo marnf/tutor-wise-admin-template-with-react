@@ -27,9 +27,11 @@ import { DataGrid } from "@mui/x-data-grid";
 import { FaUserEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { BiSolidUserDetail } from "react-icons/bi";
-
 import { BorderLeft } from "@mui/icons-material";
 import { decryptData } from "../../EncryptedPage";
+import { BsFillCalendarDateFill } from "react-icons/bs";
+import { DateRangePicker } from "react-date-range";
+import moment from 'moment';
 
 
 // Dummy subject options
@@ -46,16 +48,16 @@ const subjectOptions = [
 ];
 
 
- const encryptedUser = localStorage.getItem("user");
+const encryptedUser = localStorage.getItem("user");
 
-  let user;
-  if (encryptedUser) {
+let user;
+if (encryptedUser) {
     try {
-      user = decryptData(encryptedUser);
+        user = decryptData(encryptedUser);
     } catch (error) {
-      console.error("Error decrypting user data:", error);
+        console.error("Error decrypting user data:", error);
     }
-  }
+}
 const isSuperAdmin = user?.user_type === "super_admin";
 
 const columns = [
@@ -66,7 +68,7 @@ const columns = [
     // { field: "details", headerName: "Details", minWidth: 200 },
     { field: "class_name", headerName: "Class", minWidth: 120 },
     { field: "subject", headerName: "Subject", minWidth: 150 },
-    // { field: "start_date", headerName: "Start Date", minWidth: 150 },
+    { field: "created_at", headerName: "Created Date", minWidth: 150 },
     // { field: "lesson_type", headerName: "Lesson Type", minWidth: 100 },
     { field: "gender", headerName: "Gender", minWidth: 60 },
     { field: "budget", headerName: "Budget", minWidth: 60 },
@@ -102,12 +104,12 @@ const columns = [
                         }`}
                     onClick={() => {
                         if (isSuperAdmin) {
-                            params.row.handleDelete(params.row); 
+                            params.row.handleDelete(params.row);
                         }
                     }}
                     style={{
-                        pointerEvents: isSuperAdmin ? "auto" : "none", 
-                        opacity: isSuperAdmin ? 1 : 0.5, 
+                        pointerEvents: isSuperAdmin ? "auto" : "none",
+                        opacity: isSuperAdmin ? 1 : 0.5,
                     }}
                 />
 
@@ -133,8 +135,15 @@ const StudentList = () => {
     const [openViewModal, setOpenViewModal] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [snackbarSeverity, setSnackbarSeverity] = useState("success");
-    
-
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [dateRange, setDateRange] = useState([
+        {
+            startDate: new Date(),
+            endDate: new Date(),
+            key: "selection",
+        },
+    ]);
+    const [refreshTable, setRefreshTable] = useState(false)
 
     useEffect(() => {
         setLoading(true)
@@ -143,18 +152,20 @@ const StudentList = () => {
             .then((data) => {
                 const formattedData = data.map((item) => ({
                     ...item,
+                    created_at: moment(item?.created_at).format('YYYY-MM-DD'),
                     start_immediate: item.start_immediate ? "Yes" : "No",
                     handleEdit: handleEditRequest,
                     handleDelete: handleDeleteRequest,
                     handleViewModal: handleOpenViewModal,
-                   
+
                 }));
                 setRows(formattedData);
                 setFilteredRows(formattedData);
                 setLoading(false)
+
             })
             .catch((error) => console.error("Error fetching data:", error));
-    }, []);
+    }, [refreshTable]);
 
     useEffect(() => {
         const result = rows.filter((row) =>
@@ -165,7 +176,27 @@ const StudentList = () => {
 
 
 
+    const handleDateFilter = () => {
+        const startDate = new Date(dateRange[0].startDate).setHours(0, 0, 0, 0); // Start of the day
+        const endDate = new Date(dateRange[0].endDate).setHours(23, 59, 59, 999); // End of the day
 
+        console.log("Start Date:", startDate, "End Date:", endDate);
+
+        const filteredData = rows.filter((row) => {
+            const rowDate = new Date(row.created_at).getTime();
+            console.log("Row Date:", rowDate); // Debug
+            return rowDate >= startDate && rowDate <= endDate;
+        });
+
+        console.log("Filtered Data:", filteredData); // Debug filtered rows
+        setFilteredRows(filteredData);
+        setShowDatePicker(false); // Close the date picker after filtering
+    };
+
+
+    const resetFilters = () => {
+        setRefreshTable((prev) => !prev);
+    }
 
     const handleEditRequest = (row) => {
         setEditData({
@@ -185,12 +216,12 @@ const StudentList = () => {
         setOpenViewModal(true)
         setView(row)
     }
-    
+
     const handleCloseViewModal = () => {
         setOpenViewModal(false)
     }
 
-   
+
 
     const handleDelete = (e) => {
         e.preventDefault();
@@ -271,19 +302,66 @@ const StudentList = () => {
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
 
             <div className="flex flex-col md:flex-row lg:flex-row justify-between items-center  text-end gap-1">
-                <Typography variant="text-base" className="flex h5">
-                    <strong className="text-gray-500">Approved Request:{rows.length} </strong>
-                </Typography>
-                <div className="flex justify-end">
+
+
+                <div className="flex justify-end gap-2 items-center mb-2">
+                    <div className="relative flex items-center justify-start gap-1">
+                        <BsFillCalendarDateFill
+                            size={40}
+                            color="#f0523a"
+                            onClick={() => setShowDatePicker(!showDatePicker)}
+                            className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer pb-1"
+                        />
+
+                        {showDatePicker && (
+                            <div style={{ position: "absolute", zIndex: 100, top: "50px" }}>
+                                <DateRangePicker
+                                    onChange={(item) => setDateRange([item.selection])}
+                                    showSelectionPreview={true}
+                                    moveRangeOnFirstSelection={false}
+                                    ranges={dateRange}
+                                    direction="horizontal"
+                                />
+                                <div style={{ marginTop: "10px", display: "flex", gap: "10px" }}>
+                                    <Button
+                                        variant="contained"
+                                        color="success"
+                                        size="small"
+                                        onClick={handleDateFilter}
+                                    >
+                                        Apply Filter
+                                    </Button>
+
+                                    <Button
+                                        variant="contained"
+                                        color="error"
+                                        size="small"
+                                        onClick={resetFilters}
+                                    >
+                                        Reset
+                                    </Button>
+                                </div>
+
+                            </div>
+
+                        )}
+                    </div>
+
                     <TextField
                         label="Search Tutor Requests"
                         variant="outlined"
                         value={searchQuery}
                         size="small"
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        style={{ marginBottom: "1rem", width: "300px" }}
+                        style={{ width: "300px" }}
                     />
                 </div>
+
+                <Typography variant="text-base" className="flex h5">
+                    <strong className="text-gray-500">Approved Request:{rows.length} </strong>
+                </Typography>
+
+
             </div>
 
             {loading ? (
@@ -331,7 +409,7 @@ const StudentList = () => {
                             overflowX: "auto", // Ensure horizontal scroll for table content
                         },
                     }}
-                    
+
                 />
             )}
 

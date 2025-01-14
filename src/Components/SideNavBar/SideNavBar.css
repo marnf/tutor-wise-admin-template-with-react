@@ -9,7 +9,8 @@
 
 /* Hover Effect */
 .custom-menu .ant-menu-item:hover {
-  background-color: #b8c2f3 !important;
+  color: #da3300 !important; 
+  
  
 
 }

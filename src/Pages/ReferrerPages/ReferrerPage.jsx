@@ -1,34 +1,39 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Card, Checkbox, Dialog, DialogContent, Divider, FormControlLabel, Grid, LinearProgress, TextField, Typography } from "@mui/material";
+import { Box, Button, Checkbox, Dialog, DialogContent, Divider, FormControlLabel, LinearProgress, TextField, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { BiSolidUserDetail } from "react-icons/bi";
 import { BsFillCalendarDateFill } from "react-icons/bs";
 import { DateRangePicker } from "react-date-range";
+import moment from "moment";
 
 // Columns definition for DataGrid
 const columns = [
-    { field: "id", headerName: "ID", minWidth: 130 },
+    { field: "customized_user_id", headerName: "ID", minWidth: 130 },
     {
         field: "profile_picture",
         headerName: "Profile Picture",
         minWidth: 80,
         maxWidth: 80,
         renderCell: (params) => (
-            <img src={params.value} alt="Profile" style={{ width: 50, height: 50, borderRadius: "50%" }} />
+            <img
+                src={params.value}
+                alt="Profile"
+                style={{ width: 50, height: 50, borderRadius: "50%" }}
+            />
         )
     },
     { field: "full_name", headerName: "Name", flex: 1, minWidth: 130 },
-
-    { field: "subject", headerName: "Subject", minWidth: 100 },
-    { field: "gender", headerName: "Gender", minWidth: 60 },
-    { field: "days_per_week", headerName: "Days/Week", minWidth: 40 },
-    { field: "charge_per_month", headerName: "Charge", minWidth: 60 },
-    { field: "start_date", headerName: "Phone", minWidth: 100 },
+    { field: "division", headerName: "Division", minWidth: 100 },
+    { field: "district", headerName: "District", minWidth: 100 },
+    { field: "gender", headerName: "Gender", minWidth: 80 },
+    // { field: "nidcard_number", headerName: "NID Number", minWidth: 150 },
+    { field: "apply_number", headerName: "Applications", minWidth: 100 },
+    { field: "created_at", headerName: "Created Date", minWidth: 100 },
     {
         field: "actions",
         headerName: "Actions",
-        minWidth: 70, // Small width for the action column
-        flex: 0.1, // Takes as little space as possible
+        minWidth: 70,
+        flex: 0.1,
         renderCell: (params) => (
             <Box display="flex" justifyContent="center" className="mt-3">
                 <BiSolidUserDetail
@@ -43,7 +48,9 @@ const columns = [
     },
 ];
 
-const AllTutorList = () => {
+
+
+const Referrer = () => {
     const [rows, setRows] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [filteredRows, setFilteredRows] = useState([]);
@@ -58,35 +65,74 @@ const AllTutorList = () => {
             key: "selection",
         },
     ]);
+     const [refreshTable, setRefreshTable] = useState(false)
 
 
     // Fetch data from the API
     useEffect(() => {
-        setLoading(true)
+        setLoading(true);
         const BASE_URL = "https://tutorwise-backend.vercel.app";
-        fetch("https://tutorwise-backend.vercel.app/api/admin/pro-tutor-list/")
+
+        fetch("http://192.168.0.154:8000/api/admin/referrer-list/")
             .then((res) => res.json())
             .then((data) => {
                 const formattedData = data.map((item) => ({
-                    id: item.tutor_personal_info.customized_user_id,
-                    profile_picture: item.tutor_personal_info.profile_picture ? `${BASE_URL}${item.tutor_personal_info.profile_picture}` : null,
-                    full_name: item.tutor_personal_info.full_name,
-                    division: item.tutor_personal_info.division,
-                    location: `${item.tutor_personal_info.district}, ${item.tutor_personal_info.location}`,
-                    subject: item.tutor_tuition_info.subject,
-                    gender: item.tutor_personal_info.gender,
-                    days_per_week: item.tutor_tuition_info.days_per_week,
-                    charge_per_month: item.tutor_tuition_info.charge_per_month,
-                    phone: item.tutor_personal_info.phone,
-                    start_date: item?.tutor_personal_info?.pro_tutor_start_date,
+                    id: item.id,
+                    customized_user_id: item.customized_user_id,
+                    created_at: moment(item?.created_at).format('YYYY-MM-DD'),
+                    profile_picture: item.profile_picture
+                        ? `${BASE_URL}${item.profile_picture}`
+                        : null,
+                    full_name: item.full_name,
+                    division: item.division,
+                    district: item.district,
+                    location: item.district, // You can adjust this if more specific location data is required
+                    nidcard_number: item.nidcard_number,
+                    nidcard_picture: item.nidcard_picture
+                        ? `${BASE_URL}${item.nidcard_picture}`
+                        : null,
+                    gender: item.gender,
+                    profile_headline: item.profile_headline,
+                    profile_description: item.profile_description,
+                    apply_number: item.apply_number,
+                    nominee1_name: item.nominee1_name,
+                    nominee1_address: item.nominee1_address,
+                    nominee1_nidcard_number: item.nominee1_nidcard_number,
+                    nominee1_nidcard_picture: item.nominee1_nidcard_picture
+                        ? `${BASE_URL}${item.nominee1_nidcard_picture}`
+                        : null,
+                    nominee2_name: item.nominee2_name,
+                    nominee2_address: item.nominee2_address,
+                    nominee2_nidcard_number: item.nominee2_nidcard_number,
+                    nominee2_nidcard_picture: item.nominee2_nidcard_picture
+                        ? `${BASE_URL}${item.nominee2_nidcard_picture}`
+                        : null,
+                    college_educational_background: item.college_educational_background,
+                    college_background_section: item.college_background_section,
+                    college_name: item.college_name,
+                    college_cgpa: item.college_cgpa,
+                    college_certificate: item.college_certificate
+                        ? `${BASE_URL}${item.college_certificate}`
+                        : null,
+                    university_name: item.university_name,
+                    university_cgpa: item.university_cgpa,
+                    university_educational_level: item.university_educational_level,
+                    university_start_date: item.university_start_date,
+                    university_ending_date: item.university_ending_date,
+                    university_ongoing: item.university_ongoing,
                     handleViewModal: (params) => handleOpenViewModal(item)
                 }));
+
                 setRows(formattedData);
                 setFilteredRows(formattedData);
-                setLoading(false)
+                setLoading(false);
             })
-            .catch((error) => console.error("Error fetching data:", error));
-    }, []);
+            .catch((error) => {
+                console.error("Error fetching data:", error);
+                setLoading(false);
+            });
+    }, [refreshTable]);
+
 
     // Filter data based on search query
     useEffect(() => {
@@ -116,7 +162,7 @@ const AllTutorList = () => {
         console.log("Start Date:", startDate, "End Date:", endDate);
 
         const filteredData = rows.filter((row) => {
-            const rowDate = new Date(row.start_date).getTime(); // Use raw `created_at`
+            const rowDate = new Date(row.created_at).getTime(); // Use raw `created_at`
             console.log("Row Date:", rowDate); // Debug
             return rowDate >= startDate && rowDate <= endDate;
         });
@@ -126,9 +172,12 @@ const AllTutorList = () => {
         setShowDatePicker(false); // Close the date picker after filtering
     };
 
+    const resetFilters =()=>{
+        setRefreshTable((prev) => !prev);
+    }
+
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-
             <div className="flex flex-col md:flex-row lg:flex-row justify-between items-center  text-end gap-1">
 
                 <div className="flex items-center justify-center gap-1">
@@ -149,15 +198,25 @@ const AllTutorList = () => {
                                     ranges={dateRange}
                                     direction="horizontal"
                                 />
-                                <Button
-                                    variant="contained"
-                                    color="success"
-                                    size="small"
-                                    onClick={handleDateFilter}
-                                    sx={{ marginTop: "10px" }}
-                                >
-                                    Apply Filter
-                                </Button>
+                                <div style={{ marginTop: "10px", display: "flex", gap: "10px" }}>
+                                    <Button
+                                        variant="contained"
+                                        color="success"
+                                        size="small"
+                                        onClick={handleDateFilter}
+                                    >
+                                        Apply Filter
+                                    </Button>
+
+                                    <Button
+                                        variant="contained"
+                                        color="error"
+                                        size="small"
+                                        onClick={resetFilters}
+                                    >
+                                        Reset
+                                    </Button>
+                                </div>
 
                             </div>
 
@@ -177,7 +236,7 @@ const AllTutorList = () => {
 
 
                 <Typography variant="text-base" className="flex h5">
-                    <strong className="text-gray-500">Total Pro Tutor:{rows.length} </strong>
+                    <strong className="text-gray-500">Total Referrer:{rows.length} </strong>
                 </Typography>
 
             </div>
@@ -228,6 +287,8 @@ const AllTutorList = () => {
 
 
 
+
+
             <Dialog open={openViewModal} onClose={handleCloseViewModal} fullWidth maxWidth="lg">
                 <DialogContent>
                     <div
@@ -254,7 +315,7 @@ const AllTutorList = () => {
                             {/* Left: Profile Image */}
                             <Box sx={{ display: 'flex', gap: 2, alignItems: "center" }}>
                                 <img
-                                    src={view.tutor_personal_info?.profile_picture ? `https://tutorwise-backend.vercel.app${view.tutor_personal_info.profile_picture}` : '/default-image.jpg'}
+                                    src="/default-image.jpg" // No profile picture provided
                                     alt="Profile"
                                     style={{
                                         width: '80px',
@@ -266,47 +327,30 @@ const AllTutorList = () => {
                                 />
                                 <div>
                                     <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}>
-                                        {view?.tutor_personal_info?.full_name || ''}
+                                        {view?.full_name || 'N/A'}
                                     </Typography>
                                     <Typography variant="body2" color="textSecondary" sx={{ color: '#777' }}>
-                                        {view?.tutor_personal_info?.phone || ''}
+                                        {view?.nidcard_number || 'N/A'}
                                     </Typography>
                                     <Typography variant="body2" color="textSecondary" sx={{ color: '#777' }}>
-                                        {view?.tutor_personal_info?.university_name || ''}
+                                        {view?.district || 'N/A'}, {view?.division || 'N/A'}
                                     </Typography>
-                                    <Box sx={{ display: 'flex', gap: 2 }}>
-                                        <FormControlLabel
-                                            control={<Checkbox checked={view?.tutor_personal_info?.is_verified || false} disabled />}
-                                            label="Verified"
-                                        />
-                                        <FormControlLabel
-                                            control={<Checkbox checked={view?.tutor_personal_info?.is_pro_tutor || false} disabled />}
-                                            label="Pro Tutor"
-                                        />
-                                        <FormControlLabel
-                                            control={<Checkbox checked={view?.tutor_personal_info?.university_ongoing || false} disabled />}
-                                            label="University Ongoing"
-                                        />
-                                    </Box>
                                 </div>
                             </Box>
 
-                            {/* Right: Name, Phone, ID, University Name */}
+                            {/* Right: ID and University Info */}
                             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
                                 <Typography variant="body2" color="textSecondary" sx={{ color: '#777' }}>
-                                    <strong>ID:</strong> {view?.tutor_personal_info?.id || ''}
+                                    <strong>ID:</strong> {view?.customized_user_id || 'N/A'}
                                 </Typography>
                                 <Typography variant="body1">
-                                    {view?.tutor_personal_info?.location || ''}
-                                </Typography>
-                                <Typography variant="body1">
-                                    {view?.tutor_tuition_info?.i_will_teach || ''}
+                                    {view?.university_name || 'N/A'}
                                 </Typography>
                                 <Typography sx={{ color: '#777' }} variant="body1">
-                                    <strong>Apply Number:</strong> {view?.tutor_personal_info?.apply_number || ''}
+                                    <strong>Apply Number:</strong> {view?.apply_number || 'N/A'}
                                 </Typography>
                                 <Typography sx={{ color: '#777' }} variant="body1">
-                                    <strong>Duration:</strong> {view?.tutor_personal_info?.pro_tutor_package_duration || ''} <strong>Month</strong>
+                                    <strong>University Level:</strong> {view?.university_educational_level || 'N/A'}
                                 </Typography>
                             </Box>
                         </Box>
@@ -316,62 +360,17 @@ const AllTutorList = () => {
                             {/* Personal Info Card */}
                             <Box style={{ background: '#fff', padding: '15px', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
                                 <Typography variant="h6" style={{ marginBottom: '10px' }}>Personal Info</Typography>
-                                <Typography variant="body1"><strong>Gender:</strong> {view?.tutor_personal_info?.gender || ''}</Typography>
-                                <Typography variant="body1"><strong>District:</strong> {view?.tutor_personal_info?.district || ''}</Typography>
-                                <Typography variant="body1"><strong>Division:</strong> {view?.tutor_personal_info?.division || ''}</Typography>
-                                <Typography variant="body1"><strong>Pro Tutor Start Date:</strong> {view?.tutor_personal_info?.pro_tutor_start_date || ''}</Typography>
-                                <Typography variant="body1"><strong>Pro Tutor End Date:</strong> {view?.tutor_personal_info?.pro_tutor_end_date || ''}</Typography>
-                                <Typography variant="body1"><strong>Profile Headline:</strong> {view?.tutor_personal_info?.profile_headline || ''}</Typography>
-                                <br />
-                                <Typography variant="body1"><strong>Profile Description:</strong> {view?.tutor_personal_info?.profile_description || ''}</Typography>
-                            </Box>
-
-                            {/* College Info Card */}
-                            <Box style={{ background: '#fff', padding: '15px', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
-                                <Typography variant="h6" style={{ marginBottom: '10px' }}>College Info</Typography>
-                                <Typography variant="body1"><strong>College Name:</strong> {view?.tutor_personal_info?.college_name || ''}</Typography>
-                                <Typography variant="body1"><strong>CGPA:</strong> {view?.tutor_personal_info?.college_cgpa || ''}</Typography>
-                                <Typography variant="body1"><strong>Background:</strong> {view?.tutor_personal_info?.college_educational_background || ''}</Typography>
-                                <img
-                                    src={view?.tutor_personal_info?.college_certificate ? `https://tutorwise-backend.vercel.app${view.tutor_personal_info.college_certificate}` : '/default-image.jpg'}
-                                    alt="College Certificate"
-                                    style={{ width: '100%', height: 'auto', marginTop: '10px', borderRadius: '5px' }}
-                                />
+                                <Typography variant="body1"><strong>Gender:</strong> {view?.gender || 'N/A'}</Typography>
+                                <Typography variant="body1"><strong>Profile Headline:</strong> {view?.profile_headline || 'N/A'}</Typography>
+                                <Typography variant="body1"><strong>Profile Description:</strong> {view?.profile_description || 'N/A'}</Typography>
                             </Box>
 
                             {/* University Info Card */}
                             <Box style={{ background: '#fff', padding: '15px', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
                                 <Typography variant="h6" style={{ marginBottom: '10px' }}>University Info</Typography>
-                                <Typography variant="body1"><strong>University Name:</strong> {view?.tutor_personal_info?.university_name || ''}</Typography>
-                                <Typography variant="body1"><strong>CGPA:</strong> {view?.tutor_personal_info?.university_cgpa || ''}</Typography>
-                                <Typography variant="body1"><strong>Level:</strong> {view?.tutor_personal_info?.university_educational_level || ''}</Typography>
-                                <Typography variant="body1"><strong>Start Date:</strong> {view?.tutor_personal_info?.university_start_date || ''}</Typography>
-                                <Typography variant="body1"><strong>End Date:</strong> {view?.tutor_personal_info?.university_ending_date || ''}</Typography>
-                            </Box>
-
-                            {/* Nominee Info Card */}
-                            <Box style={{ background: '#fff', padding: '15px', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
-                                <Typography variant="h6" style={{ marginBottom: '10px' }}>Nominee Info</Typography>
-                                <Typography variant="body1"><strong>Nominee 1 Name:</strong> {view?.tutor_personal_info?.nominee1_name || ''}</Typography>
-                                <Typography variant="body1"><strong>Address:</strong> {view?.tutor_personal_info?.nominee1_address || ''}</Typography>
-                                <Typography variant="body1"><strong>NID Card:</strong> {view?.tutor_personal_info?.nominee1_nidcard_number || ''}</Typography>
-                                <img
-                                    src={view?.tutor_personal_info?.nominee1_nidcard_picture ? `https://tutorwise-backend.vercel.app${view.tutor_personal_info.nominee1_nidcard_picture}` : '/default-image.jpg'}
-                                    alt="Nominee 1 NID"
-                                    style={{ width: '100%', height: 'auto', marginTop: '10px', borderRadius: '5px' }}
-                                />
-                            </Box>
-
-                            <Box style={{ background: '#fff', padding: '15px', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
-                                <Typography variant="h6" style={{ marginBottom: '10px' }}>Nominee Info</Typography>
-                                <Typography variant="body1"><strong>Nominee 2 Name:</strong> {view?.tutor_personal_info?.nominee2_name || ''}</Typography>
-                                <Typography variant="body1"><strong>Address:</strong> {view?.tutor_personal_info?.nominee2_address || ''}</Typography>
-                                <Typography variant="body1"><strong>NID Card:</strong> {view?.tutor_personal_info?.nominee2_nidcard_number || ''}</Typography>
-                                <img
-                                    src={view?.tutor_personal_info?.nominee2_nidcard_picture ? `https://tutorwise-backend.vercel.app${view.tutor_personal_info.nominee2_nidcard_picture}` : '/default-image.jpg'}
-                                    alt="Nominee 2 NID"
-                                    style={{ width: '100%', height: 'auto', marginTop: '10px', borderRadius: '5px' }}
-                                />
+                                <Typography variant="body1"><strong>University Name:</strong> {view?.university_name || 'N/A'}</Typography>
+                                <Typography variant="body1"><strong>CGPA:</strong> {view?.university_cgpa || 'N/A'}</Typography>
+                                <Typography variant="body1"><strong>Level:</strong> {view?.university_educational_level || 'N/A'}</Typography>
                             </Box>
                         </Box>
 
@@ -398,12 +397,8 @@ const AllTutorList = () => {
 
 
 
-
-
-
-
         </Box>
     );
 };
 
-export default AllTutorList;
+export default Referrer;

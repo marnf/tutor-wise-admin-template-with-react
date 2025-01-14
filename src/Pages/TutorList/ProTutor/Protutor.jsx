@@ -73,7 +73,7 @@ const Protutor = () => {
                     full_name: item.tutor_personal_info.full_name,
                     division: item.tutor_personal_info.division,
                     location: `${item.tutor_personal_info.district}, ${item.tutor_personal_info.location}`,
-                    subject: item.tutor_tuition_info.subject,
+                    subject: item.tutor_tuition_info.subject.split(',').map(sub => sub.trim()), 
                     gender: item.tutor_personal_info.gender,
                     days_per_week: item.tutor_tuition_info.days_per_week,
                     charge_per_month: item.tutor_tuition_info.charge_per_month,

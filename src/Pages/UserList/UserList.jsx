@@ -10,6 +10,8 @@ import { GiCycle } from "react-icons/gi";
 import { Snackbar } from '@mui/material';
 import moment from "moment";
 import { decryptData } from "../../EncryptedPage";
+import { BsFillCalendarDateFill } from "react-icons/bs";
+import { DateRangePicker } from "react-date-range";
 
 
 
@@ -90,8 +92,8 @@ const UserList = () => {
     const [rolesOptions, setRolesOptions] = useState([]);  // State for roles options
     const [openDeleteModal, setOpenDeleteModal] = useState(false); // Delete confirmation modal state
     const [openCreateModal, setOpenCreateModal] = useState(false); // Create modal state
-    const [originalRolesOptions, setOriginalRolesOptions] = useState([]); 
-    const [password, setPassword] = useState(""); 
+    const [originalRolesOptions, setOriginalRolesOptions] = useState([]);
+    const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [openCreateRoleModal, setOpenCreateRoleModal] = useState(false);
@@ -103,8 +105,16 @@ const UserList = () => {
     const [view, setView] = useState([]);
     const [openViewModal, setOpenViewModal] = useState(false);
     const [editPassword, setEditPassword] = useState("");
-
-
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [dateRange, setDateRange] = useState([
+        {
+            startDate: new Date(),
+            endDate: new Date(),
+            key: "selection",
+        },
+    ]);
+    const [refreshTable, setRefreshTable] = useState(false)
+    
 
     // Function to generate random password
     const generatePassword = () => {
@@ -140,7 +150,7 @@ const UserList = () => {
                     id: user.id,
                     customizeId: user.customized_user_id,
                     lastLogin: formData(user.last_login) || '',
-                    joinDate: formData(user.join_date) || '',
+                    joinDate: moment(user?.join_date).format('YYYY-MM-DD') || '',
                     username: user.username || "",
                     phone: user.phone || "",
                     userType: user.user_type || "",
@@ -154,16 +164,39 @@ const UserList = () => {
                 setLoading(false);
             })
             .catch((error) => console.error("Error fetching data:", error));
-    }, []);
+    }, [refreshTable]);
 
     // Filter rows based on search query
-      useEffect(() => {
-           const result = rows.filter((row) =>
-               Object.values(row).join(" ").toLowerCase().includes(searchQuery.toLowerCase())
-           );
-           setFilteredRows(result);
-       }, [searchQuery, rows]);
+    useEffect(() => {
+        const result = rows.filter((row) =>
+            Object.values(row).join(" ").toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredRows(result);
+    }, [searchQuery, rows]);
 
+
+
+    const handleDateFilter = () => {
+        const startDate = new Date(dateRange[0].startDate).setHours(0, 0, 0, 0); // Start of the day
+        const endDate = new Date(dateRange[0].endDate).setHours(23, 59, 59, 999); // End of the day
+
+        console.log("Start Date:", startDate, "End Date:", endDate);
+
+        const filteredData = rows.filter((row) => {
+            const rowDate = new Date(row.joinDate).getTime();
+            console.log("Row Date:", rowDate); // Debug
+            return rowDate >= startDate && rowDate <= endDate;
+        });
+
+        console.log("Filtered Data:", filteredData); // Debug filtered rows
+        setFilteredRows(filteredData);
+        setShowDatePicker(false); // Close the date picker after filtering
+    };
+
+    const resetFilters = () => {
+
+        setRefreshTable((prev) => !prev);
+    };
 
 
     // Fetch Roles Options for Select
@@ -387,24 +420,31 @@ const UserList = () => {
 
 
 
+
+
     // Confirm Delete User
     const handleConfirmDelete = () => {
+        console.log(currentRow.id)
         // API DELETE Request
-        fetch(`https://tutorwise-backend.vercel.app/api/admin/delete-user/${currentRow.id}`, {
+        fetch(`https://tutorwise-backend.vercel.app/api/admin/delete-user/${currentRow.id}/`, {
             method: 'DELETE',
         })
             .then(() => {
                 // Remove the deleted user from the rows state
-                setRows(rows.filter(row => row.id !== currentRow.id));
-                setFilteredRows(filteredRows.filter(row => row.id !== currentRow.id));
+                // setRows(rows.filter(row => row.id !== currentRow.id));
+                // setFilteredRows(filteredRows.filter(row => row.id !== currentRow.id));
                 setOpenDeleteModal(false);  // Close delete confirmation modal
-                setSnackbarMessage("user deleted successfully!");
+                setSnackbarMessage("User deleted successfully!");
                 setOpenSnackbar(true);
+                setRefreshTable((prev) => !prev);
             })
-            .catch((error) => console.error("Error deleting user:", error));
-        setSnackbarMessage("sorry, something wrong!");
-        setOpenErrorSnackbar(true);
+            .catch((error) => {
+                console.error("Error deleting user:", error);
+                setSnackbarMessage("Sorry, something went wrong!");
+                setOpenErrorSnackbar(true);
+            });
     };
+    
 
     // Cancel Delete
     const handleCancelDelete = () => {
@@ -429,8 +469,8 @@ const UserList = () => {
             username: currentRow.username,
             phone: currentRow.phone,
             user_type: currentRow.userType,
-            roles: roleIds,  
-            password: editPassword || "" ,
+            roles: roleIds,
+            password: editPassword || "",
         };
 
         const encryptedUser = localStorage.getItem("user");
@@ -486,6 +526,77 @@ const UserList = () => {
 
             <div className="flex justify-between items-center mb-1">
 
+
+
+
+
+                <div className="flex flex-col justify-end gap-2">
+
+
+
+                    <Typography variant="text-base" className="flex justify-end">
+                        <strong className="text-gray-500"> Total user:{rows.length} </strong>
+                    </Typography>
+                    {/* Search Bar */}
+
+
+                    <div className="flex   text-end gap-1">
+
+
+                        <div className="relative flex items-center justify-start gap-1 mb-2">
+                            <BsFillCalendarDateFill
+                                size={40}
+                                color="#f0523a"
+                                onClick={() => setShowDatePicker(!showDatePicker)}
+                                className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer "
+                            />
+
+                            {showDatePicker && (
+                                <div style={{ position: "absolute", zIndex: 100, top: "50px" }}>
+                                    <DateRangePicker
+                                        onChange={(item) => setDateRange([item.selection])}
+                                        showSelectionPreview={true}
+                                        moveRangeOnFirstSelection={false}
+                                        ranges={dateRange}
+                                        direction="horizontal"
+                                    />
+                                    <div style={{ marginTop: "10px", display: "flex", gap: "10px" }}>
+                                        <Button
+                                            variant="contained"
+                                            color="success"
+                                            size="small"
+                                            onClick={handleDateFilter}
+                                        >
+                                            Apply Filter
+                                        </Button>
+
+                                        <Button
+                                            variant="contained"
+                                            color="error"
+                                            size="small"
+                                            onClick={resetFilters}
+                                        >
+                                            Reset
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <TextField
+                            label="Search Users"
+                            variant="outlined"
+                            fullWidth
+                            size="small"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            style={{ width: "300px" }}
+                        />
+
+                    </div>
+                </div>
+
+
                 <div className="flex items-center gap-2 -mb-2">
                     <button className=" bg-green-600 hover:bg-green-700 text-white transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-110 duration-300 my-2 p-1 px-2 rounded flex items-center border"
                         onClick={handleCreateUser}>
@@ -506,26 +617,6 @@ const UserList = () => {
                     </button>
                 </div>
 
-
-
-                {/* Search Bar */}
-
-
-                <div className="flex flex-col  text-end gap-1">
-                    <Typography variant="text-base" className="flex justify-end">
-                        <strong className="text-gray-500"> Total user:{rows.length} </strong>
-                    </Typography>
-                    <TextField
-                        label="Search Users"
-                        variant="outlined"
-                        fullWidth
-                        size="small"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        style={{ width: "300px" }}
-                    />
-
-                </div>
             </div>
 
             {loading ? (
@@ -935,7 +1026,7 @@ const UserList = () => {
                     <p>Are you sure you want to delete this user?</p>
                 </DialogContent>
                 <DialogActions>
-                    <Button  onClick={handleCancelDelete}>Cancel</Button>
+                    <Button onClick={handleCancelDelete}>Cancel</Button>
                     <Button onClick={handleConfirmDelete} color="error">Delete</Button>
                 </DialogActions>
             </Dialog>

@@ -510,7 +510,7 @@ const SendMessagePage = () => {
                     <TextField
                         variant="outlined"
                         multiline
-                        rows={6}  // Increase the height of the input field
+                        // Increase the height of the input field
                         fullWidth
                         value={allMessage}
                         onChange={handleMessageChange}

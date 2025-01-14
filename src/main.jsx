@@ -32,6 +32,7 @@ import SendMessagePage from './Pages/SendMessagePage/SendMessagePage.jsx';
 import AllTutorList from './Pages/TutorList/AllTutor/AllTutorList.jsx';
 import AllPayment from './Pages/Payment/AllPayment/AllPayment.jsx';
 import DynamicPricing from './Pages/DynamicPricing/DynamicPricing.jsx';
+import ReferrerPage from './Pages/ReferrerPages/ReferrerPage.jsx';
 
 
 const router = createBrowserRouter([
@@ -128,6 +129,10 @@ const router = createBrowserRouter([
       {
         path: "/student-list",
         element:<PrivateRoute allowedRoles={[11]}> <StudentList/> </PrivateRoute>
+      },
+      {
+        path: "/referrer-list",
+        element:<PrivateRoute allowedRoles={[11]}> <ReferrerPage/> </PrivateRoute>
       },
       {
         path: "/inactive-user",

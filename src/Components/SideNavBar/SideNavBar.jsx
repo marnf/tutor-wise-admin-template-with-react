@@ -6,7 +6,7 @@ import logo from '../../../public/images/TutorwiseLogo.png';
 import { MdMessage, MdPriceChange, MdSpaceDashboard } from "react-icons/md";
 import { PiUserListFill } from "react-icons/pi";
 import { PiStudentFill } from "react-icons/pi";
-import { FaChalkboardTeacher } from "react-icons/fa";
+import { FaChalkboardTeacher, FaUserTie } from "react-icons/fa";
 import { SiGitconnected } from "react-icons/si";
 import { MdOutlinePostAdd } from "react-icons/md";
 import { MdAirplanemodeInactive } from "react-icons/md";
@@ -35,6 +35,12 @@ const menuItems = [
     key: '/student-list',
     icon: <PiStudentFill size={25} />,
     label: <Link to="/student-list">Student List</Link>,
+    role: 11,
+  },
+  {
+    key: '/referrer-list',
+    icon: <FaUserTie  size={25} />,
+    label: <Link to="/referrer-list">Referrer List</Link>,
     role: 11,
   },
   {
