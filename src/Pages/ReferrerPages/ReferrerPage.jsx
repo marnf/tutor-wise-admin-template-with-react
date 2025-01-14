@@ -73,7 +73,7 @@ const Referrer = () => {
         setLoading(true);
         const BASE_URL = "https://tutorwise-backend.vercel.app";
 
-        fetch("http://192.168.0.154:8000/api/admin/referrer-list/")
+        fetch("https://tutorwise-backend.vercel.app/api/admin/referrer-list/")
             .then((res) => res.json())
             .then((data) => {
                 const formattedData = data.map((item) => ({
