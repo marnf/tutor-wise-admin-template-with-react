@@ -1,36 +1,46 @@
 import React, { useState, useEffect } from "react";
-import { Box, LinearProgress, TextField, Button, Typography, FormControlLabel, Divider, Checkbox, Dialog, DialogContent } from "@mui/material";
+import {
+    Box,
+    TextField,
+    Snackbar,
+    Alert,
+    LinearProgress,
+    Button,
+    Dialog,
+    DialogContent,
+    Typography,
+    Divider
+} from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { DateRangePicker } from "react-date-range";
-import "react-date-range/dist/styles.css"; // main css file
-import "react-date-range/dist/theme/default.css"; // theme css file
 import { BiSolidUserDetail } from "react-icons/bi";
 import moment from "moment/moment";
 import { BsFillCalendarDateFill } from "react-icons/bs";
+import BASE_URL from "../../../Api/baseUrl";
+
 
 const columns = [
     { field: "customized_user_id", headerName: "ID", minWidth: 130 },
-    { field: "formatted_created_at", headerName: "Date", minWidth: 220 },
-    // { field: "name", headerName: "User Name", minWidth: 150 },
-    // { field: "user_type", headerName: "User Type", minWidth: 60 },
+    // { field: "name", headerName: "Name", minWidth: 170 },
+    { field: "formatted_created_at", headerName: "Date", minWidth: 160 },
+    // { field: "email", headerName: "Email", minWidth: 1 },
     { field: "phone", headerName: "Phone", minWidth: 130 },
     { field: "transaction_id", headerName: "Transaction ID", minWidth: 160 },
     { field: "package", headerName: "Package", minWidth: 50 },
-    { field: "digital_bank_name", headerName: "Wallet", minWidth: 80 , maxWidth:80 },
+    { field: "digital_bank_name", headerName: "Wallet", minWidth: 80, maxWidth: 80 },
     { field: "amount", headerName: "Amount", minWidth: 70 },
-
     {
         field: "actions",
         headerName: "Actions",
         minWidth: 80,
-        flex:0.1,
+        flex: 0.1,
         renderCell: (params) => (
 
             <Box display="flex" justifyContent="center" className="mt-3">
 
                 <BiSolidUserDetail title="View"
                     size={28}
-                    color="#f0523a"
+                    color="#0d2a4c "
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => params.row.handleViewModal(params.row)} />
 
@@ -44,6 +54,7 @@ const ProPayment = () => {
     const [filteredRows, setFilteredRows] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [loading, setLoading] = useState(false);
+    const [showDatePicker, setShowDatePicker] = useState(false);
     const [view, setView] = useState([]);
     const [openViewModal, setOpenViewModal] = useState(false);
     const [dateRange, setDateRange] = useState([
@@ -53,12 +64,11 @@ const ProPayment = () => {
             key: "selection",
         },
     ]);
-    const [showDatePicker, setShowDatePicker] = useState(false);
 
     useEffect(() => {
-        setLoading(true);
-        const BASE_URL = "https://tutorwise-backend.vercel.app";
-        fetch(`${BASE_URL}/api/admin/pro-tutor-payment`)
+        setLoading(true)
+
+        fetch(`${BASE_URL}/api/admin/pro-tutor-payment/`)
             .then((res) => res.json())
             .then((data) => {
                 const formattedData = data.map((item) => ({
@@ -70,46 +80,25 @@ const ProPayment = () => {
                     user_type: item.user_type,
                     transaction_id: item.transaction_id,
                     package: item.package,
-                    amount: item.amount,
                     digital_bank_name: item.digital_bank_name,
-                    created_at:  item.created_at,
-                    formatted_created_at: formattedDate( item.created_at) ,
+                    created_at: item.created_at,
+                    formatted_created_at:moment(item.created_at).format('DD/MM/YYYY hh:mm a') || '',
                     phone: item.phone,
-                    handleViewModal: handleOpenViewModal
+                    handleViewModal: handleOpenViewModal,
                 }));
                 setRows(formattedData);
                 setFilteredRows(formattedData);
                 setLoading(false);
-            })
-            .catch((error) => console.error("Error fetching data:", error));
+            });
+
     }, []);
 
 
-    const handleSearch = (event) => {
-        setSearchQuery(event.target.value);
-        const filteredData = rows.filter((row) =>
-            row.name.toLowerCase().includes(event.target.value.toLowerCase()) ||
-            row.transaction_id.toLowerCase().includes(event.target.value.toLowerCase())
-        );
-        setFilteredRows(filteredData);
-    };
-
-    const handleDateFilter = () => {
-        const startDate = dateRange[0].startDate;
-        const endDate = dateRange[0].endDate;
-
-        const filteredData = rows.filter((row) => {
-            const rowDate = new Date(row.created_at);
-            return rowDate >= startDate && rowDate <= endDate;
-        });
-        setFilteredRows(filteredData);
-        setShowDatePicker(false); // Close the date picker after filtering
-    };
-
     const formattedDate = (dateString) => {
         if (!dateString) return "N/A";
-        return moment(dateString).format("MMMM Do YYYY, h:mm a");
+        return moment(dateString).format("MMMM Do YYYY"); // Keep it for UI
     };
+
 
     const handleOpenViewModal = (item) => {
         setView(item)
@@ -121,6 +110,37 @@ const ProPayment = () => {
     const handleCloseViewModal = () => {
         setOpenViewModal(false)
     }
+
+
+    // Filtering rows based on search query
+        useEffect(() => {
+            const result = rows.filter((row) =>
+                Object.values(row).join(" ").toLowerCase().includes(searchQuery.toLowerCase())
+            );
+            setFilteredRows(result);
+        }, [searchQuery, rows]);
+    
+
+
+
+
+    const handleDateFilter = () => {
+        const startDate = new Date(dateRange[0].startDate).setHours(0, 0, 0, 0); // Start of the day
+        const endDate = new Date(dateRange[0].endDate).setHours(23, 59, 59, 999); // End of the day
+
+        console.log("Start Date:", startDate, "End Date:", endDate);
+
+        const filteredData = rows.filter((row) => {
+            const rowDate = new Date(row.created_at).getTime(); // Use raw `created_at`
+            console.log("Row Date:", rowDate); // Debug
+            return rowDate >= startDate && rowDate <= endDate;
+        });
+
+        console.log("Filtered Data:", filteredData); // Debug filtered rows
+        setFilteredRows(filteredData);
+        setShowDatePicker(false); // Close the date picker after filtering
+    };
+
 
 
     return (
@@ -167,26 +187,27 @@ const ProPayment = () => {
 
                     {/* Search Bar */}
                     <TextField
-                        label="Search"
+                        label="Search "
                         variant="outlined"
-                        size="small"
                         value={searchQuery}
-                        onChange={handleSearch}
-                        sx={{ width: "300px" }}
+                        size="small"
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        style={{ width: "300px" }}
                     />
+
                 </div>
 
 
                 <Typography variant="text-base" className="flex h5">
-                    <strong className="text-gray-500">Total Pro Payment:{rows.length} </strong>
+                    <strong className="text-gray-500">Total Pro Payment: {rows.length} </strong>
                 </Typography>
-
 
 
             </div>
 
+
             {loading ? (
-                <Box sx={{ width: "100%" }}>
+                <Box sx={{ width: '100%' }}>
                     <LinearProgress
                         sx={{
                             backgroundColor: "#0d2a4c",
@@ -200,25 +221,34 @@ const ProPayment = () => {
                     rows={filteredRows}
                     columns={columns.map((col) => ({
                         ...col,
-                        minWidth: col.minWidth || 150,
+                        minWidth: col.minWidth || 150, // Minimum width for each column (adjust as needed)
                     }))}
                     pageSize={10}
                     rowsPerPageOptions={[5, 10, 20]}
                     disableSelectionOnClick
+
                     sx={{
                         "& .MuiDataGrid-columnHeader": {
                             backgroundColor: "#f0f0f0",
                             fontWeight: "bold",
+                            borderBottom: "2px solid #1976d2", // Column header's bottom border
                         },
                         "& .MuiDataGrid-cell": {
-                            border: "1px solid #e0e0e0",
+                            border: "1px solid #e0e0e0", // Border for each cell
+                            whiteSpace: "normal", // Allow text to wrap in cells
+                            wordWrap: "break-word", // Break long words if necessary
+                        },
+                        "& .MuiDataGrid-cell:focus": {
+                            outline: "none", // Remove default outline on focus
+                        },
+                        "& .MuiDataGrid-virtualScroller": {
+                            overflowX: "auto", // Ensure horizontal scroll for table content
                         },
                         "& .MuiDataGrid-columnHeader:focus-within": {
                             outline: "none", // Remove outline when child element inside column header is focused
-                        },  
+                        },
                     }}
-                />
-            )}
+                />)}
 
 
             <Dialog open={openViewModal} onClose={handleCloseViewModal} fullWidth>

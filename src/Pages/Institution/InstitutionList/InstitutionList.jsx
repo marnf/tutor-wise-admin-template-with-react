@@ -4,6 +4,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { FaUserEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { decryptData } from "../../../EncryptedPage";
+import BASE_URL from "../../../Api/baseUrl";
 
 const columns = (handleEditClick, handleDeleteClick) => {
 
@@ -83,7 +84,7 @@ const InstitutionList = () => {
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
 
     useEffect(() => {
-        const BASE_URL = "https://tutorwise-backend.vercel.app";
+      
         fetch(`${BASE_URL}/api/admin/view-institution/`)
             .then((res) => res.json())
             .then((data) => {
@@ -108,7 +109,7 @@ const InstitutionList = () => {
     // Handle form submission for edit
     const handleFormSubmit = (e) => {
         e.preventDefault();
-        const BASE_URL = "https://tutorwise-backend.vercel.app";
+      
 
         // API call to update institution
         fetch(`${BASE_URL}/api/admin/edit-institution/${selectedInstitution.id}/`, {
@@ -152,7 +153,7 @@ const InstitutionList = () => {
 
     // Confirm deletion
     const handleDelete = () => {
-        const BASE_URL = "https://tutorwise-backend.vercel.app";
+        
         fetch(`${BASE_URL}/api/admin/delete-institution/${deleteId}/`, {
             method: "POST",
         })

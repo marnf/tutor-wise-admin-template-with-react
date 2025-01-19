@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
-import "./AddFaq.css"; // Custom CSS for styling
+import "./AddFaq.css"; 
+import BASE_URL from "../../../Api/baseUrl";
 
 const AddFaq = () => {
   const [popupMessage, setPopupMessage] = useState("");
@@ -16,7 +17,7 @@ const AddFaq = () => {
 
     try {
       const response = await fetch(
-        "https://tutorwise-backend.vercel.app/api/admin/add-faq/",
+        `${BASE_URL}/api/admin/add-faq/`,
         {
           method: "POST",
           headers: {

@@ -25,6 +25,7 @@ import { BiNotification, BiNotificationOff, BiSolidSelectMultiple, BiSolidUserDe
 import { decryptData } from "../../EncryptedPage";
 import { BiSolidNotification } from "react-icons/bi";
 import { MdNotificationsActive } from "react-icons/md";
+import BASE_URL from "../../Api/baseUrl";
 
 
 
@@ -161,7 +162,7 @@ const PendingHigherTutorRequest = () => {
 
     useEffect(() => {
         setLoading(true)
-        fetch("https://tutorwise-backend.vercel.app/api/admin/view-hire-request-tutor/")
+        fetch(`${BASE_URL}/api/admin/view-hire-request-tutor/`)
             .then((res) => res.json())
             .then((data) => {
                 const formattedData = data.map((item) => ({
@@ -220,7 +221,7 @@ const PendingHigherTutorRequest = () => {
 
 
     const handleApprove = () => {
-        fetch(`https://tutorwise-backend.vercel.app/api/admin/approve-request/${approveData.id}/`, {
+        fetch(`${BASE_URL}/api/admin/approve-request/${approveData.id}/`, {
             method: "POST", // or PUT if needed
             headers: {
                 "Content-Type": "application/json",
@@ -253,7 +254,7 @@ const PendingHigherTutorRequest = () => {
 
 
     const handleSendNotification = () => {
-        fetch(`https://tutorwise-backend.vercel.app/api/admin/send-notification/${notifyData.id}/`, {
+        fetch(`${BASE_URL}/api/admin/send-notification/${notifyData.id}/`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -287,7 +288,7 @@ const PendingHigherTutorRequest = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log(formData)
-        fetch(`https://tutorwise-backend.vercel.app/api/admin/edit-hire-tutor-request/${formData.id}/`, {
+        fetch(`${BASE_URL}/api/admin/edit-hire-tutor-request/${formData.id}/`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -309,7 +310,7 @@ const PendingHigherTutorRequest = () => {
 
 
     const handleDelete = () => {
-        fetch(`https://tutorwise-backend.vercel.app/api/admin/delete-hire-tutor-request/${editData.id}/`, {
+        fetch(`${BASE_URL}/api/admin/delete-hire-tutor-request/${editData.id}/`, {
             method: "POST", // You may want to change this to DELETE, depending on the API
             headers: {
                 "Content-Type": "application/json",

@@ -23,7 +23,7 @@ import { MdDelete } from "react-icons/md";
 import { FaUserEdit } from "react-icons/fa";
 import { BiSolidUserDetail } from "react-icons/bi";
 import { decryptData } from "../../EncryptedPage";
-
+import BASE_URL from '../../Api/baseUrl';
 
 // Dummy subject options
 const subjectOptions = [
@@ -144,7 +144,7 @@ const AssignedList = () => {
 
     useEffect(() => {
         setLoading(true)
-        fetch("https://tutorwise-backend.vercel.app/api/admin/view-approve-reqeust-list/")
+        fetch(`${BASE_URL}/api/admin/view-approve-reqeust-list/`)
             .then((res) => res.json())
             .then((data) => {
                 const formattedData = data.map((item) => ({
@@ -183,7 +183,7 @@ const AssignedList = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        fetch(`https://tutorwise-backend.vercel.app/api/admin/edit-approve-hire-tutor-request/${formData.id}/`, {
+        fetch(`${BASE_URL}/api/admin/edit-approve-hire-tutor-request/${formData.id}/`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -205,7 +205,7 @@ const AssignedList = () => {
 
 
     const handleDelete = () => {
-        fetch(`https://tutorwise-backend.vercel.app/api/admin/unapproved-request/${deleteData.id}/`, {
+        fetch(`${BASE_URL}/api/admin/unapproved-request/${deleteData.id}/`, {
             method: "POST", // You may want to change this to DELETE, depending on the API
             headers: {
                 "Content-Type": "application/json",

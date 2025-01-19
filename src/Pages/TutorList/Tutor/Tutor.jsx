@@ -2,6 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Box, Button, Checkbox, Dialog, DialogContent, Divider, FormControlLabel, LinearProgress, TextField, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { BiSolidUserDetail } from "react-icons/bi";
+import { BsFillCalendarDateFill } from "react-icons/bs";
+import { DateRangePicker } from "react-date-range";
+import BASE_URL from "../../../Api/baseUrl";
+import moment from "moment";
+
 // Columns definition for DataGrid
 const columns = [
     { field: "customizedId", headerName: "ID", minWidth: 130 },
@@ -14,58 +19,71 @@ const columns = [
             <img src={params.value} alt="Profile" style={{ width: 50, height: 50, borderRadius: "50%" }} />
         )
     },
-    { field: "full_name", headerName: "Name", flex: 1 },
+    { field: "full_name", headerName: "Name", flex: 1, minWidth: 130 },
+    { field: "formattedJoinDate", headerName: "Joining Date", flex: 1, minWidth: 160 },
+
     { field: "subject", headerName: "Subject", minWidth: 100 },
     { field: "gender", headerName: "Gender", minWidth: 60 },
-    { field: "days_per_week", headerName: "Days/Week", minWidth: 60 },
+    { field: "days_per_week", headerName: "Days/Week", minWidth: 40 },
     { field: "charge_per_month", headerName: "Charge", minWidth: 60 },
-    { field: "phone", headerName: "Phone", minWidth: 150 },
+    { field: "phone", headerName: "Phone", minWidth: 100 },
     {
         field: "actions",
         headerName: "Actions",
-        minWidth: 40,
+        minWidth: 70, // Small width for the action column
+        flex: 0.1, // Takes as little space as possible
         renderCell: (params) => (
-
             <Box display="flex" justifyContent="center" className="mt-3">
-
-                <BiSolidUserDetail title="View"
+                <BiSolidUserDetail
+                    title="View"
                     size={28}
                     color="#f0523a"
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
-                    onClick={() => params.row.handleViewModal(params)} />
-
+                    onClick={() => params.row.handleViewModal(params)}
+                />
             </Box>
         ),
     },
 ];
 
-const Tutor = () => {
+const Protutor = () => {
     const [rows, setRows] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [filteredRows, setFilteredRows] = useState([]);
     const [loading, setLoading] = useState(false);
     const [view, setView] = useState([]);
     const [openViewModal, setOpenViewModal] = useState(false);
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [dateRange, setDateRange] = useState([
+        {
+            startDate: new Date(),
+            endDate: new Date(),
+            key: "selection",
+        },
+    ]);
+
 
     // Fetch data from the API
     useEffect(() => {
         setLoading(true)
-        const BASE_URL = "https://tutorwise-backend.vercel.app";
-        fetch("https://tutorwise-backend.vercel.app/api/admin/non-pro-tutor-list")
+    
+        fetch(`${BASE_URL}/api/admin/non-pro-tutor-list`)
             .then((res) => res.json())
             .then((data) => {
                 const formattedData = data.map((item) => ({
                     id: item.tutor_personal_info.id,
                     customizedId: item.tutor_personal_info.customized_user_id,
                     profile_picture: item.tutor_personal_info.profile_picture ? `${BASE_URL}${item.tutor_personal_info.profile_picture}` : null,
-                    full_name: item.tutor_personal_info.full_name,
-                    division: item.tutor_personal_info.division,
+                    full_name: item.tutor_personal_info.full_name || "N/A",
+                    start_date: item.tutor_personal_info.created_at || "N/A",
+                    formattedJoinDate:moment(item.tutor_personal_info.created_at).format('DD/MM/YYYY hh:mm a') || '',
+                    division: item.tutor_personal_info.division || "N/A",
                     location: `${item.tutor_personal_info.district}, ${item.tutor_personal_info.location}`,
-                    subject: item.tutor_tuition_info.subject,
-                    gender: item.tutor_personal_info.gender,
-                    days_per_week: item.tutor_tuition_info.days_per_week,
-                    charge_per_month: item.tutor_tuition_info.charge_per_month,
-                    phone: item.tutor_personal_info.phone,
+                    subject: item.tutor_tuition_info ? item.tutor_tuition_info.subject : "N/A",
+                    gender: item.tutor_personal_info.gender || "N/A",
+                    days_per_week: item.tutor_tuition_info ? item.tutor_tuition_info.days_per_week : "N/A",
+                    charge_per_month: item.tutor_tuition_info ? item.tutor_tuition_info.charge_per_month : "N/A",
+                    phone: item.tutor_personal_info.phone || "N/A",
                     handleViewModal: (params) => handleOpenViewModal(item)
                 }));
                 setRows(formattedData);
@@ -74,6 +92,7 @@ const Tutor = () => {
             })
             .catch((error) => console.error("Error fetching data:", error));
     }, []);
+    
 
     // Filter data based on search query
     useEffect(() => {
@@ -82,6 +101,7 @@ const Tutor = () => {
         );
         setFilteredRows(result);
     }, [searchQuery, rows]);
+
 
 
     const handleOpenViewModal = (item) => {
@@ -95,24 +115,76 @@ const Tutor = () => {
         setOpenViewModal(false)
     }
 
+    const handleDateFilter = () => {
+        const startDate = new Date(dateRange[0].startDate).setHours(0, 0, 0, 0); // Start of the day
+        const endDate = new Date(dateRange[0].endDate).setHours(23, 59, 59, 999); // End of the day
 
+        console.log("Start Date:", startDate, "End Date:", endDate);
+
+        const filteredData = rows.filter((row) => {
+            const rowDate = new Date(row.start_date).getTime(); // Use raw `created_at`
+            console.log("Row Date:", rowDate); // Debug
+            return rowDate >= startDate && rowDate <= endDate;
+        });
+
+        console.log("Filtered Data:", filteredData); // Debug filtered rows
+        setFilteredRows(filteredData);
+        setShowDatePicker(false); // Close the date picker after filtering
+    };
 
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
-
             <div className="flex flex-col md:flex-row lg:flex-row justify-between items-center  text-end gap-1">
-                <Typography variant="text-base" className="flex h5">
-                    <strong className="text-gray-500">Total Tutor:{rows.length} </strong>
-                </Typography>
-                <div className="flex justify-end">
-                    <TextField
-                        label="Search Tutors"
-                        variant="outlined"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        style={{ marginBottom: "1rem", width: "300px" }}
-                    />
+
+                <div className="flex items-center justify-center gap-1">
+                    <div className="relative flex items-center justify-start gap-1">
+                        <BsFillCalendarDateFill
+                            size={40}
+                            color="#f0523a"
+                            onClick={() => setShowDatePicker(!showDatePicker)}
+                            className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer pb-1"
+                        />
+
+                        {showDatePicker && (
+                            <div style={{ position: "absolute", zIndex: 100, top: "50px" }}>
+                                <DateRangePicker
+                                    onChange={(item) => setDateRange([item.selection])}
+                                    showSelectionPreview={true}
+                                    moveRangeOnFirstSelection={false}
+                                    ranges={dateRange}
+                                    direction="horizontal"
+                                />
+                                <Button
+                                    variant="contained"
+                                    color="success"
+                                    size="small"
+                                    onClick={handleDateFilter}
+                                    sx={{ marginTop: "10px" }}
+                                >
+                                    Apply Filter
+                                </Button>
+
+                            </div>
+
+                        )}
+                    </div>
+                    <div className="flex justify-end">
+                        <TextField className="mb-1"
+                            label="Search Tutors"
+                            variant="outlined"
+                            size="small"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            style={{ width: "300px" }}
+                        />
+                    </div>
                 </div>
+
+
+                <Typography variant="text-base" className="flex h5">
+                    <strong className="text-gray-500">Total Non-Pro Tutor:{rows.length} </strong>
+                </Typography>
+
             </div>
 
             {loading ? (
@@ -160,6 +232,9 @@ const Tutor = () => {
                 />)}
 
 
+
+
+
             <Dialog open={openViewModal} onClose={handleCloseViewModal} fullWidth maxWidth="lg">
                 <DialogContent>
                     <div
@@ -186,7 +261,7 @@ const Tutor = () => {
                             {/* Left: Profile Image */}
                             <Box sx={{ display: 'flex', gap: 2, alignItems: "center" }}>
                                 <img
-                                    src={view.tutor_personal_info?.profile_picture ? `https://tutorwise-backend.vercel.app${view.tutor_personal_info.profile_picture}` : '/default-image.jpg'}
+                                    src={view.tutor_personal_info?.profile_picture ? `${BASE_URL}${view.tutor_personal_info.profile_picture}` : '/default-image.jpg'}
                                     alt="Profile"
                                     style={{
                                         width: '80px',
@@ -265,7 +340,7 @@ const Tutor = () => {
                                 <Typography variant="body1"><strong>CGPA:</strong> {view?.tutor_personal_info?.college_cgpa || 'N/A'}</Typography>
                                 <Typography variant="body1"><strong>Background:</strong> {view?.tutor_personal_info?.college_educational_background || 'N/A'}</Typography>
                                 <img
-                                    src={view?.tutor_personal_info?.college_certificate ? `https://tutorwise-backend.vercel.app${view.tutor_personal_info.college_certificate}` : '/default-image.jpg'}
+                                    src={view?.tutor_personal_info?.college_certificate ? `${BASE_URL}${view.tutor_personal_info.college_certificate}` : '/default-image.jpg'}
                                     alt="College Certificate"
                                     style={{ width: '100%', height: 'auto', marginTop: '10px', borderRadius: '5px' }}
                                 />
@@ -288,7 +363,7 @@ const Tutor = () => {
                                 <Typography variant="body1"><strong>Address:</strong> {view?.tutor_personal_info?.nominee1_address || 'N/A'}</Typography>
                                 <Typography variant="body1"><strong>NID Card:</strong> {view?.tutor_personal_info?.nominee1_nidcard_number || 'N/A'}</Typography>
                                 <img
-                                    src={view?.tutor_personal_info?.nominee1_nidcard_picture ? `https://tutorwise-backend.vercel.app${view.tutor_personal_info.nominee1_nidcard_picture}` : '/default-image.jpg'}
+                                    src={view?.tutor_personal_info?.nominee1_nidcard_picture ? `${BASE_URL}${view.tutor_personal_info.nominee1_nidcard_picture}` : '/default-image.jpg'}
                                     alt="Nominee 1 NID"
                                     style={{ width: '100%', height: 'auto', marginTop: '10px', borderRadius: '5px' }}
                                 />
@@ -300,7 +375,7 @@ const Tutor = () => {
                                 <Typography variant="body1"><strong>Address:</strong> {view?.tutor_personal_info?.nominee2_address || 'N/A'}</Typography>
                                 <Typography variant="body1"><strong>NID Card:</strong> {view?.tutor_personal_info?.nominee2_nidcard_number || 'N/A'}</Typography>
                                 <img
-                                    src={view?.tutor_personal_info?.nominee2_nidcard_picture ? `https://tutorwise-backend.vercel.app${view.tutor_personal_info.nominee2_nidcard_picture}` : '/default-image.jpg'}
+                                    src={view?.tutor_personal_info?.nominee2_nidcard_picture ? `${BASE_URL}${view.tutor_personal_info.nominee2_nidcard_picture}` : '/default-image.jpg'}
                                     alt="Nominee 2 NID"
                                     style={{ width: '100%', height: 'auto', marginTop: '10px', borderRadius: '5px' }}
                                 />
@@ -326,9 +401,8 @@ const Tutor = () => {
                 </DialogContent>
             </Dialog>
 
-
         </Box>
     );
 };
 
-export default Tutor;
+export default Protutor;

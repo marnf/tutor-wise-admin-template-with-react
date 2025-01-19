@@ -27,6 +27,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { FaUserEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { BiSolidUserDetail } from "react-icons/bi";
+import BASE_URL from "../../Api/baseUrl";
 
 const columns = (handleEditClick, handleDeleteClick, handleOpenViewModal) => [
     // { field: "serial", headerName: "Serial Number", minWidth: 40 },  // Default minWidth: 150
@@ -108,7 +109,7 @@ const TutorPostAction = () => {
         const fetchData = () => {
             setLoading(true);
 
-            fetch("https://tutorwise-backend.vercel.app/api/admin/tuition/list/")
+            fetch(`${BASE_URL}/api/admin/tuition/list/`)
                 .then((response) => {
                     if (!response.ok) {
                         throw new Error("Failed to fetch data");
@@ -180,7 +181,7 @@ const TutorPostAction = () => {
     };
 
     const handleDeleteConfirm = () => {
-        fetch(`https://tutorwise-backend.vercel.app0/api/admin/delete-tuition-post/${deleteId}/`, {
+        fetch(`${BASE_URL}0/api/admin/delete-tuition-post/${deleteId}/`, {
             method: "DELETE",
         })
             .then((response) => {
@@ -211,7 +212,7 @@ const TutorPostAction = () => {
 
         console.log("Form Data:", editData);
 
-        fetch(`https://tutorwise-backend.vercel.app0/api/admin/edit-tuition-post/${editData.id}/`, {
+        fetch(`${BASE_URL}0/api/admin/edit-tuition-post/${editData.id}/`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",

@@ -4,6 +4,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { BiSolidUserDetail } from "react-icons/bi";
 import { BsFillCalendarDateFill } from "react-icons/bs";
 import { DateRangePicker } from "react-date-range";
+import BASE_URL from "../../../Api/baseUrl";
 
 // Columns definition for DataGrid
 const columns = [
@@ -63,8 +64,8 @@ const AllTutorList = () => {
     // Fetch data from the API
     useEffect(() => {
         setLoading(true)
-        const BASE_URL = "https://tutorwise-backend.vercel.app";
-        fetch("https://tutorwise-backend.vercel.app/api/admin/pro-tutor-list/")
+       
+        fetch(`${BASE_URL}/api/admin/pro-tutor-list/`)
             .then((res) => res.json())
             .then((data) => {
                 const formattedData = data.map((item) => ({
@@ -254,7 +255,7 @@ const AllTutorList = () => {
                             {/* Left: Profile Image */}
                             <Box sx={{ display: 'flex', gap: 2, alignItems: "center" }}>
                                 <img
-                                    src={view.tutor_personal_info?.profile_picture ? `https://tutorwise-backend.vercel.app${view.tutor_personal_info.profile_picture}` : '/default-image.jpg'}
+                                    src={view.tutor_personal_info?.profile_picture ? `${BASE_URL}${view.tutor_personal_info.profile_picture}` : ''}
                                     alt="Profile"
                                     style={{
                                         width: '80px',
@@ -333,7 +334,7 @@ const AllTutorList = () => {
                                 <Typography variant="body1"><strong>CGPA:</strong> {view?.tutor_personal_info?.college_cgpa || ''}</Typography>
                                 <Typography variant="body1"><strong>Background:</strong> {view?.tutor_personal_info?.college_educational_background || ''}</Typography>
                                 <img
-                                    src={view?.tutor_personal_info?.college_certificate ? `https://tutorwise-backend.vercel.app${view.tutor_personal_info.college_certificate}` : '/default-image.jpg'}
+                                    src={view?.tutor_personal_info?.college_certificate ? `${BASE_URL}${view.tutor_personal_info.college_certificate}` : '/default-image.jpg'}
                                     alt="College Certificate"
                                     style={{ width: '100%', height: 'auto', marginTop: '10px', borderRadius: '5px' }}
                                 />
@@ -356,7 +357,7 @@ const AllTutorList = () => {
                                 <Typography variant="body1"><strong>Address:</strong> {view?.tutor_personal_info?.nominee1_address || ''}</Typography>
                                 <Typography variant="body1"><strong>NID Card:</strong> {view?.tutor_personal_info?.nominee1_nidcard_number || ''}</Typography>
                                 <img
-                                    src={view?.tutor_personal_info?.nominee1_nidcard_picture ? `https://tutorwise-backend.vercel.app${view.tutor_personal_info.nominee1_nidcard_picture}` : '/default-image.jpg'}
+                                    src={view?.tutor_personal_info?.nominee1_nidcard_picture ? `${BASE_URL}${view.tutor_personal_info.nominee1_nidcard_picture}` : '/default-image.jpg'}
                                     alt="Nominee 1 NID"
                                     style={{ width: '100%', height: 'auto', marginTop: '10px', borderRadius: '5px' }}
                                 />
@@ -368,7 +369,7 @@ const AllTutorList = () => {
                                 <Typography variant="body1"><strong>Address:</strong> {view?.tutor_personal_info?.nominee2_address || ''}</Typography>
                                 <Typography variant="body1"><strong>NID Card:</strong> {view?.tutor_personal_info?.nominee2_nidcard_number || ''}</Typography>
                                 <img
-                                    src={view?.tutor_personal_info?.nominee2_nidcard_picture ? `https://tutorwise-backend.vercel.app${view.tutor_personal_info.nominee2_nidcard_picture}` : '/default-image.jpg'}
+                                    src={view?.tutor_personal_info?.nominee2_nidcard_picture ? `${BASE_URL}${view.tutor_personal_info.nominee2_nidcard_picture}` : '/default-image.jpg'}
                                     alt="Nominee 2 NID"
                                     style={{ width: '100%', height: 'auto', marginTop: '10px', borderRadius: '5px' }}
                                 />

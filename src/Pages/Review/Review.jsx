@@ -3,6 +3,7 @@ import { Box, Button, Modal, TextField, Dialog, DialogTitle, DialogContent, Dial
 import { DataGrid } from "@mui/x-data-grid";
 import { BiSolidSelectMultiple } from "react-icons/bi";
 import { FaUserEdit } from "react-icons/fa";
+import BASE_URL from "../../Api/baseUrl";
 
 
 
@@ -51,7 +52,6 @@ const Review = () => {
 
     useEffect(() => {
         setLoading(true)
-        const BASE_URL = "https://tutorwise-backend.vercel.app";
         fetch(`${BASE_URL}/api/admin/view-review-rating/`)
             .then((res) => res.json())
             .then((data) => {
@@ -126,7 +126,6 @@ const Review = () => {
 
     // Handle approve
     const handleApprove = () => {
-        const BASE_URL = "https://tutorwise-backend.vercel.app";
         fetch(`${BASE_URL}/api/admin/add-testimonials/${approveId}/`, {
             method: "POST",
         })

@@ -7,6 +7,7 @@ import logo from '../../../public/images/TutorwiseLogo.png';
 import headerImage from '../../../public/images/TutorwiseLogo.png';
 import { Alert, Snackbar } from "@mui/material";
 import { encryptData } from "../../EncryptedPage";
+import BASE_URL from "../../Api/baseUrl";
 
 
 
@@ -58,7 +59,10 @@ const LoginPage = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch("https://tutorwise-backend.vercel.app/api/account/admin/login/", {
+      const response = await fetch(
+        `${BASE_URL}/api/account/admin/login/`, 
+        
+         {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -115,7 +119,7 @@ const LoginPage = () => {
 
     showOtpModal();
 
-    fetch("https://tutorwise-backend.vercel.app/api/account/admin/forgot-password/", {
+    fetch(`${BASE_URL}/api/account/admin/forgot-password/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -147,7 +151,7 @@ const LoginPage = () => {
     const formData = { gmail: gmail, otp: otp };
 
 
-    fetch("https://tutorwise-backend.vercel.app/api/account/admin/verify-otp/", {
+    fetch(`${BASE_URL}/api/account/admin/verify-otp/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -194,7 +198,7 @@ const LoginPage = () => {
     const formData = { gmail: gmail };
 
 
-    fetch("https://tutorwise-backend.vercel.app/api/account/admin/resend-otp/", {
+    fetch(`${BASE_URL}/api/account/admin/resend-otp/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -241,7 +245,7 @@ const LoginPage = () => {
       setSnackbarSeverity("error");
       setOpenSnackbar(true);
     } else {
-      fetch("https://tutorwise-backend.vercel.app/api/account/admin/save-password/", {
+      fetch(`${BASE_URL}/api/account/admin/save-password/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

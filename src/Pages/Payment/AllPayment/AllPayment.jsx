@@ -16,23 +16,24 @@ import { DateRangePicker } from "react-date-range";
 import { BiSolidUserDetail } from "react-icons/bi";
 import moment from "moment/moment";
 import { BsFillCalendarDateFill } from "react-icons/bs";
+import BASE_URL from "../../../Api/baseUrl";
 
 
 const columns = [
     { field: "customized_user_id", headerName: "ID", minWidth: 130 },
     // { field: "name", headerName: "Name", minWidth: 170 },
-     { field: "formatted_created_at", headerName: "Date", minWidth: 220 },
+    { field: "formatted_created_at", headerName: "Date", minWidth: 160 },
     // { field: "email", headerName: "Email", minWidth: 1 },
     { field: "phone", headerName: "Phone", minWidth: 130 },
     { field: "transaction_id", headerName: "Transaction ID", minWidth: 160 },
     { field: "package", headerName: "Package", minWidth: 50 },
-    { field: "digital_bank_name", headerName: "Wallet", minWidth: 80 , maxWidth:80 },
+    { field: "digital_bank_name", headerName: "Wallet", minWidth: 80, maxWidth: 80 },
     { field: "amount", headerName: "Amount", minWidth: 70 },
     {
         field: "actions",
         headerName: "Actions",
         minWidth: 80,
-        flex:0.1,
+        flex: 0.1,
         renderCell: (params) => (
 
             <Box display="flex" justifyContent="center" className="mt-3">
@@ -66,8 +67,8 @@ const AllPayment = () => {
 
     useEffect(() => {
         setLoading(true)
-        const BASE_URL = "https://tutorwise-backend.vercel.app";
-        fetch(`${BASE_URL}/api/admin/buy-apply-payment`)
+
+        fetch(`${BASE_URL}/api/admin/all-payment-list/`)
             .then((res) => res.json())
             .then((data) => {
                 const formattedData = data.map((item) => ({
@@ -80,8 +81,8 @@ const AllPayment = () => {
                     transaction_id: item.transaction_id,
                     package: item.package,
                     digital_bank_name: item.digital_bank_name,
-                    created_at: item.created_at, 
-                    formatted_created_at: formattedDate(item.created_at), 
+                    created_at: item.created_at,
+                    formatted_created_at:moment(item.created_at).format('DD/MM/YYYY hh:mm a') || '',
                     phone: item.phone,
                     handleViewModal: handleOpenViewModal,
                 }));
@@ -89,7 +90,7 @@ const AllPayment = () => {
                 setFilteredRows(formattedData);
                 setLoading(false);
             });
-            
+
     }, []);
 
 
@@ -97,7 +98,7 @@ const AllPayment = () => {
         if (!dateString) return "N/A";
         return moment(dateString).format("MMMM Do YYYY"); // Keep it for UI
     };
-    
+
 
     const handleOpenViewModal = (item) => {
         setView(item)
@@ -112,34 +113,35 @@ const AllPayment = () => {
 
 
     // Filtering rows based on search query
-    const handleSearch = (event) => {
-        setSearchQuery(event.target.value);
-        const filteredData = rows.filter((row) =>
-            row.name.toLowerCase().includes(event.target.value.toLowerCase()) ||
-            row.email.toLowerCase().includes(event.target.value.toLowerCase()) ||
-            row.transaction_id.toLowerCase().includes(event.target.value.toLowerCase())
-        );
-        setFilteredRows(filteredData);
-    };
+        useEffect(() => {
+            const result = rows.filter((row) =>
+                Object.values(row).join(" ").toLowerCase().includes(searchQuery.toLowerCase())
+            );
+            setFilteredRows(result);
+        }, [searchQuery, rows]);
+    
+
+
+
 
     const handleDateFilter = () => {
         const startDate = new Date(dateRange[0].startDate).setHours(0, 0, 0, 0); // Start of the day
         const endDate = new Date(dateRange[0].endDate).setHours(23, 59, 59, 999); // End of the day
-    
+
         console.log("Start Date:", startDate, "End Date:", endDate);
-    
+
         const filteredData = rows.filter((row) => {
             const rowDate = new Date(row.created_at).getTime(); // Use raw `created_at`
             console.log("Row Date:", rowDate); // Debug
             return rowDate >= startDate && rowDate <= endDate;
         });
-    
+
         console.log("Filtered Data:", filteredData); // Debug filtered rows
         setFilteredRows(filteredData);
         setShowDatePicker(false); // Close the date picker after filtering
     };
-    
-    
+
+
 
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
@@ -185,13 +187,14 @@ const AllPayment = () => {
 
                     {/* Search Bar */}
                     <TextField
-                        label="Search"
+                        label="Search "
                         variant="outlined"
-                        size="small"
                         value={searchQuery}
-                        onChange={handleSearch}
-                        sx={{ width: "300px" }}
+                        size="small"
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        style={{ width: "300px" }}
                     />
+
                 </div>
 
 

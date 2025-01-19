@@ -3,7 +3,7 @@ import { Box, Button, Modal, Snackbar, Alert, TextField, LinearProgress, Dialog,
 import { DataGrid } from "@mui/x-data-grid";
 import { MdDelete } from "react-icons/md";
 import { decryptData } from "../../EncryptedPage";
-
+import BASE_URL from "../../Api/baseUrl";
 
 
 
@@ -31,7 +31,7 @@ const Testimonial = () => {
 
     useEffect(() => {
         setLoading(true)
-        const BASE_URL = "https://tutorwise-backend.vercel.app";
+   
         fetch(`${BASE_URL}/api/admin/testimonials-view/`)
             .then((res) => res.json())
             .then((data) => {
@@ -61,7 +61,7 @@ const Testimonial = () => {
     };
 
     const handleDeleteConfirm = () => {
-        const BASE_URL = "https://tutorwise-backend.vercel.app";
+   
         fetch(`${BASE_URL}/api/admin/remove-testimonials/${deleteId}/`, {
             method: "POST",
             headers: {

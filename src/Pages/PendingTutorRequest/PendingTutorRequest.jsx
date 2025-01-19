@@ -8,7 +8,7 @@ import { BiSolidSelectMultiple } from "react-icons/bi";
 import { Snackbar, Alert } from "@mui/material";
 import { BiSolidUserDetail } from "react-icons/bi";
 import { decryptData } from "../../EncryptedPage";
-
+import BASE_URL from "../../Api/baseUrl";
 
 
 
@@ -110,7 +110,7 @@ const PendingTutorRequest = () => {
 
     useEffect(() => {
         setLoading(true)
-        fetch("https://tutorwise-backend.vercel.app/api/admin/view-request-tutor/")
+        fetch(`${BASE_URL}/api/admin/view-request-tutor/`)
             .then((res) => res.json())
             .then((data) => {
                 const formattedData = data.map((request) => ({
@@ -164,7 +164,7 @@ const PendingTutorRequest = () => {
     };
 
     const handleDeleteConfirm = () => {
-        fetch(`https://tutorwise-backend.vercel.app/api/admin/delete-request-tutor/${deleteId}/`, {
+        fetch(`${BASE_URL}/api/admin/delete-request-tutor/${deleteId}/`, {
             method: "DELETE",
         })
             .then((response) => {
@@ -197,7 +197,7 @@ const PendingTutorRequest = () => {
 
         console.log("Form Data:", editData);
 
-        fetch(`https://tutorwise-backend.vercel.app/api/admin/request-tutor-add-info/${editData.id}/`, {
+        fetch(`${BASE_URL}/api/admin/request-tutor-add-info/${editData.id}/`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",

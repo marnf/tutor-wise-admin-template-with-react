@@ -5,6 +5,7 @@ import { BiSolidUserDetail } from "react-icons/bi";
 import { BsFillCalendarDateFill } from "react-icons/bs";
 import { DateRangePicker } from "react-date-range";
 import moment from "moment";
+import BASE_URL from "../../Api/baseUrl";
 
 // Columns definition for DataGrid
 const columns = [
@@ -12,23 +13,33 @@ const columns = [
     {
         field: "profile_picture",
         headerName: "Profile Picture",
-        minWidth: 80,
-        maxWidth: 80,
+        minWidth: 60,
+        maxWidth: 60,
         renderCell: (params) => (
             <img
+                className=" mt-2"
                 src={params.value}
                 alt="Profile"
-                style={{ width: 50, height: 50, borderRadius: "50%" }}
+                style={{ width: 30, height: 30, borderRadius: "50%" }}
             />
         )
     },
     { field: "full_name", headerName: "Name", flex: 1, minWidth: 130 },
-    { field: "division", headerName: "Division", minWidth: 100 },
-    { field: "district", headerName: "District", minWidth: 100 },
+    { field: "phone", headerName: "phone", flex: 1, minWidth: 130 },
+    { field: "gmail", headerName: "gmail", flex: 1, minWidth: 130 },
+    {
+        field: "location",
+        headerName: "Location",
+        minWidth: 100,
+        renderCell: (params) => {
+            const district = params.row.district || 'N/A';
+            const division = params.row.division || 'N/A';
+            return `${district}, ${division}`; 
+        },
+    },
     { field: "gender", headerName: "Gender", minWidth: 80 },
     // { field: "nidcard_number", headerName: "NID Number", minWidth: 150 },
-    { field: "apply_number", headerName: "Applications", minWidth: 100 },
-    { field: "created_at", headerName: "Created Date", minWidth: 100 },
+    { field: "formattedJoinDate", headerName: "Created Date", minWidth: 160 },
     {
         field: "actions",
         headerName: "Actions",
@@ -65,28 +76,31 @@ const Referrer = () => {
             key: "selection",
         },
     ]);
-     const [refreshTable, setRefreshTable] = useState(false)
+    const [refreshTable, setRefreshTable] = useState(false)
 
 
     // Fetch data from the API
     useEffect(() => {
         setLoading(true);
-        const BASE_URL = "https://tutorwise-backend.vercel.app";
 
-        fetch("https://tutorwise-backend.vercel.app/api/admin/referrer-list/")
+
+        fetch(`${BASE_URL}/api/admin/referrer-list/`)
             .then((res) => res.json())
             .then((data) => {
                 const formattedData = data.map((item) => ({
                     id: item.id,
                     customized_user_id: item.customized_user_id,
                     created_at: moment(item?.created_at).format('YYYY-MM-DD'),
+                    formattedJoinDate: moment(item?.created_at).format('DD/MM/YYYY hh:mm a') || '',
+
                     profile_picture: item.profile_picture
                         ? `${BASE_URL}${item.profile_picture}`
                         : null,
                     full_name: item.full_name,
+                    phone: item.phone,
+                    gmail: item.gmail,
                     division: item.division,
                     district: item.district,
-                    location: item.district, // You can adjust this if more specific location data is required
                     nidcard_number: item.nidcard_number,
                     nidcard_picture: item.nidcard_picture
                         ? `${BASE_URL}${item.nidcard_picture}`
@@ -172,7 +186,7 @@ const Referrer = () => {
         setShowDatePicker(false); // Close the date picker after filtering
     };
 
-    const resetFilters =()=>{
+    const resetFilters = () => {
         setRefreshTable((prev) => !prev);
     }
 
@@ -372,6 +386,17 @@ const Referrer = () => {
                                 <Typography variant="body1"><strong>CGPA:</strong> {view?.university_cgpa || 'N/A'}</Typography>
                                 <Typography variant="body1"><strong>Level:</strong> {view?.university_educational_level || 'N/A'}</Typography>
                             </Box>
+
+
+                            {/* college Info Card */}
+                            <Box style={{ background: '#fff', padding: '15px', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
+                                <Typography variant="h6" style={{ marginBottom: '10px' }}>college Info</Typography>
+                                <Typography variant="body1"><strong>college Name:</strong> {view?.college_name || 'N/A'}</Typography>
+                                <Typography variant="body1"><strong>Section:</strong> {view?.college_background_section || 'N/A'}</Typography>
+                                <Typography variant="body1"><strong>CGPA:</strong> {view?.college_cgpa || 'N/A'}</Typography>
+                                <Typography variant="body1"><strong>Background:</strong> {view?.college_educational_background || 'N/A'}</Typography>
+                            </Box>
+
                         </Box>
 
                         {/* Footer Section */}

@@ -3,6 +3,7 @@ import { Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitl
 import { DataGrid } from "@mui/x-data-grid";
 import { BiSolidUserDetail } from "react-icons/bi";
 import { IoMdCheckboxOutline } from "react-icons/io";
+import BASE_URL from "../../Api/baseUrl";
 
 // Columns definition for DataGrid
 const columns = [
@@ -56,10 +57,10 @@ const ConnectedTutor = ({ onApprove, budgetLimit, label, gender, subject }) => {
 
     useEffect(() => {
         setLoading(true);
-        const BASE_URL = "https://tutorwise-backend.vercel.app";
+       
 
 
-        fetch("https://tutorwise-backend.vercel.app/api/admin/non-pro-tutor-list")
+        fetch(`${BASE_URL}/api/admin/non-pro-tutor-list`)
             .then((res) => res.json())
             .then((data) => {
 
@@ -249,7 +250,7 @@ const ConnectedTutor = ({ onApprove, budgetLimit, label, gender, subject }) => {
                             {/* Left: Profile Image */}
                             <Box sx={{ display: 'flex', gap: 2, alignItems: "center" }}>
                                 <img
-                                    src={view.tutor_personal_info?.profile_picture ? `https://tutorwise-backend.vercel.app${view.tutor_personal_info.profile_picture}` : '/default-image.jpg'}
+                                    src={view.tutor_personal_info?.profile_picture ? `${BASE_URL}${view.tutor_personal_info.profile_picture}` : '/default-image.jpg'}
                                     alt="Profile"
                                     style={{
                                         width: '80px',

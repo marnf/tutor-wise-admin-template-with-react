@@ -24,6 +24,7 @@ import { MdDelete } from "react-icons/md";
 import { BiSolidMessageDetail, BiSolidSelectMultiple, BiSolidUserDetail } from "react-icons/bi";
 import { BsFillCalendarDateFill } from "react-icons/bs";
 import { decryptData } from "../../EncryptedPage";
+import BASE_URL from "../../Api/baseUrl";
 
 
 // Dummy subject options
@@ -144,7 +145,7 @@ const SendMessagePage = () => {
 
     useEffect(() => {
         setLoading(true)
-        fetch("https://tutorwise-backend.vercel.app/api/admin/view-hire-request-tutor/")
+        fetch(`${BASE_URL}/api/admin/view-hire-request-tutor/`)
             .then((res) => res.json())
             .then((data) => {
                 const formattedData = data.map((item) => ({
@@ -179,7 +180,7 @@ const SendMessagePage = () => {
 
 
     const handleDelete = () => {
-        fetch(`https://tutorwise-backend.vercel.app/api/admin/delete-hire-tutor-request/${editData.id}/`, {
+        fetch(`${BASE_URL}/api/admin/delete-hire-tutor-request/${editData.id}/`, {
             method: "POST", // You may want to change this to DELETE, depending on the API
             headers: {
                 "Content-Type": "application/json",

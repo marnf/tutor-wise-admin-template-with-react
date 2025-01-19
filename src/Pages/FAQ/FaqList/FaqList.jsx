@@ -19,7 +19,7 @@ import { MdDelete } from "react-icons/md";
 import { FaUserEdit } from "react-icons/fa";
 import Modal from '@mui/material/Modal';
 import { decryptData } from "../../../EncryptedPage";
-
+import BASE_URL from "../../../Api/baseUrl";
 
 
 
@@ -91,7 +91,7 @@ const FaqList = () => {
 
   useEffect(() => {
     setLoading(true);
-    const BASE_URL = "https://tutorwise-backend.vercel.app";
+  
     fetch(`${BASE_URL}/api/account/view-faq/`)
       .then((res) => res.json())
       .then((data) => {
@@ -128,7 +128,7 @@ const FaqList = () => {
   };
 
   const handleDelete = () => {
-    const BASE_URL = "https://tutorwise-backend.vercel.app";
+   
     fetch(`${BASE_URL}/api/admin/delete-faq/${deleteId}/`, {
       method: "DELETE",
     })
@@ -158,7 +158,7 @@ const FaqList = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const BASE_URL = "https://tutorwise-backend.vercel.app";
+  
     fetch(`${BASE_URL}/api/admin/edit-faq/${editData.id}/`, {
       method: "PUT",
       headers: {

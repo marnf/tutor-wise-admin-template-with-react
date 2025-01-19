@@ -38,6 +38,17 @@ const menuItems = [
     role: 11,
   },
   {
+    key: 'tutor-list',
+    icon: <FaChalkboardTeacher size={25} />,
+    label: 'Tutor List',
+    role: 3,
+    children: [
+      // { key: '/all-tutor-list', label: <Link to="/all-tutor-list">All Tutor</Link>, role: 3, },
+      { key: '/pro-tutor-list', label: <Link to="/pro-tutor-list">Pro Tutor</Link>, role: 3, },
+      { key: '/tutor-list', label: <Link to="/tutor-list"> Tutor</Link>, role: 3, },
+    ],
+  },
+  {
     key: '/referrer-list',
     icon: <FaUserTie  size={25} />,
     label: <Link to="/referrer-list">Referrer List</Link>,
@@ -55,17 +66,7 @@ const menuItems = [
       { key: '/approved-higher-tutor-request', label: <Link to="/approved-higher-tutor-request">Approved Higher Tutor Request</Link>, role: 2, },
     ],
   },
-  {
-    key: 'tutor-list',
-    icon: <FaChalkboardTeacher size={25} />,
-    label: 'Tutor List',
-    role: 3,
-    children: [
-      { key: '/all-tutor-list', label: <Link to="/all-tutor-list">All Tutor</Link>, role: 3, },
-      { key: '/pro-tutor-list', label: <Link to="/pro-tutor-list">Pro Tutor</Link>, role: 3, },
-      { key: '/tutor-list', label: <Link to="/tutor-list"> Tutor</Link>, role: 3, },
-    ],
-  },
+  
   {
     key: '/assigned-list',
     icon: <SiGitconnected size={25} />,
@@ -104,7 +105,7 @@ const menuItems = [
     children: [
       { key: '/all-payment', label: <Link to="/all-payment">All Payment</Link>, role: 6, },
       { key: '/pro-payment', label: <Link to="/pro-payment">Pro Payment</Link>, role: 6, },
-      { key: '/payment', label: <Link to="/payment">Payment</Link>, role: 6, },
+      { key: '/payment', label: <Link to="/payment">Limit Payment</Link>, role: 6, },
     ],
   },
   {

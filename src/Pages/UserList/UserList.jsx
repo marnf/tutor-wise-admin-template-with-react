@@ -5,14 +5,14 @@ import Select from "react-select";  // Import react-select
 import { BiSolidSelectMultiple, BiSolidUserDetail } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
 import { GoPlus } from "react-icons/go";
-import { FaEye, FaEyeSlash, FaUserEdit } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaStar, FaUserEdit } from "react-icons/fa";
 import { GiCycle } from "react-icons/gi";
 import { Snackbar } from '@mui/material';
 import moment from "moment";
 import { decryptData } from "../../EncryptedPage";
 import { BsFillCalendarDateFill } from "react-icons/bs";
 import { DateRangePicker } from "react-date-range";
-
+import BASE_URL from "../../Api/baseUrl";
 
 
 
@@ -32,12 +32,29 @@ const isSuperAdmin = user?.user_type === "super_admin";
 
 const columns = [
     { field: "customizeId", headerName: "ID", minWidth: 130 },
-    { field: "username", headerName: "Name", flex: 1 },
-    { field: "lastLogin", headerName: "Last login", flex: 1 },
-    // { field: "joinDate", headerName: "Joining date", flex: 1 },
+    { 
+        field: "username", 
+        headerName: "Name", 
+        flex: 1,
+        minWidth: 240,
+        renderCell: (params) => (
+            <Box display="flex" alignItems="center">
+                <span>{params.row.username || "N/A"}</span>
+                
+                {params.row.is_new && (
+                 <div style={{ background:"#f0523a"}} className=" ml-2 h-5 flex items-center justify-center rounded-full px-1">
+                 <p className="text-white  font-medium m-0" style={{ fontSize: '10px', margin: 0 }}>new</p>
+               </div>
+               
+                )}
+            </Box>
+        ),
+    },
+    // { field: "lastLogin", headerName: "Last login", flex: 1 },
+     { field: "formattedJoinDate", headerName: "Joining date", minWidth:160 },
     { field: "phone", headerName: "Phone", flex: 1 },
     { field: "userType", headerName: "User Type", flex: 1 },
-    { field: "rolesName", headerName: "Roles Name", flex: 2 },
+    // { field: "rolesName", headerName: "Roles Name", flex: 2 },
     {
         field: "actions",
         headerName: "Actions",
@@ -141,16 +158,18 @@ const UserList = () => {
     // Fetch Data for Users
     useEffect(() => {
         setLoading(true);
-        fetch("https://tutorwise-backend.vercel.app/api/admin/all-users-list/")
+        fetch(`${BASE_URL}/api/admin/all-users-list/`)
             .then((res) => res.json())
             .then((data) => {
                 const usersData = data.user_data || data;
 
                 const formattedUsers = usersData.map((user) => ({
+                    is_new:user.is_new,
                     id: user.id,
                     customizeId: user.customized_user_id,
                     lastLogin: formData(user.last_login) || '',
                     joinDate: moment(user?.join_date).format('YYYY-MM-DD') || '',
+                    formattedJoinDate:moment(user.join_date).format('DD/MM/YYYY hh:mm a') || '',
                     username: user.username || "",
                     phone: user.phone || "",
                     userType: user.user_type || "",
@@ -201,7 +220,7 @@ const UserList = () => {
 
     // Fetch Roles Options for Select
     useEffect(() => {
-        fetch("https://tutorwise-backend.vercel.app/api/admin/view-role/")
+        fetch(`${BASE_URL}/api/admin/view-role/`)
             .then((res) => res.json())
             .then((data) => {
                 const options = data.map((role) => ({
@@ -217,7 +236,7 @@ const UserList = () => {
 
 
     const fetchRoles = () => {
-        fetch("https://tutorwise-backend.vercel.app/api/admin/view-role/")
+        fetch(`${BASE_URL}/api/admin/view-role/`)
             .then((res) => res.json())
             .then((data) => {
                 const options = data.map((role) => ({
@@ -326,7 +345,7 @@ const UserList = () => {
         const jsonData = Object.fromEntries(formData.entries());
         console.log(jsonData)
 
-        fetch("https://tutorwise-backend.vercel.app/api/admin/create-role/", {
+        fetch(`${BASE_URL}/api/admin/create-role/`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -380,7 +399,7 @@ const UserList = () => {
         console.log(newUser);
 
         // API POST request to create a new user
-        fetch("https://tutorwise-backend.vercel.app/api/account/admin/create-user/", {
+        fetch(`${BASE_URL}/api/account/admin/create-user/`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -426,7 +445,7 @@ const UserList = () => {
     const handleConfirmDelete = () => {
         console.log(currentRow.id)
         // API DELETE Request
-        fetch(`https://tutorwise-backend.vercel.app/api/admin/delete-user/${currentRow.id}/`, {
+        fetch(`${BASE_URL}/api/admin/delete-user/${currentRow.id}/`, {
             method: 'DELETE',
         })
             .then(() => {
@@ -490,7 +509,7 @@ const UserList = () => {
         console.log(updatedData)
 
         // API PUT Request to update user
-        fetch(`https://tutorwise-backend.vercel.app/api/admin/edit-users-list/${currentRow.id}/`, {
+        fetch(`${BASE_URL}/api/admin/edit-users-list/${currentRow.id}/`, {
 
             method: 'PUT',
             headers: {
@@ -1155,7 +1174,7 @@ const UserList = () => {
             {/* Snackbar component */}
             <Snackbar
                 open={openSnackbar}
-                autoHideDuration={200}
+                autoHideDuration={2000}
                 onClose={handleCloseSnackbar}
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             >
@@ -1166,7 +1185,7 @@ const UserList = () => {
 
             <Snackbar
                 open={openErrorSnackbar}
-                autoHideDuration={200}
+                autoHideDuration={2000}
                 onClose={handleCloseErrorSnackbar}
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             >

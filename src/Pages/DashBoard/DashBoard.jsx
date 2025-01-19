@@ -8,6 +8,7 @@ import { Box, LinearProgress } from "@mui/material";
 import { MdViewList } from "react-icons/md";
 import { BiSolidMessageDetail } from "react-icons/bi";
 import { TbListDetails } from "react-icons/tb";
+import BASE_URL from '../../Api/baseUrl';
 
 
 const Dashboard = () => {
@@ -27,34 +28,34 @@ const Dashboard = () => {
 
     // API Data Fetching
     useEffect(() => {
-        axios.get('https://tutorwise-backend.vercel.app/api/admin/total-student-number/')
+        axios.get(`${BASE_URL}/api/admin/total-student-number/`)
             .then((response) => {
                 setTotalStudentData(response.data);
                 animatePercentage('totalStudent', response.data.student_percentage);
             })
             .catch((error) => console.error('Error fetching Total Student data:', error));
 
-        axios.get('https://tutorwise-backend.vercel.app/api/admin/total-pro-tutor-number/')
+        axios.get(`${BASE_URL}/api/admin/total-pro-tutor-number/`)
             .then((response) => {
                 setProTutorData(response.data);
                 animatePercentage('proTutor', response.data.pro_tutor_percentage);
             })
             .catch((error) => console.error('Error fetching Pro Tutor data:', error));
 
-        axios.get('https://tutorwise-backend.vercel.app/api/admin/total-referrer-number/')
+        axios.get(`${BASE_URL}/api/admin/total-referrer-number/`)
             .then((response) => {
                 setReferrerData(response.data);
                 animatePercentage('referrer', response.data.referer_percentage);
             })
             .catch((error) => console.error('Error fetching Referrer data:', error));
 
-        axios.get('https://tutorwise-backend.vercel.app/api/admin/total-payment-number/')
+        axios.get(`${BASE_URL}/api/admin/total-payment-number/`)
             .then((response) => {
                 setPaymentData(response.data);
             })
             .catch((error) => console.error('Error fetching Payment data:', error));
 
-        axios.get('https://tutorwise-backend.vercel.app/api/admin/active-inactive-user-percentage/')
+        axios.get(`${BASE_URL}/api/admin/active-inactive-user-percentage/`)
             .then((response) => {
                 setActiveUserData(response.data);
                 animatePercentage('activeUser', response.data.active_percentage);

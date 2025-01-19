@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import './AddInstitution.css'
+import BASE_URL from "../../../Api/baseUrl";
 
 const InstitutionForm = () => {
     const [institutionName, setInstitutionName] = useState("");
@@ -26,7 +27,7 @@ const InstitutionForm = () => {
             formData.append("logo", "");  // You can also send empty string or just remove the line entirely
         }
 
-        fetch("https://tutorwise-backend.vercel.app/api/admin/add-institution/", {
+        fetch(`${BASE_URL}/api/admin/add-institution/`, {
             method: "POST",
             body: formData,
         })

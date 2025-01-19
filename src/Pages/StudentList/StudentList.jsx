@@ -32,6 +32,7 @@ import { decryptData } from "../../EncryptedPage";
 import { BsFillCalendarDateFill } from "react-icons/bs";
 import { DateRangePicker } from "react-date-range";
 import moment from 'moment';
+import BASE_URL from "../../Api/baseUrl";
 
 
 // Dummy subject options
@@ -61,17 +62,18 @@ if (encryptedUser) {
 const isSuperAdmin = user?.user_type === "super_admin";
 
 const columns = [
-    { field: "id", headerName: "ID", minWidth: 40 },
-    { field: "name", headerName: "Name", minWidth: 150 },
-    { field: "phone", headerName: "Phone", minWidth: 120 },
-    //  { field: "location", headerName: "Location", minWidth: 200 },
-    // { field: "details", headerName: "Details", minWidth: 200 },
-    { field: "class_name", headerName: "Class", minWidth: 120 },
-    { field: "subject", headerName: "Subject", minWidth: 150 },
-    { field: "created_at", headerName: "Created Date", minWidth: 150 },
+    { field: "customized_id", headerName: "ID", minWidth: 130 },
+    { field: "full_name", headerName: "Name", minWidth: 150 },
+    { field: "phone", headerName: "Phone", minWidth: 130 },
+    { field: "gmail", headerName: "Gmail", minWidth: 230 },
+    { field: "formattedJoinDate", headerName: "Joining Date", minWidth: 160 },
+    { field: "gender", headerName: "Gender", minWidth: 70, maxWidth:70 },
+
+    // { field: "subject", headerName: "Subject", minWidth: 150 },
+    // { field: "class_name", headerName: "Class", minWidth: 120 },
     // { field: "lesson_type", headerName: "Lesson Type", minWidth: 100 },
-    { field: "gender", headerName: "Gender", minWidth: 60 },
-    { field: "budget", headerName: "Budget", minWidth: 60 },
+    // { field: "details", headerName: "Details", minWidth: 200 },
+    // { field: "location", headerName: "Location", minWidth: 200 },
     // { field: "days_per_week", headerName: "Days/Week", minWidth: 60 },
     // { field: "start_immediate", headerName: "Start Immediately", minWidth: 60 },
     // { field: "additional_comment", headerName: "Additional Comment", minWidth: 200 },
@@ -147,13 +149,13 @@ const StudentList = () => {
 
     useEffect(() => {
         setLoading(true)
-        fetch("https://tutorwise-backend.vercel.app/api/admin/approve-request-tutor-list/")
+        fetch(`${BASE_URL}/api/admin/student-list/`)
             .then((res) => res.json())
             .then((data) => {
                 const formattedData = data.map((item) => ({
                     ...item,
                     created_at: moment(item?.created_at).format('YYYY-MM-DD'),
-                    start_immediate: item.start_immediate ? "Yes" : "No",
+                    formattedJoinDate:moment(item?.created_at).format('DD/MM/YYYY hh:mm a') || '',
                     handleEdit: handleEditRequest,
                     handleDelete: handleDeleteRequest,
                     handleViewModal: handleOpenViewModal,
@@ -201,7 +203,6 @@ const StudentList = () => {
     const handleEditRequest = (row) => {
         setEditData({
             ...row,
-            start_immediate: row.start_immediate === "Yes",
         });
         setOpen(true);
     };
@@ -225,7 +226,7 @@ const StudentList = () => {
 
     const handleDelete = (e) => {
         e.preventDefault();
-        fetch(`https://tutorwise-backend.vercel.app/api/admin/unapprove-request-tutor/${deleteData.id}/`, {
+        fetch(`${BASE_URL}/api/admin/unapprove-request-tutor/${deleteData.id}/`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -255,8 +256,10 @@ const StudentList = () => {
 
 
     const handleSubmit = (e) => {
+
+        console.log(editData)
         e.preventDefault();
-        fetch(`https://tutorwise-backend.vercel.app/api/admin/edit-approved-request-tutor/${editData.id}/`, {
+        fetch(`${BASE_URL}/api/admin/edit-approved-request-tutor/${editData.id}/`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -414,31 +417,41 @@ const StudentList = () => {
             )}
 
             <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-                <DialogTitle>Edit Tutor Request</DialogTitle>
+                <DialogTitle>Edit Student Details</DialogTitle>
                 <DialogContent>
                     <form className="mt-2" onSubmit={handleSubmit}>
                         <Grid container spacing={3}>
-                            {/* Name and Location */}
+                            {/* Customized ID */}
                             <Grid item xs={12} sm={6}>
                                 <TextField
-                                    label="Name"
+                                    label="Customized ID"
                                     variant="outlined"
                                     fullWidth
-                                    value={editData.name || ""}
-                                    onChange={(e) => setEditData({ ...editData, name: e.target.value })}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    label="Location"
-                                    variant="outlined"
-                                    fullWidth
-                                    value={editData.location || ""}
-                                    onChange={(e) => setEditData({ ...editData, location: e.target.value })}
+                                    value={editData.customized_id || ""}
+                                    disabled
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}
                                 />
                             </Grid>
 
-                            {/* Phone and Start Date */}
+                            {/* Created At */}
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    label="Created At"
+                                    variant="outlined"
+                                    fullWidth
+                                    value={editData.created_at || ""}
+                                    disabled
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}
+                                />
+                            </Grid>
+
+
+
+                            {/* Phone */}
                             <Grid item xs={12} sm={6}>
                                 <TextField
                                     label="Phone"
@@ -452,359 +465,266 @@ const StudentList = () => {
                                 />
                             </Grid>
 
+
+                            {/* Gmail */}
                             <Grid item xs={12} sm={6}>
                                 <TextField
-                                    label="Start Date"
-                                    type="date"
+                                    label="Gmail"
                                     variant="outlined"
                                     fullWidth
-                                    value={editData.start_date || ""}
-                                    onChange={(e) => setEditData({ ...editData, start_date: e.target.value })}
-                                    InputLabelProps={{
-                                        shrink: true,
+                                    value={editData.gmail || ""}
+                                    disabled
+                                    InputProps={{
+                                        readOnly: true,
                                     }}
                                 />
                             </Grid>
 
-                            {/* Gender and Lesson Type */}
+                            {/* NID Card */}
                             <Grid item xs={12} sm={6}>
-                                <FormLabel>Gender</FormLabel>
+                                <TextField
+                                    label="NID Card Number"
+                                    variant="outlined"
+                                    fullWidth
+                                    value={editData.nidcard_number || ""}
+                                    disabled
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}
+                                />
+                            </Grid>
+
+                            {/* Name */}
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    label="Name"
+                                    variant="outlined"
+                                    fullWidth
+                                    value={editData.full_name || ""}
+                                    onChange={(e) => setEditData({ ...editData, full_name: e.target.value })}
+                                    sx={{
+                                        "& .MuiOutlinedInput-root": {
+                                            "& fieldset": {
+                                                borderColor: "black",
+                                                borderWidth: "2px",
+                                            },
+                                            "&.Mui-focused fieldset": {
+                                                borderColor: "black",
+                                                borderWidth: "3px",
+                                            },
+                                        },
+                                    }}
+                                />
+                            </Grid>
+
+                            {/* Division */}
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    label="Division"
+                                    variant="outlined"
+                                    fullWidth
+                                    value={editData.division || ""}
+                                    onChange={(e) => setEditData({ ...editData, division: e.target.value })}
+                                    sx={{
+                                        "& .MuiOutlinedInput-root": {
+                                            "& fieldset": {
+                                                borderColor: "black",
+                                                borderWidth: "2px",
+                                            },
+                                            "&.Mui-focused fieldset": {
+                                                borderColor: "black",
+                                                borderWidth: "3px",
+                                            },
+                                        },
+                                    }}
+                                />
+                            </Grid>
+
+                            {/* District */}
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    label="District"
+                                    variant="outlined"
+                                    fullWidth
+                                    value={editData.district || ""}
+                                    onChange={(e) => setEditData({ ...editData, district: e.target.value })}
+                                    sx={{
+                                        "& .MuiOutlinedInput-root": {
+                                            "& fieldset": {
+                                                borderColor: "black",
+                                                borderWidth: "2px",
+                                            },
+                                            "&.Mui-focused fieldset": {
+                                                borderColor: "black",
+                                                borderWidth: "3px",
+                                            },
+                                        },
+                                    }}
+                                />
+                            </Grid>
+
+
+
+                            {/* Gender */}
+                            <Grid item xs={12} sm={6}>
+                                <FormLabel className="mb-1">Gender</FormLabel>
                                 <RadioGroup
+                                    className=" border-t-2 border-gray-500"
                                     row
                                     value={editData.gender || ""}
                                     onChange={(e) => setEditData({ ...editData, gender: e.target.value })}
                                 >
-                                    <FormControlLabel value="male" control={<Radio />} label="Male" />
-                                    <FormControlLabel value="female" control={<Radio />} label="Female" />
-                                    <FormControlLabel value="others" control={<Radio />} label="Others" />
-                                </RadioGroup>
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <FormLabel>Lesson Type</FormLabel>
-                                <RadioGroup
-                                    row
-                                    value={editData.lesson_type || ""}
-                                    onChange={(e) => setEditData({ ...editData, lesson_type: e.target.value })}
-                                >
-                                    <FormControlLabel value="Online" control={<Radio />} label="Online" />
-                                    <FormControlLabel value="Offline" control={<Radio />} label="Offline" />
-                                    <FormControlLabel value="Both" control={<Radio />} label="Both" />
+                                    <FormControlLabel value="Male" control={<Radio />} label="Male" />
+                                    <FormControlLabel value="Female" control={<Radio />} label="Female" />
+                                    <FormControlLabel value="Others" control={<Radio />} label="Others" />
                                 </RadioGroup>
                             </Grid>
 
-                            {/* Budget and Days Per Week */}
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    label="Budget"
-                                    type="number"
-                                    variant="outlined"
-                                    fullWidth
-                                    value={editData.budget || ""}
-                                    onChange={(e) => setEditData({ ...editData, budget: e.target.value })}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    label="Days Per Week"
-                                    select
-                                    fullWidth
-                                    value={editData.days_per_week || ""}
-                                    onChange={(e) => setEditData({ ...editData, days_per_week: e.target.value })}
-                                >
-                                    {[1, 2, 3, 4, 5, 6].map((day, index) => (
-                                        <MenuItem key={index} value={day}>
-                                            {`${day} day${day > 1 ? 's' : ''}`}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
-                            </Grid>
-
-                            {/* Subject and Class */}
-                            <Grid item xs={12} sm={6}>
-                                <Autocomplete
-                                    freeSolo
-                                    options={subjectOptions}
-                                    value={editData.subject || ""}
-                                    onInputChange={(e, newValue) => setEditData({ ...editData, subject: newValue })}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            label="Subject"
-                                            variant="outlined"
-                                            fullWidth
-                                        />
-                                    )}
-                                />
-
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    label="Class"
-                                    select
-                                    fullWidth
-                                    value={editData.class_name || ""}
-                                    onChange={(e) => setEditData({ ...editData, class_name: e.target.value })}
-                                >
-                                    {[
-                                        "Class 1",
-                                        "Class 2",
-                                        "Class 3",
-                                        "Class 4",
-                                        "Class 5",
-                                        "Class 6",
-                                        "Class 7",
-                                        "Class 8",
-                                        "Class 9",
-                                        "Class 10",
-                                    ].map((cls, index) => (
-                                        <MenuItem key={index} value={cls}>
-                                            {cls}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
-                            </Grid>
-
-                            {/* Details and Additional Comment */}
-                            <Grid item xs={12} sm={6}>
-                                <TextareaAutosize
-                                    minRows={4}
-                                    placeholder="Details"
-                                    value={editData.details || ""}
-                                    onChange={(e) => setEditData({ ...editData, details: e.target.value })}
-                                    style={{ width: "100%", border: "1px solid gray", padding: "10px", borderRadius: "5px" }}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextareaAutosize
-                                    minRows={4}
-                                    placeholder="Additional Comment"
-                                    value={editData.additional_comment || ""}
-                                    onChange={(e) => setEditData({ ...editData, additional_comment: e.target.value })}
-                                    style={{ width: "100%", border: "1px solid gray", padding: "10px", borderRadius: "5px" }}
-                                />
-                            </Grid>
 
 
-                            <Grid item xs={12} sm={6}>
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox
-                                            checked={editData.start_immediate || false}
-                                            onChange={(e) =>
-                                                setEditData({
-                                                    ...editData,
-                                                    start_immediate: e.target.checked,
-                                                })
-                                            }
-                                        />
-                                    }
-                                    label="Start Immediately"
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
+                            {/* Submit and Cancel Buttons */}
+                            <Grid item xs={12}>
                                 <DialogActions>
                                     <Button onClick={handleClose} variant="outlined" color="secondary">
                                         Cancel
                                     </Button>
-                                    <Button onClick={handleSubmit} type="submit" variant="contained" color="primary">
+                                    <Button type="submit" variant="contained" color="primary">
                                         Submit
                                     </Button>
                                 </DialogActions>
                             </Grid>
-
-                            {/* Buttons */}
-
                         </Grid>
                     </form>
                 </DialogContent>
             </Dialog>
 
+
             <Dialog open={openViewModal} onClose={handleCloseViewModal}  >
 
-
-                <div className="flex justify-between items-center">
-
-
-                    {/* Content */}
-                    <DialogContent>
-                        <div
+              
+                    <Box
+                        sx={{
+                            padding: 4,
+                            borderRadius: 2,
+                            boxShadow: "0px 8px 20px rgba(0,0,0,0.15)",
+                            backgroundColor: "#ffffff",
+                            maxWidth: "600px",
+                            margin: "auto",
+                        }}
+                    >
+                        {/* Header Section */}
+                        <Box
                             sx={{
-                                padding: 5,
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: 2,
-                                borderRadius: 4,
-                                boxShadow: '0px 8px 20px rgba(0,0,0,0.1)',
-                                backgroundColor: '#f9f9f9',
-                                margin: ' auto',
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                paddingBottom: 2,
+                                borderBottom: "1px solid #ddd",
                             }}
                         >
-                            {/* Header Section */}
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                    gap: 3,
-                                    paddingBottom: 2,
-                                    marginBottom: 1,
-                                    borderBottom: '1px solid #ddd',
-                                }}
-                            >
-                                {/* Left: Name and Phone */}
-                                <Box>
-                                    <Typography
-                                        variant="h6"
-                                        sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}
-                                    >
-                                        {view?.name || ''}
-                                    </Typography>
-                                    <Typography
-                                        variant="body2"
-                                        color="textSecondary"
-                                        sx={{ color: '#777' }}
-                                    >
-                                        {view?.phone || ''}
-                                    </Typography>
-                                </Box>
-
-                                {/* Right:  */}
-                                <Box>
-                                    <Typography
-                                        variant="body2"
-                                        color="textSecondary"
-                                        sx={{
-                                            fontSize: '1rem',
-                                            color: '#555',
-                                            textAlign: 'right',
-                                        }}
-                                    >
-                                        <strong>ID:</strong>{view?.id || ''}
-                                    </Typography>
-                                    <Typography variant="body1">
-                                        {' '}
-                                        {view?.created_at
-                                            ? new Date(view.created_at).toLocaleString()
-                                            : ''}
-                                    </Typography>
-                                </Box>
-                            </Box>
-
-                            {/* Body Section */}
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    gap: 3,
-                                    flexDirection: { xs: 'column', sm: 'row' },
-                                }}
-                            >
-                                {/* Left Column */}
-                                <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-
-
-                                    <Typography variant="body1">
-                                        <strong>Subject:</strong> {view?.subject || ''}
-                                    </Typography>
-                                    <Divider />
-                                    <Typography variant="body1">
-                                        <strong>Class Name:</strong> {view?.class_name || ''}
-                                    </Typography>
-                                    <Divider />
-                                    <Typography variant="body1">
-                                        <strong>Lesson Type:</strong> {view?.lesson_type || ''}
-                                    </Typography>
-                                    <Divider />
-                                    <Typography variant="body1">
-                                        <strong>Gender:</strong> {view?.gender || ''}
-                                    </Typography>
-                                    <Divider />
-                                    <Typography variant="body1">
-                                        <strong>Details:</strong> {view?.details || ''}
-                                    </Typography>
-                                    <Divider />
-
-
-                                </Box>
-
-                                {/* Right Column */}
-                                <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-
-                                    <Typography variant="body1">
-                                        <strong>Location:</strong> {view?.location || ''}
-                                    </Typography>
-                                    <Divider />
-                                    <Typography variant="body1">
-                                        <strong>Days Per Week:</strong> {view?.days_per_week || ''}
-                                    </Typography>
-                                    <Divider />
-                                    <Typography variant="body1">
-                                        <strong>Start Date:</strong> {view?.start_date || ''}
-                                    </Typography>
-                                    <Divider />
-                                    <Typography variant="body1">
-                                        <strong>Budget:</strong> {view?.budget || ''}
-                                    </Typography>
-                                    <Divider />
-                                    <Typography variant="body1">
-                                        <strong>Additional Comment:</strong> {view?.additional_comment || ''}
-                                    </Typography>
-                                    <Divider />
-
-
-                                </Box>
-                            </Box>
-
-                            {/* Footer Section: Checkboxes */}
-                            <Box
-                                sx={{
-                                    display: 'flex',
-
-                                    gap: 2,
-                                    paddingTop: 2,
-                                    borderTop: '1px solid #ddd',
-                                }}
-                            >
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox checked={view?.is_verified || false} disabled />
-                                    }
-                                    label="Verified"
-                                />
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox checked={view?.is_approve || false} disabled />
-                                    }
-                                    label="Approved"
-                                />
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox checked={view?.start_immediate || false} disabled />
-                                    }
-                                    label="Start Immediately"
-                                />
-                            </Box>
-
-                            {/* Footer Section: Cancel Button */}
-                            <Box sx={{ textAlign: 'center', marginTop: 2 }}>
-                                <Button
-                                    variant="contained"
-                                    sx={{
-                                        backgroundColor: '#ff5722',
-                                        color: '#fff',
-                                        fontWeight: 'bold',
-                                        padding: '0.5rem 2rem',
-                                        '&:hover': {
-                                            backgroundColor: '#e64a19',
-                                        },
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                                <img
+                                    
+                                    src={view.profile_picture ? `${BASE_URL}${view.profile_picture}` : ''}
+                                    alt="Profile"
+                                    style={{
+                                        width: "60px",
+                                        height: "60px",
+                                        borderRadius: "50%",
+                                        objectFit: "cover",
                                     }}
-                                    onClick={handleCloseViewModal}
-                                >
-                                    Cancel
-                                </Button>
+                                />
+                                <Box>
+                                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                                        {view?.full_name || "No Data"}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ color: "#555" }}>
+                                        {view?.gmail || "No Data"}
+                                    </Typography>
+                                </Box>
                             </Box>
-                        </div>
-                    </DialogContent>
-                </div>
+                            <Box>
+                                <Typography variant="body2" sx={{ textAlign: "right", color: "#777" }}>
+                                    <strong>ID:</strong> {view?.customized_id || "No Data"}
+                                </Typography>
+                                <Typography variant="body2" className="mt-2">
+                                    {view?.created_at
+                                        ? new Date(view.created_at).toLocaleString()
+                                        : "No Data"}
+                                </Typography>
+                            </Box>
+                        </Box>
+
+                        {/* Body Section */}
+                        <Box sx={{ marginTop: 3 }}>
+                            <Box
+                                sx={{
+                                    display: "grid",
+                                    gridTemplateColumns: "1fr 1fr",
+                                    gap: 2,
+                                }}
+                            >
+                                <Typography variant="body1">
+                                    <strong>Phone:</strong> {view?.phone || "No Data"}
+                                </Typography>
+                                <Typography variant="body1">
+                                    <strong>Gender:</strong> {view?.gender || "No Data"}
+                                </Typography>
+                                <Typography variant="body1">
+                                    <strong>Division:</strong> {view?.division || "No Data"}
+                                </Typography>
+                                <Typography variant="body1">
+                                    <strong>District:</strong> {view?.district || "No Data"}
+                                </Typography>
+                                <Typography variant="body1">
+                                    <strong>NID Number:</strong> {view?.nidcard_number || "No Data"}
+                                </Typography>
+                                <br />
+                                <>
+                                <strong>NID Picture:</strong>{" "}
+                                    
+                                       <img
+                                    
+                                       src={view.nidcard_picture ? `${BASE_URL}${view.nidcard_picture}` : ''}
+                                       alt="Profile"
+                                       style={{
+                                           width: "60px",
+                                           height: "60px",
+                                           borderRadius: "10px",
+                                           objectFit: "cover",
+                                           border:"1px solid black",
+                                           padding:"10px"
+                                       }}
+                                   />
+                                </>
+                                    
+                                       
+                                    
+                            </Box>
+                        </Box>
+
+                        {/* Footer Section */}
+                        <Box sx={{ textAlign: "center", marginTop: 4 }}>
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    backgroundColor: "#007bff",
+                                    color: "#fff",
+                                    fontWeight: "bold",
+                                    padding: "0.5rem 2rem",
+                                    "&:hover": {
+                                        backgroundColor: "#0056b3",
+                                    },
+                                }}
+                                onClick={handleCloseViewModal}
+                            >
+                                Close
+                            </Button>
+                        </Box>
+                    </Box>
+              
+
+
             </Dialog>
 
 
