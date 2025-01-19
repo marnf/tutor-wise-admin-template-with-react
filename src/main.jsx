@@ -22,7 +22,7 @@ import ProPayment from './Pages/Payment/ProPayment/ProPayment.jsx';
 import Payment from './Pages/Payment/Payment/Payment.jsx';
 import Review from './Pages/Review/Review.jsx';
 import Testimonial from './Pages/Testimonial/Testimonial.jsx';
-import TutorPostAction from './Pages/TutonPostAction/TutonPostAction.jsx';
+
 import InactiveUser from './Pages/InactiveUser/InactiveUser.jsx'
 import PrivateRoute from './../src/PrivateRoute/PrivateRoute.jsx'
 import ProtectedRoute from './Components/ProtectedRoute .jsx';
@@ -35,6 +35,11 @@ import DynamicPricing from './Pages/DynamicPricing/DynamicPricing.jsx';
 import ReferrerPage from './Pages/ReferrerPages/ReferrerPage.jsx';
 import 'react-date-range/dist/styles.css'; 
 import 'react-date-range/dist/theme/default.css'; 
+import TutorPosts from './Pages/TeachersTuitionPost/TutorPosts/TutorPosts.jsx';
+import TutorPostStatus from './Pages/TeachersTuitionPost/TutorPostStatus/TutorPostStatus.jsx';
+import AllTuition from './Pages/StudentsTuitionPosts/AllTuition/AllTuition.jsx';
+import TuitionStatus from './Pages/StudentsTuitionPosts/TuitionStatus/TuitionStatus.jsx';
+import HireTutor from './Pages/HireTutor/HireTutor.jsx';
 
 
 const router = createBrowserRouter([
@@ -133,6 +138,10 @@ const router = createBrowserRouter([
         element:<PrivateRoute allowedRoles={[11]}> <StudentList/> </PrivateRoute>
       },
       {
+        path: "/hire-tutor",
+        element:<PrivateRoute allowedRoles={[11]}> <HireTutor></HireTutor> </PrivateRoute>
+      },
+      {
         path: "/referrer-list",
         element:<PrivateRoute allowedRoles={[11]}> <ReferrerPage/> </PrivateRoute>
       },
@@ -141,8 +150,20 @@ const router = createBrowserRouter([
         element:<PrivateRoute allowedRoles={[12]}> <InactiveUser></InactiveUser> </PrivateRoute>
       },
       {
-        path: "/tutor-post",
-        element:<PrivateRoute allowedRoles={[13]}> <TutorPostAction></TutorPostAction></PrivateRoute>
+        path: "/students-tuition-posts",
+        element:<PrivateRoute allowedRoles={[13]}> <AllTuition></AllTuition> </PrivateRoute>
+      },
+      {
+        path: "/students-tuition-status",
+        element:<PrivateRoute allowedRoles={[13]}> <TuitionStatus></TuitionStatus> </PrivateRoute>
+      },
+      {
+        path: "/teachers-tuition-post",
+        element:<PrivateRoute allowedRoles={[13]}> <TutorPosts></TutorPosts> </PrivateRoute>
+      },
+      {
+        path: "/teachers-post-status",
+        element:<PrivateRoute allowedRoles={[13]}> <TutorPostStatus></TutorPostStatus> </PrivateRoute>
       },
       {
         path: "/dynamic-pricing",

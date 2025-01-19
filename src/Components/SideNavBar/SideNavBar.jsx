@@ -18,6 +18,8 @@ import { MdRateReview } from "react-icons/md";
 import { MdOutlineTask } from "react-icons/md";
 import { decryptData } from '../../EncryptedPage';
 import '../SideNavBar/SideNavBar.css'
+import { BsFileEarmarkPost } from 'react-icons/bs';
+import { IoBookmarks } from "react-icons/io5";
 
 const menuItems = [
   {
@@ -50,7 +52,7 @@ const menuItems = [
   },
   {
     key: '/referrer-list',
-    icon: <FaUserTie  size={25} />,
+    icon: <FaUserTie size={25} />,
     label: <Link to="/referrer-list">Referrer List</Link>,
     role: 11,
   },
@@ -66,7 +68,7 @@ const menuItems = [
       { key: '/approved-higher-tutor-request', label: <Link to="/approved-higher-tutor-request">Approved Higher Tutor Request</Link>, role: 2, },
     ],
   },
-  
+
   {
     key: '/connected-list',
     icon: <SiGitconnected size={25} />,
@@ -79,12 +81,31 @@ const menuItems = [
     label: <Link to="/inactive-user">Inactive Users</Link>,
     role: 12,
   },
+
   {
-    key: '/tutor-post',
+    key: 'students-tuition-post',
     icon: <MdOutlinePostAdd size={25} />,
-    label: <Link to="/tutor-post">Tuition post</Link>,
+    label: 'Students tuition posts',
     role: 13,
+    children: [
+      { key: '/students-tuition-posts', label: <Link to="/students-tuition-posts">Students posts</Link>, role: 13, },
+      { key: '/students-tuition-status', label: <Link to="/students-tuition-status">Post Status</Link>, role: 13, },
+    ],
   },
+
+  {
+    key: 'tuition-post',
+    icon: <BsFileEarmarkPost size={25} />,
+    label: 'Teachers tuition posts',
+    role: 6,
+    children: [
+      { key: '/teachers-tuition-post', label: <Link to="/teachers-tuition-post">Teachers posts</Link>, role: 6, },
+      { key: '/teachers-post-status', label: <Link to="/teachers-post-status">Post Status</Link>, role: 6, },
+    ],
+  },
+
+
+
   {
     key: '/dynamic-pricing',
     icon: <MdPriceChange size={25} />,
@@ -95,6 +116,12 @@ const menuItems = [
     key: '/send-message',
     icon: <MdMessage size={25} />,
     label: <Link to="/send-message">Send message</Link>,
+    role: 9,
+  },
+  {
+    key: '/hire-tutor',
+    icon: <IoBookmarks size={25} />,
+    label: <Link to="/hire-tutor">Hire Tutor</Link>,
     role: 9,
   },
   {

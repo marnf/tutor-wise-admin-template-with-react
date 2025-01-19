@@ -78,7 +78,7 @@ const columns = [
     },
     { field: "studentCustomizedId", headerName: "Student Id", minWidth: 130 },
     { field: "studentName", headerName: "Student Name", minWidth: 150 },
-    { field: "budget", headerName: "Budget", minWidth: 70 , maxWidth:70 },
+    { field: "budget", headerName: "Budget", minWidth: 70, maxWidth: 70 },
     {
         field: "actions",
         headerName: "Actions",
@@ -88,11 +88,24 @@ const columns = [
 
             <Box display="flex" justifyContent="center" className="mt-3" gap={1}>
 
-                <FaUserEdit title="Edit"
+                {/* <FaUserEdit title="Edit"
                     size={25}
                     color="black"
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
-                    onClick={() => params.row.handleEdit(params.row)} />
+                    onClick={() => params.row.handleEdit(params.row)} /> */}
+
+
+                <FaUserEdit
+                    title="Edit"
+                    size={25}
+                    color="gray"
+                    className="transition ease-in-out delay-250 hover:scale-100 cursor-not-allowed"
+                    style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
+                    }}
+                />
+
 
                 <BiSolidUserDetail title="View"
                     size={36}
@@ -163,9 +176,6 @@ const AssignedList = () => {
                     location: `${item.tutor_division}, ${item.tutor_district}`,
                     tutorName: item.tutor_name || "Not Provided",
                     studentName: item.student_name || "Not Provided",
-
-                    tutorProfilePicture: item.tutor_profile_picture,
-                    studentProfilePicture: item.student_profile_picture,
 
                     tutorCustomizedId: item.tutor_customized_id,
                     studentCustomizedId: item.student_customized_id,
@@ -572,8 +582,8 @@ const AssignedList = () => {
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                 <Avatar
                                     alt="Tutor Profile"
-                                   
-                                    src={view.tutor_profile_picture? `${BASE_URL}${view.tutor_profile_picture}` : '/default-image.jpg'}
+
+                                    src={view.tutor_profile_picture ? `${BASE_URL}${view.tutor_profile_picture}` : '/default-image.jpg'}
                                     sx={{ width: 60, height: 60 }}
                                 />
                                 <Box>
@@ -590,7 +600,7 @@ const AssignedList = () => {
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                 <Avatar
                                     alt="Student Profile"
-                                    src={view.student_profile_picture? `${BASE_URL}${view.student_profile_picture}` : '/default-image.jpg'}
+                                    src={view.student_profile_picture ? `${BASE_URL}${view.student_profile_picture}` : '/default-image.jpg'}
                                     sx={{ width: 60, height: 60 }}
                                 />
                                 <Box>

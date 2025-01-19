@@ -59,17 +59,17 @@ if (encryptedUser) {
 const isSuperAdmin = user?.user_type === "super_admin";
 
 const columns = [
-    { field: "id", headerName: "ID", minWidth: 40 },
-    { field: "name", headerName: "Name", minWidth: 150 },
+    { field: "customizedUserId", headerName: "ID", minWidth: 130 },
+    { field: "username", headerName: "Name", minWidth: 150 },
+    { field: "userType", headerName: "User Type", minWidth: 120 },
     { field: "phone", headerName: "Phone", minWidth: 120 },
     //  { field: "location", headerName: "Location", minWidth: 200 },
     // { field: "details", headerName: "Details", minWidth: 200 },
-    { field: "class_name", headerName: "Class", minWidth: 120 },
-    { field: "subject", headerName: "Subject", minWidth: 150 },
+    // { field: "subject", headerName: "Subject", minWidth: 150 },
     // { field: "start_date", headerName: "Start Date", minWidth: 150 },
     // { field: "lesson_type", headerName: "Lesson Type", minWidth: 100 },
-    { field: "gender", headerName: "Gender", minWidth: 60 },
-    { field: "budget", headerName: "Budget", minWidth: 60 },
+    // { field: "gender", headerName: "Gender", minWidth: 60 },
+    // { field: "budget", headerName: "Budget", minWidth: 60 },
     // { field: "days_per_week", headerName: "Days/Week", minWidth: 60 },
     // { field: "start_immediate", headerName: "Start Immediately", minWidth: 60 },
     // { field: "additional_comment", headerName: "Additional Comment", minWidth: 200 },
@@ -142,24 +142,28 @@ const InactiveUser = () => {
 
 
     useEffect(() => {
-        setLoading(true)
-        fetch(`${BASE_URL}/api/admin/approve-request-tutor-list/`)
+        setLoading(true);
+        fetch(`${BASE_URL}/api/admin/inactive-user-list/`)
             .then((res) => res.json())
             .then((data) => {
                 const formattedData = data.map((item) => ({
-                    ...item,
-                    start_immediate: item.start_immediate ? "Yes" : "No",
-
-                    handleDelete: handleDeleteRequest,
-                    handleViewModal: handleOpenViewModal,
-
+                    id: item.id,
+                    username: item.username || "No Username",
+                    userType: item.user_type || "No Type",
+                    customizedUserId: item.customized_user_id || "No ID",
+                    phone: item.phone || "No Phone",
+                    handleViewModal: () => handleOpenViewModal(item), // Pass item for modal view
                 }));
                 setRows(formattedData);
                 setFilteredRows(formattedData);
-                setLoading(false)
+                setLoading(false);
             })
-            .catch((error) => console.error("Error fetching data:", error));
+            .catch((error) => {
+                console.error("Error fetching data:", error);
+                setLoading(false);
+            });
     }, []);
+
 
     useEffect(() => {
         const result = rows.filter((row) =>
@@ -264,7 +268,7 @@ const InactiveUser = () => {
 
             <div className="flex flex-col md:flex-row lg:flex-row justify-between items-center  text-end gap-1">
                 <Typography variant="text-base" className="flex h5">
-                    <strong className="text-gray-500">Approved Request:{rows.length} </strong>
+                    <strong className="text-gray-500">Inactive User:{rows.length} </strong>
                 </Typography>
                 <div className="flex justify-end">
                     <TextField
@@ -329,193 +333,61 @@ const InactiveUser = () => {
 
 
 
-            <Dialog open={openViewModal} onClose={handleCloseViewModal}  >
+            <Dialog open={openViewModal} onClose={handleCloseViewModal}>
+
+                <div
+                    style={{
+                        padding: "1.5rem",
+                        backgroundColor: "#f9f9f9",
+                        borderRadius: "8px",
+                    }}
+                >
+                    {/* Header Section */}
+                    <Box
+                        className="flex items-center justify-between gap-5"
+                    >
+                        <Box className="flex gap-4 flex-col">
+                            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                               Name: {view?.username || "No Name"}
+                            </Typography>
+                            <Typography variant="body2" sx={{ color: "#777" }}>
+                                {view?.customized_user_id || "No Customized ID"}
+                            </Typography>
+                            <Typography variant="body2" sx={{ color: "#777" }}>
+                                <strong>User Type:</strong> {view?.user_type || "No User Type"}
+                            </Typography>
+                            <Typography variant="body2" sx={{ color: "#777" }}>
+                                {view?.phone || "No Customized ID"}
+                            </Typography>
+                        </Box>
+                        <Box>
 
 
-                <div className="flex justify-between items-center">
+                        </Box>
+                    </Box>
 
 
-                    {/* Content */}
-                    <DialogContent>
-                        <div
+
+
+                    {/* Cancel Button */}
+                    <Box sx={{ textAlign: "center", marginTop: "1rem" }}>
+                        <Button
+                            variant="contained"
                             sx={{
-                                padding: 5,
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: 2,
-                                borderRadius: 4,
-                                boxShadow: '0px 8px 20px rgba(0,0,0,0.1)',
-                                backgroundColor: '#f9f9f9',
-                                margin: ' auto',
+                                backgroundColor: "#007bff",
+                                color: "#fff",
+                                fontWeight: "bold",
+                                "&:hover": { backgroundColor: "#0056b3" },
                             }}
+                            onClick={handleCloseViewModal}
                         >
-                            {/* Header Section */}
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                    gap: 3,
-                                    paddingBottom: 2,
-                                    marginBottom: 1,
-                                    borderBottom: '1px solid #ddd',
-                                }}
-                            >
-                                {/* Left: Name and Phone */}
-                                <Box>
-                                    <Typography
-                                        variant="h6"
-                                        sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}
-                                    >
-                                        {view?.name || ''}
-                                    </Typography>
-                                    <Typography
-                                        variant="body2"
-                                        color="textSecondary"
-                                        sx={{ color: '#777' }}
-                                    >
-                                        {view?.phone || ''}
-                                    </Typography>
-                                </Box>
-
-                                {/* Right:  */}
-                                <Box>
-                                    <Typography
-                                        variant="body2"
-                                        color="textSecondary"
-                                        sx={{
-                                            fontSize: '1rem',
-                                            color: '#555',
-                                            textAlign: 'right',
-                                        }}
-                                    >
-                                        <strong>ID:</strong>{view?.id || ''}
-                                    </Typography>
-                                    <Typography variant="body1">
-                                        {' '}
-                                        {view?.created_at
-                                            ? new Date(view.created_at).toLocaleString()
-                                            : ''}
-                                    </Typography>
-                                </Box>
-                            </Box>
-
-                            {/* Body Section */}
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    gap: 3,
-                                    flexDirection: { xs: 'column', sm: 'row' },
-                                }}
-                            >
-                                {/* Left Column */}
-                                <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-
-
-                                    <Typography variant="body1">
-                                        <strong>Subject:</strong> {view?.subject || ''}
-                                    </Typography>
-                                    <Divider />
-                                    <Typography variant="body1">
-                                        <strong>Class Name:</strong> {view?.class_name || ''}
-                                    </Typography>
-                                    <Divider />
-                                    <Typography variant="body1">
-                                        <strong>Lesson Type:</strong> {view?.lesson_type || ''}
-                                    </Typography>
-                                    <Divider />
-                                    <Typography variant="body1">
-                                        <strong>Gender:</strong> {view?.gender || ''}
-                                    </Typography>
-                                    <Divider />
-                                    <Typography variant="body1">
-                                        <strong>Details:</strong> {view?.details || ''}
-                                    </Typography>
-                                    <Divider />
-
-
-                                </Box>
-
-                                {/* Right Column */}
-                                <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-
-                                    <Typography variant="body1">
-                                        <strong>Location:</strong> {view?.location || ''}
-                                    </Typography>
-                                    <Divider />
-                                    <Typography variant="body1">
-                                        <strong>Days Per Week:</strong> {view?.days_per_week || ''}
-                                    </Typography>
-                                    <Divider />
-                                    <Typography variant="body1">
-                                        <strong>Start Date:</strong> {view?.start_date || ''}
-                                    </Typography>
-                                    <Divider />
-                                    <Typography variant="body1">
-                                        <strong>Budget:</strong> {view?.budget || ''}
-                                    </Typography>
-                                    <Divider />
-                                    <Typography variant="body1">
-                                        <strong>Additional Comment:</strong> {view?.additional_comment || ''}
-                                    </Typography>
-                                    <Divider />
-
-
-                                </Box>
-                            </Box>
-
-                            {/* Footer Section: Checkboxes */}
-                            <Box
-                                sx={{
-                                    display: 'flex',
-
-                                    gap: 2,
-                                    paddingTop: 2,
-                                    borderTop: '1px solid #ddd',
-                                }}
-                            >
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox checked={view?.is_verified || false} disabled />
-                                    }
-                                    label="Verified"
-                                />
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox checked={view?.is_approve || false} disabled />
-                                    }
-                                    label="Approved"
-                                />
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox checked={view?.start_immediate || false} disabled />
-                                    }
-                                    label="Start Immediately"
-                                />
-                            </Box>
-
-                            {/* Footer Section: Cancel Button */}
-                            <Box sx={{ textAlign: 'center', marginTop: 2 }}>
-                                <Button
-                                    variant="contained"
-                                    sx={{
-                                        backgroundColor: '#ff5722',
-                                        color: '#fff',
-                                        fontWeight: 'bold',
-                                        padding: '0.5rem 2rem',
-                                        '&:hover': {
-                                            backgroundColor: '#e64a19',
-                                        },
-                                    }}
-                                    onClick={handleCloseViewModal}
-                                >
-                                    Cancel
-                                </Button>
-                            </Box>
-                        </div>
-                    </DialogContent>
+                            Close
+                        </Button>
+                    </Box>
                 </div>
+
             </Dialog>
+
 
 
 
