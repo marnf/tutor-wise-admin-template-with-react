@@ -55,7 +55,7 @@ const columns = [
 
 
 
-                <MdDelete
+                {/* <MdDelete
                     title="Delete"
                     size={25}
                     color={isSuperAdmin ? "red" : "gray"}
@@ -69,6 +69,18 @@ const columns = [
                     style={{
                         pointerEvents: isSuperAdmin ? "auto" : "none", // নিষ্ক্রিয় হলে ইভেন্ট ব্লক করবে
                         opacity: isSuperAdmin ? 1 : 0.5, // নিষ্ক্রিয় হলে ফেইড হয়ে যাবে
+                    }}
+                /> */}
+
+
+                <MdDelete
+                    title="Delete"
+                    size={25}
+                    color="gray"
+                    className="transition ease-in-out delay-250 hover:scale-100 cursor-not-allowed"
+                    style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
                     }}
                 />
 

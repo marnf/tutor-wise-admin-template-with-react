@@ -13,20 +13,20 @@ const columns = [
     {
         field: "profile_picture",
         headerName: "Profile Picture",
-        minWidth: 80,
-        maxWidth: 80,
+        minWidth: 50,
+        maxWidth: 50,
         renderCell: (params) => (
-            <img src={params.value} alt="Profile" style={{ width: 50, height: 50, borderRadius: "50%" }} />
+            <img src={params.value} alt="Profile" className="mt-2" style={{ width: 30, height: 30, borderRadius: "50%" }} />
         )
     },
     { field: "full_name", headerName: "Name", flex: 1, minWidth: 130 },
-    { field: "formattedJoinDate", headerName: "Joining Date", flex: 1, minWidth: 160 },
+    { field: "formattedJoinDate", headerName: "Joining Date", minWidth: 160 },
 
-    { field: "subject", headerName: "Subject", minWidth: 100 },
-    { field: "gender", headerName: "Gender", minWidth: 60 },
-    { field: "days_per_week", headerName: "Days/Week", minWidth: 40 },
-    { field: "charge_per_month", headerName: "Charge", minWidth: 60 },
-    { field: "phone", headerName: "Phone", minWidth: 100 },
+    { field: "subject", headerName: "Subject", minWidth: 100 ,flex: 1, },
+    { field: "gender", headerName: "Gender", minWidth: 60 ,maxWidth:60},
+    { field: "days_per_week", headerName: "Days/Week", minWidth: 40 ,maxWidth:40 },
+    { field: "charge_per_month", headerName: "Charge", minWidth: 60 ,maxWidth:60},
+    { field: "phone", headerName: "Phone", minWidth: 130 },
     {
         field: "actions",
         headerName: "Actions",

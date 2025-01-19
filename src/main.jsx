@@ -33,6 +33,8 @@ import AllTutorList from './Pages/TutorList/AllTutor/AllTutorList.jsx';
 import AllPayment from './Pages/Payment/AllPayment/AllPayment.jsx';
 import DynamicPricing from './Pages/DynamicPricing/DynamicPricing.jsx';
 import ReferrerPage from './Pages/ReferrerPages/ReferrerPage.jsx';
+import 'react-date-range/dist/styles.css'; 
+import 'react-date-range/dist/theme/default.css'; 
 
 
 const router = createBrowserRouter([
@@ -123,7 +125,7 @@ const router = createBrowserRouter([
         element:<PrivateRoute allowedRoles={[9]}> <SendMessagePage></SendMessagePage> </PrivateRoute>
       },
       {
-        path: "/assigned-list",
+        path: "/connected-list",
         element:<PrivateRoute allowedRoles={[10]}> <AssignedList/> </PrivateRoute>
       },
       {

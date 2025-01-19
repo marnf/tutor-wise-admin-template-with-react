@@ -68,9 +68,9 @@ const menuItems = [
   },
   
   {
-    key: '/assigned-list',
+    key: '/connected-list',
     icon: <SiGitconnected size={25} />,
-    label: <Link to="/assigned-list">Assigned List</Link>,
+    label: <Link to="/connected-list">Connected List</Link>,
     role: 10,
   },
   {
@@ -82,7 +82,7 @@ const menuItems = [
   {
     key: '/tutor-post',
     icon: <MdOutlinePostAdd size={25} />,
-    label: <Link to="/tutor-post">Tutor Post</Link>,
+    label: <Link to="/tutor-post">Tuition post</Link>,
     role: 13,
   },
   {

@@ -46,16 +46,16 @@ const subjectOptions = [
 ];
 
 
- const encryptedUser = localStorage.getItem("user");
+const encryptedUser = localStorage.getItem("user");
 
-  let user;
-  if (encryptedUser) {
+let user;
+if (encryptedUser) {
     try {
-      user = decryptData(encryptedUser);
+        user = decryptData(encryptedUser);
     } catch (error) {
-      console.error("Error decrypting user data:", error);
+        console.error("Error decrypting user data:", error);
     }
-  }
+}
 const isSuperAdmin = user?.user_type === "super_admin";
 
 const columns = [
@@ -88,7 +88,7 @@ const columns = [
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => params.row.handleViewModal(params.row)} />
 
-                <MdDelete
+                {/* <MdDelete
                     title="Delete"
                     size={25}
                     color={isSuperAdmin ? "red" : "gray"}
@@ -102,6 +102,17 @@ const columns = [
                     style={{
                         pointerEvents: isSuperAdmin ? "auto" : "none", 
                         opacity: isSuperAdmin ? 1 : 0.5, 
+                    }}
+                /> */}
+
+                <MdDelete
+                    title="Delete"
+                    size={25}
+                    color="gray"
+                    className="transition ease-in-out delay-250 hover:scale-100 cursor-not-allowed"
+                    style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
                     }}
                 />
 
@@ -127,7 +138,7 @@ const InactiveUser = () => {
     const [openViewModal, setOpenViewModal] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [snackbarSeverity, setSnackbarSeverity] = useState("success");
-    
+
 
 
     useEffect(() => {
@@ -138,10 +149,10 @@ const InactiveUser = () => {
                 const formattedData = data.map((item) => ({
                     ...item,
                     start_immediate: item.start_immediate ? "Yes" : "No",
-                  
+
                     handleDelete: handleDeleteRequest,
                     handleViewModal: handleOpenViewModal,
-                   
+
                 }));
                 setRows(formattedData);
                 setFilteredRows(formattedData);
@@ -169,12 +180,12 @@ const InactiveUser = () => {
         setOpenViewModal(true)
         setView(row)
     }
-    
+
     const handleCloseViewModal = () => {
         setOpenViewModal(false)
     }
 
-   
+
 
     const handleDelete = (e) => {
         e.preventDefault();
@@ -240,7 +251,7 @@ const InactiveUser = () => {
             });
     };
 
-   
+
 
     const handleCloseDeleteModal = () => {
         setOpenDeleteModal(false);
@@ -312,11 +323,11 @@ const InactiveUser = () => {
                             overflowX: "auto", // Ensure horizontal scroll for table content
                         },
                     }}
-                    
+
                 />
             )}
 
-           
+
 
             <Dialog open={openViewModal} onClose={handleCloseViewModal}  >
 

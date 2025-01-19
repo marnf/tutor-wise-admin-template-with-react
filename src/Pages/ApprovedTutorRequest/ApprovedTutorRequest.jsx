@@ -49,16 +49,16 @@ const subjectOptions = [
 ];
 
 
- const encryptedUser = localStorage.getItem("user");
+const encryptedUser = localStorage.getItem("user");
 
-  let user;
-  if (encryptedUser) {
+let user;
+if (encryptedUser) {
     try {
-      user = decryptData(encryptedUser);
+        user = decryptData(encryptedUser);
     } catch (error) {
-      console.error("Error decrypting user data:", error);
+        console.error("Error decrypting user data:", error);
     }
-  }
+}
 const isSuperAdmin = user?.user_type === "super_admin";
 
 const columns = [
@@ -102,7 +102,7 @@ const columns = [
                     color="#0c2849"
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => params.row.handleConnectModal(params.row)} />
-
+                {/* 
                 <MdDelete
                     title="Delete"
                     size={25}
@@ -117,6 +117,18 @@ const columns = [
                     style={{
                         pointerEvents: isSuperAdmin ? "auto" : "none", // নিষ্ক্রিয় হলে ইভেন্ট ব্লক করবে
                         opacity: isSuperAdmin ? 1 : 0.5, // নিষ্ক্রিয় হলে ফেইড হয়ে যাবে
+                    }}
+                /> */}
+
+
+                <MdDelete
+                    title="Delete"
+                    size={25}
+                    color="gray"
+                    className="transition ease-in-out delay-250 hover:scale-100 cursor-not-allowed"
+                    style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
                     }}
                 />
 
@@ -164,7 +176,7 @@ const ApprovedTutorRequest = () => {
         const TutorId = approvedUser;
         const StudentId = connect;
         console.log(TutorId, StudentId)
-       
+
     }
 
 
@@ -371,7 +383,7 @@ const ApprovedTutorRequest = () => {
                             overflowX: "auto", // Ensure horizontal scroll for table content
                         },
                     }}
-                    
+
                 />
             )}
 
@@ -590,13 +602,13 @@ const ApprovedTutorRequest = () => {
                 <div className="flex flex-col md:flex-row lg:flex-row justify-between gap-1 ">
 
 
-                        <ConnectedTutor onApprove={handleUserApproval} budgetLimit={connect?.budget} label={connect?.class_name} gender={connect?.gender} subject={connect?.subject} ></ConnectedTutor>
+                    <ConnectedTutor onApprove={handleUserApproval} budgetLimit={connect?.budget} label={connect?.class_name} gender={connect?.gender} subject={connect?.subject} ></ConnectedTutor>
 
-                       
+
 
 
                     {/* Content */}
-                    <DialogContent  className="md:mt-0 lg:mt-0 sm:mt-12">
+                    <DialogContent className="md:mt-0 lg:mt-0 sm:mt-12">
                         <div
 
                             sx={{
@@ -726,7 +738,7 @@ const ApprovedTutorRequest = () => {
 
                             {/* Footer Section: Cancel Button */}
                             <Box className="flex justify-end  items-center">
-                               
+
                                 <Button
                                     variant="contained"
                                     sx={{

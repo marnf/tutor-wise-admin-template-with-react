@@ -17,12 +17,12 @@ import { MdDelete } from 'react-icons/md';
 
 const DynamicPricing = () => {
     const [rows, setRows] = useState([
-        { id: 1, category: "premium" , package: 'One Month', presentAmount: 500, discountAmount: 50 },
-        { id: 2, category: "premium" , package: 'Two Month', presentAmount: 900, discountAmount: 100 },
-        { id: 3, category: "premium" , package: 'six Month', presentAmount: 1200, discountAmount: 150 },
-        { id: 4, category: "limit" , package: 'One Month', presentAmount: 400, discountAmount: 40 },
-        { id: 5, category: "limit" , package: 'Two Month', presentAmount: 800, discountAmount: 90 },
-        { id: 6, category: "limit" , package: 'six Month', presentAmount: 1100, discountAmount: 140 },
+        { id: 1, category: "premium", package: 'One Month', presentAmount: 500, discountAmount: 50 },
+        { id: 2, category: "premium", package: 'Two Month', presentAmount: 900, discountAmount: 100 },
+        { id: 3, category: "premium", package: 'six Month', presentAmount: 1200, discountAmount: 150 },
+        { id: 4, category: "limit", package: 'One Month', presentAmount: 400, discountAmount: 40 },
+        { id: 5, category: "limit", package: 'Two Month', presentAmount: 800, discountAmount: 90 },
+        { id: 6, category: "limit", package: 'six Month', presentAmount: 1100, discountAmount: 140 },
     ]);
 
     const [formData, setFormData] = useState({
@@ -100,11 +100,24 @@ const DynamicPricing = () => {
                         onClick={() => handleFormOpen(params.row)}
                         className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer" />
 
-                    <MdDelete title="Edit"
+                    {/* <MdDelete title="Delete"
                         size={25}
                         color="red"
                         onClick={() => handleDeleteModalOpen(params.id)}
-                        className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer" />
+                        className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer" 
+                        /> */}
+
+
+                    <MdDelete
+                        title="Delete"
+                        size={25}
+                        color="gray"
+                        className="transition ease-in-out delay-250 hover:scale-100 cursor-not-allowed"
+                        style={{
+                            pointerEvents: "none",
+                            opacity: 0.5,
+                        }}
+                    />
 
 
 

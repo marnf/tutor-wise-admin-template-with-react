@@ -56,18 +56,31 @@ const columns = (handleEditClick, handleDeleteClick, handleOpenViewModal) => [
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => handleEditClick(params.row)}
                 />
-                <MdDelete
-                    title="Delete"
-                    size={25}
-                    color="red"
-                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
-                    onClick={() => handleDeleteClick(params.row.id)}
-                />
                 <BiSolidUserDetail title="View"
                     size={28}
                     color="#f0523a"
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => handleOpenViewModal(params.row)} />
+
+                {/* <MdDelete
+                    title="Delete"
+                    size={25}
+                    color="red"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                    onClick={() => handleDeleteClick(params.row.id)}
+                /> */}
+
+
+                <MdDelete
+                    title="Delete"
+                    size={25}
+                    color="gray"
+                    className="transition ease-in-out delay-250 hover:scale-100 cursor-not-allowed"
+                    style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
+                    }}
+                />
 
             </Box>
         ),

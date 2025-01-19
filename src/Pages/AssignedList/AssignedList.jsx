@@ -16,7 +16,8 @@ import {
     Typography,
     Divider,
     FormControlLabel,
-    Checkbox, // Import Grid component
+    Checkbox,
+    Avatar, // Import Grid component
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { MdDelete } from "react-icons/md";
@@ -43,42 +44,41 @@ const encryptedUser = localStorage.getItem("user");
 
 let user;
 if (encryptedUser) {
-  try {
-    user = decryptData(encryptedUser);
-  } catch (error) {
-    console.error("Error decrypting user data:", error);
-  }
+    try {
+        user = decryptData(encryptedUser);
+    } catch (error) {
+        console.error("Error decrypting user data:", error);
+    }
 }
 const isSuperAdmin = user?.user_type === "super_admin";
 
 
 const columns = [
-    { field: "tutor_customized_user_id", headerName: "ID", minWidth: 130 },
+
     {
         field: "type",
         headerName: "Type",
         minWidth: 60,
+        maxWidth: 60,
         renderCell: () => (
             <span style={{ fontWeight: "bold" }}>Tutor</span>
         ),
     },
-    { field: "tutor_name", headerName: "Tutor Name", minWidth: 150 },
-    { field: "tutor_phone", headerName: "Phone", minWidth: 120 },
-    // { field: "location", headerName: "Location", minWidth: 200 },
-    // { field: "tutor_charge", headerName: "Charge", minWidth: 60 },
+    { field: "tutor_customized_id", headerName: "ID", minWidth: 130 },
+    { field: "tutorName", headerName: "Tutor Name", minWidth: 150 },
+
     {
         field: "type_student",
         headerName: "Type",
-        minWidth: 60,
+        minWidth: 80,
+        maxWidth: 80,
         renderCell: () => (
             <span style={{ fontWeight: "bold" }}>Student</span>
         ),
     },
-    { field: "name", headerName: "Student Name", minWidth: 150 },
-    { field: "phone", headerName: "Phone", minWidth: 120 },
-    // { field: "medium", headerName: "Medium", minWidth: 60 },
-    // { field: "start_date", headerName: "Start Date", minWidth: 150 },
-    // { field: "subjects", headerName: "Subject", minWidth: 60 },
+    { field: "studentCustomizedId", headerName: "Student Id", minWidth: 130 },
+    { field: "studentName", headerName: "Student Name", minWidth: 150 },
+    { field: "budget", headerName: "Budget", minWidth: 70 , maxWidth:70 },
     {
         field: "actions",
         headerName: "Actions",
@@ -101,7 +101,7 @@ const columns = [
                     onClick={() => params.row.handleViewModal(params.row)} />
 
 
-                <MdDelete
+                {/* <MdDelete
                     title="Delete"
                     size={25}
                     color={isSuperAdmin ? "red" : "gray"}
@@ -116,8 +116,19 @@ const columns = [
                         pointerEvents: isSuperAdmin ? "auto" : "none",
                         opacity: isSuperAdmin ? 1 : 0.5,
                     }}
-                />
+                /> */}
 
+
+                <MdDelete
+                    title="Delete"
+                    size={25}
+                    color="gray"
+                    className="transition ease-in-out delay-250 hover:scale-100 cursor-not-allowed"
+                    style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
+                    }}
+                />
 
             </Box>
         ),
@@ -143,23 +154,37 @@ const AssignedList = () => {
 
 
     useEffect(() => {
-        setLoading(true)
-        fetch(`${BASE_URL}/api/admin/view-approve-reqeust-list/`)
+        setLoading(true);
+        fetch(`${BASE_URL}/api/admin/all-tuition-connect-list`)
             .then((res) => res.json())
             .then((data) => {
                 const formattedData = data.map((item) => ({
                     ...item,
                     location: `${item.tutor_division}, ${item.tutor_district}`,
+                    tutorName: item.tutor_name || "Not Provided",
+                    studentName: item.student_name || "Not Provided",
+
+                    tutorProfilePicture: item.tutor_profile_picture,
+                    studentProfilePicture: item.student_profile_picture,
+
+                    tutorCustomizedId: item.tutor_customized_id,
+                    studentCustomizedId: item.student_customized_id,
+                    acceptedDate: new Date(item.accepted_date).toLocaleString(),
+                    paymentOption: item.payment_option,
+
+                    budget: Number(Number(item.budget).toFixed(0)),
+                    connectType: item.connect_type,
                     handleEdit: handleEditRequest,
                     handleDelete: handleDeleteRequest,
-                    handleViewModal: handleOpenViewModal
+                    handleViewModal: handleOpenViewModal,
                 }));
                 setRows(formattedData);
                 setFilteredRows(formattedData);
-                setLoading(false)
+                setLoading(false);
             })
             .catch((error) => console.error("Error fetching data:", error));
     }, []);
+
 
     useEffect(() => {
         const result = rows.filter((row) =>
@@ -297,6 +322,7 @@ const AssignedList = () => {
                         minWidth: col.minWidth || 150, // Minimum width for each column (adjust as needed)
                     }))}
                     pageSize={10}
+                    getRowId={(row) => row.tutor_customized_id || row.student_customized_id}
                     rowsPerPageOptions={[5, 10, 20]}
                     disableSelectionOnClick
 
@@ -516,7 +542,6 @@ const AssignedList = () => {
 
             {/* view modal */}
             <Dialog open={openViewModal} onClose={handleCloseViewModal} fullWidth>
-                {/* Content */}
                 <DialogContent>
                     <div
                         sx={{
@@ -528,7 +553,7 @@ const AssignedList = () => {
                             boxShadow: '0px 8px 20px rgba(0,0,0,0.1)',
                             backgroundColor: '#f9f9f9',
                             maxWidth: '700px',
-                            margin: ' auto',
+                            margin: 'auto',
                         }}
                     >
                         {/* Header Section */}
@@ -543,90 +568,72 @@ const AssignedList = () => {
                                 borderBottom: '1px solid #ddd',
                             }}
                         >
-                            {/* Left: Name and Phone */}
-                            <Box>
-                                <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}>
-                                    {view?.name || 'N/A'}
-                                </Typography>
-                                <Typography variant="body2" color="textSecondary" sx={{ color: '#777' }}>
-                                    {view?.phone || 'N/A'}
-                                </Typography>
+                            {/* Left: Tutor Profile Picture and Info */}
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <Avatar
+                                    alt="Tutor Profile"
+                                   
+                                    src={view.tutor_profile_picture? `${BASE_URL}${view.tutor_profile_picture}` : '/default-image.jpg'}
+                                    sx={{ width: 60, height: 60 }}
+                                />
+                                <Box>
+                                    <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+                                        {view?.tutor_name || 'N/A'}
+                                    </Typography>
+                                    <Typography variant="body2" color="textSecondary" sx={{ color: '#777' }}>
+                                        {view?.tutor_customized_id || 'N/A'}
+                                    </Typography>
+                                </Box>
                             </Box>
 
-                            {/* Right: ID and Date */}
-                            <Box>
-                                <Typography variant="body2" color="textSecondary" sx={{ fontSize: '1rem', color: '#555', textAlign: 'right' }}>
-                                    <strong>ID:</strong> {view?.id || 'N/A'}
-                                </Typography>
-                                <Typography variant="body1">
-                                    {view?.start_date ? new Date(view.start_date).toLocaleString() : 'N/A'}
-                                </Typography>
+                            {/* Right: Student Profile Picture and Info */}
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <Avatar
+                                    alt="Student Profile"
+                                    src={view.student_profile_picture? `${BASE_URL}${view.student_profile_picture}` : '/default-image.jpg'}
+                                    sx={{ width: 60, height: 60 }}
+                                />
+                                <Box>
+                                    <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+                                        {view?.student_name || 'N/A'}
+                                    </Typography>
+                                    <Typography variant="body2" color="textSecondary" sx={{ color: '#777' }}>
+                                        {view?.student_customized_id || 'N/A'}
+                                    </Typography>
+                                </Box>
                             </Box>
                         </Box>
 
-                        {/* Body Section */}
+                        {/* Body Section: Two Equal Columns */}
                         <Box sx={{ display: 'flex', gap: 3, flexDirection: { xs: 'column', sm: 'row' } }}>
                             {/* Left Column */}
                             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
                                 <Typography variant="body1">
-                                    <strong>Tutor Name:</strong> {view?.tutor_name || 'N/A'}
-                                </Typography>
-                                <Divider />
-                                <Typography variant="body1" >
-                                    <strong>Tutor ID:</strong> {view?.tutor_customized_user_id || 'N/A'}
+                                    <strong>Payment Option:</strong> {view?.payment_option || 'N/A'}
                                 </Typography>
                                 <Divider />
                                 <Typography variant="body1">
-                                    <strong>Tutor Phone:</strong> {view?.tutor_phone || 'N/A'}
+                                    <strong>Connected Date: <br /></strong> {view?.accepted_date ? new Date(view.accepted_date).toLocaleString() : 'N/A'}
                                 </Typography>
-                                <Divider />
-                                <Typography variant="body1">
-                                    <strong>Tutor Division:</strong> {view?.tutor_division || 'N/A'}
-                                </Typography>
-                                <Divider />
-                                <Typography variant="body1">
-                                    <strong>Tutor District:</strong> {view?.tutor_district || 'N/A'}
-                                </Typography>
+
                                 <Divider />
 
                             </Box>
 
                             {/* Right Column */}
                             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+
                                 <Typography variant="body1">
-                                    <strong>Tutor Charge:</strong> {view?.tutor_charge || 'N/A'}
+                                    <strong>Connect Type:</strong> {view?.connect_type || 'N/A'}
                                 </Typography>
                                 <Divider />
                                 <Typography variant="body1">
-                                    <strong>Medium:</strong> {view?.medium || 'N/A'}
+                                    <strong>Budget:</strong> {view?.budget || 'N/A'}
                                 </Typography>
                                 <Divider />
-                                <Typography variant="body1">
-                                    <strong>Subjects:</strong> {view?.subjects || 'N/A'}
-                                </Typography>
-                                <Divider />
-                                <Typography variant="body1">
-                                    <strong>Start Date:</strong> {view?.start_date || 'N/A'}
-                                </Typography>
-                                <Divider />
+
 
                             </Box>
-                        </Box>
-
-                        {/* Footer Section: Checkboxes */}
-                        <Box sx={{ display: 'flex', gap: 2, paddingTop: 2, borderTop: '1px solid #ddd' }}>
-                            <FormControlLabel
-                                control={<Checkbox checked={view?.is_verified || false} disabled />}
-                                label="Verified"
-                            />
-                            <FormControlLabel
-                                control={<Checkbox checked={view?.is_approved || false} disabled />}
-                                label="Approved"
-                            />
-                            <FormControlLabel
-                                control={<Checkbox checked={view?.start_immediate || false} disabled />}
-                                label="Start Immediately"
-                            />
                         </Box>
 
                         {/* Footer Section: Cancel Button */}
@@ -650,6 +657,10 @@ const AssignedList = () => {
                     </div>
                 </DialogContent>
             </Dialog>
+
+
+
+
 
 
 

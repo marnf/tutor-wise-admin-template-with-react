@@ -38,16 +38,16 @@ const subjectOptions = [
     "Arts and crafts", "Art and Culture"
 ];
 
- const encryptedUser = localStorage.getItem("user");
+const encryptedUser = localStorage.getItem("user");
 
-  let user;
-  if (encryptedUser) {
+let user;
+if (encryptedUser) {
     try {
-      user = decryptData(encryptedUser);
+        user = decryptData(encryptedUser);
     } catch (error) {
-      console.error("Error decrypting user data:", error);
+        console.error("Error decrypting user data:", error);
     }
-  }
+}
 const isSuperAdmin = user?.user_type === "super_admin";
 
 
@@ -101,7 +101,7 @@ const columns = [
                     onClick={() => params.row.handleViewModal(params.row)} />
 
 
-                <MdDelete
+                {/* <MdDelete
                     title="Delete"
                     size={25}
                     color={isSuperAdmin ? "red" : "gray"}
@@ -116,9 +116,18 @@ const columns = [
                         pointerEvents: isSuperAdmin ? "auto" : "none",
                         opacity: isSuperAdmin ? 1 : 0.5,
                     }}
+                /> */}
+
+                <MdDelete
+                    title="Delete"
+                    size={25}
+                    color="gray"
+                    className="transition ease-in-out delay-250 hover:scale-100 cursor-not-allowed"
+                    style={{
+                        pointerEvents: "none", 
+                        opacity: 0.5, 
+                    }}
                 />
-
-
             </Box>
         ),
     },

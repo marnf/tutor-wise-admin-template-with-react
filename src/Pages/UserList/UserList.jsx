@@ -32,26 +32,26 @@ const isSuperAdmin = user?.user_type === "super_admin";
 
 const columns = [
     { field: "customizeId", headerName: "ID", minWidth: 130 },
-    { 
-        field: "username", 
-        headerName: "Name", 
+    {
+        field: "username",
+        headerName: "Name",
         flex: 1,
         minWidth: 240,
         renderCell: (params) => (
             <Box display="flex" alignItems="center">
                 <span>{params.row.username || "N/A"}</span>
-                
+
                 {params.row.is_new && (
-                 <div style={{ background:"#f0523a"}} className=" ml-2 h-5 flex items-center justify-center rounded-full px-1">
-                 <p className="text-white  font-medium m-0" style={{ fontSize: '10px', margin: 0 }}>new</p>
-               </div>
-               
+                    <div style={{ background: "#f0523a" }} className=" ml-2 h-5 flex items-center justify-center rounded-full px-1">
+                        <p className="text-white  font-medium m-0" style={{ fontSize: '10px', margin: 0 }}>new</p>
+                    </div>
+
                 )}
             </Box>
         ),
     },
     // { field: "lastLogin", headerName: "Last login", flex: 1 },
-     { field: "formattedJoinDate", headerName: "Joining date", minWidth:160 },
+    { field: "formattedJoinDate", headerName: "Joining date", minWidth: 160 },
     { field: "phone", headerName: "Phone", flex: 1 },
     { field: "userType", headerName: "User Type", flex: 1 },
     // { field: "rolesName", headerName: "Roles Name", flex: 2 },
@@ -78,7 +78,7 @@ const columns = [
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => params.row.handleViewModal(params)} />
 
-                <MdDelete
+                {/* <MdDelete
                     title="Delete"
                     size={25}
                     color={isSuperAdmin ? "red" : "gray"}
@@ -93,7 +93,20 @@ const columns = [
                         pointerEvents: isSuperAdmin ? "auto" : "none",
                         opacity: isSuperAdmin ? 1 : 0.5,
                     }}
+                /> */}
+
+
+                <MdDelete
+                    title="Delete"
+                    size={25}
+                    color="gray"
+                    className="transition ease-in-out delay-250 hover:scale-100 cursor-not-allowed"
+                    style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
+                    }}
                 />
+
             </Box>
 
         ),
@@ -131,7 +144,7 @@ const UserList = () => {
         },
     ]);
     const [refreshTable, setRefreshTable] = useState(false)
-    
+
 
     // Function to generate random password
     const generatePassword = () => {
@@ -164,12 +177,12 @@ const UserList = () => {
                 const usersData = data.user_data || data;
 
                 const formattedUsers = usersData.map((user) => ({
-                    is_new:user.is_new,
+                    is_new: user.is_new,
                     id: user.id,
                     customizeId: user.customized_user_id,
                     lastLogin: formData(user.last_login) || '',
                     joinDate: moment(user?.join_date).format('YYYY-MM-DD') || '',
-                    formattedJoinDate:moment(user.join_date).format('DD/MM/YYYY hh:mm a') || '',
+                    formattedJoinDate: moment(user.join_date).format('DD/MM/YYYY hh:mm a') || '',
                     username: user.username || "",
                     phone: user.phone || "",
                     userType: user.user_type || "",
@@ -463,7 +476,7 @@ const UserList = () => {
                 setOpenErrorSnackbar(true);
             });
     };
-    
+
 
     // Cancel Delete
     const handleCancelDelete = () => {

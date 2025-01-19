@@ -67,7 +67,7 @@ const columns = [
     { field: "phone", headerName: "Phone", minWidth: 130 },
     { field: "gmail", headerName: "Gmail", minWidth: 230 },
     { field: "formattedJoinDate", headerName: "Joining Date", minWidth: 160 },
-    { field: "gender", headerName: "Gender", minWidth: 70, maxWidth:70 },
+    { field: "gender", headerName: "Gender", minWidth: 70, maxWidth: 70 },
 
     // { field: "subject", headerName: "Subject", minWidth: 150 },
     // { field: "class_name", headerName: "Class", minWidth: 120 },
@@ -97,7 +97,7 @@ const columns = [
                     color="#f0523a"
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
                     onClick={() => params.row.handleViewModal(params.row)} />
-
+                {/* 
                 <MdDelete
                     title="Delete"
                     size={25}
@@ -112,6 +112,18 @@ const columns = [
                     style={{
                         pointerEvents: isSuperAdmin ? "auto" : "none",
                         opacity: isSuperAdmin ? 1 : 0.5,
+                    }}
+                /> */}
+
+
+                <MdDelete
+                    title="Delete"
+                    size={25}
+                    color="gray"
+                    className="transition ease-in-out delay-250 hover:scale-100 cursor-not-allowed"
+                    style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
                     }}
                 />
 
@@ -155,7 +167,7 @@ const StudentList = () => {
                 const formattedData = data.map((item) => ({
                     ...item,
                     created_at: moment(item?.created_at).format('YYYY-MM-DD'),
-                    formattedJoinDate:moment(item?.created_at).format('DD/MM/YYYY hh:mm a') || '',
+                    formattedJoinDate: moment(item?.created_at).format('DD/MM/YYYY hh:mm a') || '',
                     handleEdit: handleEditRequest,
                     handleDelete: handleDeleteRequest,
                     handleViewModal: handleOpenViewModal,
@@ -601,128 +613,128 @@ const StudentList = () => {
 
             <Dialog open={openViewModal} onClose={handleCloseViewModal}  >
 
-              
+
+                <Box
+                    sx={{
+                        padding: 4,
+                        borderRadius: 2,
+                        boxShadow: "0px 8px 20px rgba(0,0,0,0.15)",
+                        backgroundColor: "#ffffff",
+                        maxWidth: "600px",
+                        margin: "auto",
+                    }}
+                >
+                    {/* Header Section */}
                     <Box
                         sx={{
-                            padding: 4,
-                            borderRadius: 2,
-                            boxShadow: "0px 8px 20px rgba(0,0,0,0.15)",
-                            backgroundColor: "#ffffff",
-                            maxWidth: "600px",
-                            margin: "auto",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            paddingBottom: 2,
+                            borderBottom: "1px solid #ddd",
                         }}
                     >
-                        {/* Header Section */}
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                            <img
+
+                                src={view.profile_picture ? `${BASE_URL}${view.profile_picture}` : ''}
+                                alt="Profile"
+                                style={{
+                                    width: "60px",
+                                    height: "60px",
+                                    borderRadius: "50%",
+                                    objectFit: "cover",
+                                }}
+                            />
+                            <Box>
+                                <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                                    {view?.full_name || "No Data"}
+                                </Typography>
+                                <Typography variant="body2" sx={{ color: "#555" }}>
+                                    {view?.gmail || "No Data"}
+                                </Typography>
+                            </Box>
+                        </Box>
+                        <Box>
+                            <Typography variant="body2" sx={{ textAlign: "right", color: "#777" }}>
+                                <strong>ID:</strong> {view?.customized_id || "No Data"}
+                            </Typography>
+                            <Typography variant="body2" className="mt-2">
+                                {view?.created_at
+                                    ? new Date(view.created_at).toLocaleString()
+                                    : "No Data"}
+                            </Typography>
+                        </Box>
+                    </Box>
+
+                    {/* Body Section */}
+                    <Box sx={{ marginTop: 3 }}>
                         <Box
                             sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                                paddingBottom: 2,
-                                borderBottom: "1px solid #ddd",
+                                display: "grid",
+                                gridTemplateColumns: "1fr 1fr",
+                                gap: 2,
                             }}
                         >
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                            <Typography variant="body1">
+                                <strong>Phone:</strong> {view?.phone || "No Data"}
+                            </Typography>
+                            <Typography variant="body1">
+                                <strong>Gender:</strong> {view?.gender || "No Data"}
+                            </Typography>
+                            <Typography variant="body1">
+                                <strong>Division:</strong> {view?.division || "No Data"}
+                            </Typography>
+                            <Typography variant="body1">
+                                <strong>District:</strong> {view?.district || "No Data"}
+                            </Typography>
+                            <Typography variant="body1">
+                                <strong>NID Number:</strong> {view?.nidcard_number || "No Data"}
+                            </Typography>
+                            <br />
+                            <>
+                                <strong>NID Picture:</strong>{" "}
+
                                 <img
-                                    
-                                    src={view.profile_picture ? `${BASE_URL}${view.profile_picture}` : ''}
+
+                                    src={view.nidcard_picture ? `${BASE_URL}${view.nidcard_picture}` : ''}
                                     alt="Profile"
                                     style={{
                                         width: "60px",
                                         height: "60px",
-                                        borderRadius: "50%",
+                                        borderRadius: "10px",
                                         objectFit: "cover",
+                                        border: "1px solid black",
+                                        padding: "10px"
                                     }}
                                 />
-                                <Box>
-                                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                                        {view?.full_name || "No Data"}
-                                    </Typography>
-                                    <Typography variant="body2" sx={{ color: "#555" }}>
-                                        {view?.gmail || "No Data"}
-                                    </Typography>
-                                </Box>
-                            </Box>
-                            <Box>
-                                <Typography variant="body2" sx={{ textAlign: "right", color: "#777" }}>
-                                    <strong>ID:</strong> {view?.customized_id || "No Data"}
-                                </Typography>
-                                <Typography variant="body2" className="mt-2">
-                                    {view?.created_at
-                                        ? new Date(view.created_at).toLocaleString()
-                                        : "No Data"}
-                                </Typography>
-                            </Box>
-                        </Box>
+                            </>
 
-                        {/* Body Section */}
-                        <Box sx={{ marginTop: 3 }}>
-                            <Box
-                                sx={{
-                                    display: "grid",
-                                    gridTemplateColumns: "1fr 1fr",
-                                    gap: 2,
-                                }}
-                            >
-                                <Typography variant="body1">
-                                    <strong>Phone:</strong> {view?.phone || "No Data"}
-                                </Typography>
-                                <Typography variant="body1">
-                                    <strong>Gender:</strong> {view?.gender || "No Data"}
-                                </Typography>
-                                <Typography variant="body1">
-                                    <strong>Division:</strong> {view?.division || "No Data"}
-                                </Typography>
-                                <Typography variant="body1">
-                                    <strong>District:</strong> {view?.district || "No Data"}
-                                </Typography>
-                                <Typography variant="body1">
-                                    <strong>NID Number:</strong> {view?.nidcard_number || "No Data"}
-                                </Typography>
-                                <br />
-                                <>
-                                <strong>NID Picture:</strong>{" "}
-                                    
-                                       <img
-                                    
-                                       src={view.nidcard_picture ? `${BASE_URL}${view.nidcard_picture}` : ''}
-                                       alt="Profile"
-                                       style={{
-                                           width: "60px",
-                                           height: "60px",
-                                           borderRadius: "10px",
-                                           objectFit: "cover",
-                                           border:"1px solid black",
-                                           padding:"10px"
-                                       }}
-                                   />
-                                </>
-                                    
-                                       
-                                    
-                            </Box>
-                        </Box>
 
-                        {/* Footer Section */}
-                        <Box sx={{ textAlign: "center", marginTop: 4 }}>
-                            <Button
-                                variant="contained"
-                                sx={{
-                                    backgroundColor: "#007bff",
-                                    color: "#fff",
-                                    fontWeight: "bold",
-                                    padding: "0.5rem 2rem",
-                                    "&:hover": {
-                                        backgroundColor: "#0056b3",
-                                    },
-                                }}
-                                onClick={handleCloseViewModal}
-                            >
-                                Close
-                            </Button>
+
                         </Box>
                     </Box>
-              
+
+                    {/* Footer Section */}
+                    <Box sx={{ textAlign: "center", marginTop: 4 }}>
+                        <Button
+                            variant="contained"
+                            sx={{
+                                backgroundColor: "#007bff",
+                                color: "#fff",
+                                fontWeight: "bold",
+                                padding: "0.5rem 2rem",
+                                "&:hover": {
+                                    backgroundColor: "#0056b3",
+                                },
+                            }}
+                            onClick={handleCloseViewModal}
+                        >
+                            Close
+                        </Button>
+                    </Box>
+                </Box>
+
 
 
             </Dialog>

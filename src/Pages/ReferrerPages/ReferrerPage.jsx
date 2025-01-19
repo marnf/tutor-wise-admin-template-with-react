@@ -37,9 +37,9 @@ const columns = [
             return `${district}, ${division}`; 
         },
     },
-    { field: "gender", headerName: "Gender", minWidth: 80 },
+    { field: "gender", headerName: "Gender", minWidth: 60, maxWidth:60 },
     // { field: "nidcard_number", headerName: "NID Number", minWidth: 150 },
-    { field: "formattedJoinDate", headerName: "Created Date", minWidth: 160 },
+    { field: "formattedJoinDate", headerName: "Created Date", minWidth: 160, maxWidth:160 },
     {
         field: "actions",
         headerName: "Actions",
