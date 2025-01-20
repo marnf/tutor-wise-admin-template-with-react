@@ -4,7 +4,7 @@ import { Menu } from 'antd';
 import { Link, useLocation } from 'react-router-dom';
 import logo from '../../../public/images/TutorwiseLogo.png';
 import { MdMessage, MdPriceChange, MdSpaceDashboard } from "react-icons/md";
-import { PiUserListFill } from "react-icons/pi";
+import { PiHandWithdrawLight, PiUserListFill } from "react-icons/pi";
 import { PiStudentFill } from "react-icons/pi";
 import { FaChalkboardTeacher, FaUserTie } from "react-icons/fa";
 import { SiGitconnected } from "react-icons/si";
@@ -116,6 +116,12 @@ const menuItems = [
     key: '/send-message',
     icon: <MdMessage size={25} />,
     label: <Link to="/send-message">Send message</Link>,
+    role: 9,
+  },
+  {
+    key: '/withdraw',
+    icon: <PiHandWithdrawLight  size={25} />,
+    label: <Link to="/withdraw">Withdraw</Link>,
     role: 9,
   },
   {

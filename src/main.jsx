@@ -40,6 +40,7 @@ import TutorPostStatus from './Pages/TeachersTuitionPost/TutorPostStatus/TutorPo
 import AllTuition from './Pages/StudentsTuitionPosts/AllTuition/AllTuition.jsx';
 import TuitionStatus from './Pages/StudentsTuitionPosts/TuitionStatus/TuitionStatus.jsx';
 import HireTutor from './Pages/HireTutor/HireTutor.jsx';
+import WithDraw from './Pages/WithDraw/WithDraw.jsx';
 
 
 const router = createBrowserRouter([
@@ -128,6 +129,10 @@ const router = createBrowserRouter([
       {
         path: "/send-message",
         element:<PrivateRoute allowedRoles={[9]}> <SendMessagePage></SendMessagePage> </PrivateRoute>
+      },
+      {
+        path: "/withdraw",
+        element:<PrivateRoute allowedRoles={[9]}> <WithDraw></WithDraw> </PrivateRoute>
       },
       {
         path: "/connected-list",

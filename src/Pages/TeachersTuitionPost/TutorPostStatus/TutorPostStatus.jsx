@@ -72,7 +72,7 @@ const columns = [
         headerName: "Pending",
         maxWidth: 70, minWidth: 70,
         renderCell: (params) => (
-            <Checkbox checked={params.value === true} disabled />
+            <Checkbox checked={params.value === true}  />
         )
         
     },
@@ -81,7 +81,7 @@ const columns = [
         headerName: "Approved",
         maxWidth: 70, minWidth: 70,
         renderCell: (params) => (
-            <Checkbox checked={params.value === true} disabled />
+            <Checkbox checked={params.value === true}  />
         )
     },
     {
@@ -89,7 +89,7 @@ const columns = [
         headerName: "Accepted",
         maxWidth: 70, minWidth: 70,
         renderCell: (params) => (
-            <Checkbox checked={params.value === true} disabled />
+            <Checkbox checked={params.value === true}  />
         )
     },
     {
@@ -97,7 +97,7 @@ const columns = [
         headerName: "Paid",
         maxWidth: 70, minWidth: 70,
         renderCell: (params) => (
-            <Checkbox checked={params.value === true} disabled />
+            <Checkbox checked={params.value === true}  />
         )
     },
     // { field: "totalEarnings", headerName: "Total Earnings", minWidth: 130 },

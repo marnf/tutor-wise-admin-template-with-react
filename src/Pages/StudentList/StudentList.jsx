@@ -373,7 +373,7 @@ const StudentList = () => {
                 </div>
 
                 <Typography variant="text-base" className="flex h5">
-                    <strong className="text-gray-500">Approved Request:{rows.length} </strong>
+                    <strong className="text-gray-500">Students List:{rows.length} </strong>
                 </Typography>
 
 

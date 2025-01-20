@@ -46,6 +46,7 @@
     "react-lottie": "^1.2.10",
     "react-router-dom": "^7.0.2",
     "react-select": "^5.8.3",
+    "react-toggle-button": "^2.2.0",
     "simple-datatables": "^9.2.1",
     "sort-by": "^1.2.0"
   },

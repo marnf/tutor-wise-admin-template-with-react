@@ -72,6 +72,8 @@ const columns = [
                     onClick={() => params.row.handleEdit(params.row)}
                 />
 
+              
+
                 <BiSolidUserDetail title="View"
                     size={29}
                     color="#f0523a"
