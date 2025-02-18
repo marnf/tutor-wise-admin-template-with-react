@@ -69,6 +69,7 @@ const Protutor = () => {
         fetch(`${BASE_URL}/api/admin/pro-tutor-list/`)
             .then((res) => res.json())
             .then((data) => {
+                
                 const formattedData = data.map((item) => ({
                     id: item.tutor_personal_info.customized_user_id,
                     profile_picture: item.tutor_personal_info.profile_picture ? `${BASE_URL}${item.tutor_personal_info.profile_picture}` : null,

@@ -31,16 +31,22 @@ import AssignedList from './Pages/AssignedList/AssignedList.jsx'
 import SendMessagePage from './Pages/SendMessagePage/SendMessagePage.jsx';
 import AllTutorList from './Pages/TutorList/AllTutor/AllTutorList.jsx';
 import AllPayment from './Pages/Payment/AllPayment/AllPayment.jsx';
-import DynamicPricing from './Pages/DynamicPricing/DynamicPricing.jsx';
 import ReferrerPage from './Pages/ReferrerPages/ReferrerPage.jsx';
-import 'react-date-range/dist/styles.css'; 
-import 'react-date-range/dist/theme/default.css'; 
+import 'react-date-range/dist/styles.css';
+import 'react-date-range/dist/theme/default.css';
 import TutorPosts from './Pages/TeachersTuitionPost/TutorPosts/TutorPosts.jsx';
 import TutorPostStatus from './Pages/TeachersTuitionPost/TutorPostStatus/TutorPostStatus.jsx';
 import AllTuition from './Pages/StudentsTuitionPosts/AllTuition/AllTuition.jsx';
 import TuitionStatus from './Pages/StudentsTuitionPosts/TuitionStatus/TuitionStatus.jsx';
 import HireTutor from './Pages/HireTutor/HireTutor.jsx';
 import WithDraw from './Pages/WithDraw/WithDraw.jsx';
+import ProSubscription from './Pages/DynamicPricing/ProSubscription/ProSubscription.jsx';
+import LimitSubscription from './Pages/DynamicPricing/LimitSubscription/LimitSubscription.jsx';
+import TuitionPercentage from './Pages/DynamicPricing/TuitionPercentage/TuitionPercentage.jsx';
+import CreateUser from './Pages/CreateUser/CreateUser.jsx';
+import { AuthProvider } from './Contexts/AuthProvider.jsx';
+
+
 
 
 const router = createBrowserRouter([
@@ -54,12 +60,18 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element:  <DashBoard />,
+        element: <DashBoard />,
       },
       {
         path: "/userlist",
         element: <PrivateRoute allowedRoles={[1]}>
           <UserList />
+        </PrivateRoute>
+      },
+      {
+        path: "/create-user",
+        element: <PrivateRoute allowedRoles={[1]}>
+          <CreateUser />
         </PrivateRoute>
       },
       {
@@ -72,31 +84,31 @@ const router = createBrowserRouter([
       },
       {
         path: "/pending-higher-tutor-request",
-        element:<PrivateRoute allowedRoles={[2]}> <PendingHigherTutorRequest />,</PrivateRoute>
+        element: <PrivateRoute allowedRoles={[2]}> <PendingHigherTutorRequest />,</PrivateRoute>
       },
       {
         path: "/approved-higher-tutor-request",
-        element:<PrivateRoute allowedRoles={[2]}> <ApprovedHigherTutorRequest />,</PrivateRoute>
+        element: <PrivateRoute allowedRoles={[2]}> <ApprovedHigherTutorRequest />,</PrivateRoute>
       },
       {
         path: "/all-tutor-list",
-        element:<PrivateRoute allowedRoles={[3]}> <AllTutorList />,</PrivateRoute>
+        element: <PrivateRoute allowedRoles={[3]}> <AllTutorList />,</PrivateRoute>
       },
       {
         path: "/pro-tutor-list",
-        element:<PrivateRoute allowedRoles={[3]}> <Protutor />,</PrivateRoute>
+        element: <PrivateRoute allowedRoles={[3]}> <Protutor />,</PrivateRoute>
       },
       {
         path: "/tutor-list",
-        element:<PrivateRoute allowedRoles={[3]}> <Tutor />,</PrivateRoute>
+        element: <PrivateRoute allowedRoles={[3]}> <Tutor />,</PrivateRoute>
       },
       {
         path: "/add-institution",
-        element:<PrivateRoute allowedRoles={[4]}> <AddInstitution />,</PrivateRoute>
+        element: <PrivateRoute allowedRoles={[4]}> <AddInstitution />,</PrivateRoute>
       },
       {
         path: "/institution-list",
-        element:<PrivateRoute allowedRoles={[4]}><InstitutionList />,</PrivateRoute>
+        element: <PrivateRoute allowedRoles={[4]}><InstitutionList />,</PrivateRoute>
       },
       {
         path: "/add-faq",
@@ -104,19 +116,19 @@ const router = createBrowserRouter([
       },
       {
         path: "/faq-list",
-        element:<PrivateRoute allowedRoles={[5]}> <FaqList />,</PrivateRoute>
+        element: <PrivateRoute allowedRoles={[5]}> <FaqList />,</PrivateRoute>
       },
       {
         path: "/all-payment",
-        element:<PrivateRoute allowedRoles={[6]}> <AllPayment />,</PrivateRoute>
+        element: <PrivateRoute allowedRoles={[6]}> <AllPayment />,</PrivateRoute>
       },
       {
         path: "/pro-payment",
-        element:<PrivateRoute allowedRoles={[6]}> <ProPayment />,</PrivateRoute>
+        element: <PrivateRoute allowedRoles={[6]}> <ProPayment />,</PrivateRoute>
       },
       {
         path: "/payment",
-        element:<PrivateRoute allowedRoles={[6]}> <Payment />,</PrivateRoute>
+        element: <PrivateRoute allowedRoles={[6]}> <Payment />,</PrivateRoute>
       },
       {
         path: "/review",
@@ -124,55 +136,63 @@ const router = createBrowserRouter([
       },
       {
         path: "/testimonial",
-        element:<PrivateRoute allowedRoles={[8]}> <Testimonial />,</PrivateRoute>
+        element: <PrivateRoute allowedRoles={[8]}> <Testimonial />,</PrivateRoute>
       },
       {
         path: "/send-message",
-        element:<PrivateRoute allowedRoles={[9]}> <SendMessagePage></SendMessagePage> </PrivateRoute>
+        element: <PrivateRoute allowedRoles={[9]}> <SendMessagePage></SendMessagePage> </PrivateRoute>
       },
       {
         path: "/withdraw",
-        element:<PrivateRoute allowedRoles={[9]}> <WithDraw></WithDraw> </PrivateRoute>
+        element: <PrivateRoute allowedRoles={[9]}> <WithDraw></WithDraw> </PrivateRoute>
       },
       {
         path: "/connected-list",
-        element:<PrivateRoute allowedRoles={[10]}> <AssignedList/> </PrivateRoute>
+        element: <PrivateRoute allowedRoles={[10]}> <AssignedList /> </PrivateRoute>
       },
       {
         path: "/student-list",
-        element:<PrivateRoute allowedRoles={[11]}> <StudentList/> </PrivateRoute>
+        element: <PrivateRoute allowedRoles={[11]}> <StudentList /> </PrivateRoute>
       },
       {
         path: "/hire-tutor",
-        element:<PrivateRoute allowedRoles={[11]}> <HireTutor></HireTutor> </PrivateRoute>
+        element: <PrivateRoute allowedRoles={[11]}> <HireTutor></HireTutor> </PrivateRoute>
       },
       {
         path: "/referrer-list",
-        element:<PrivateRoute allowedRoles={[11]}> <ReferrerPage/> </PrivateRoute>
+        element: <PrivateRoute allowedRoles={[11]}> <ReferrerPage /> </PrivateRoute>
       },
       {
         path: "/inactive-user",
-        element:<PrivateRoute allowedRoles={[12]}> <InactiveUser></InactiveUser> </PrivateRoute>
+        element: <PrivateRoute allowedRoles={[12]}> <InactiveUser></InactiveUser> </PrivateRoute>
       },
       {
         path: "/students-tuition-posts",
-        element:<PrivateRoute allowedRoles={[13]}> <AllTuition></AllTuition> </PrivateRoute>
+        element: <PrivateRoute allowedRoles={[13]}> <AllTuition></AllTuition> </PrivateRoute>
       },
       {
         path: "/students-tuition-status",
-        element:<PrivateRoute allowedRoles={[13]}> <TuitionStatus></TuitionStatus> </PrivateRoute>
+        element: <PrivateRoute allowedRoles={[13]}> <TuitionStatus></TuitionStatus> </PrivateRoute>
       },
       {
         path: "/teachers-tuition-post",
-        element:<PrivateRoute allowedRoles={[13]}> <TutorPosts></TutorPosts> </PrivateRoute>
+        element: <PrivateRoute allowedRoles={[13]}> <TutorPosts></TutorPosts> </PrivateRoute>
       },
       {
         path: "/teachers-post-status",
-        element:<PrivateRoute allowedRoles={[13]}> <TutorPostStatus></TutorPostStatus> </PrivateRoute>
+        element: <PrivateRoute allowedRoles={[13]}> <TutorPostStatus></TutorPostStatus> </PrivateRoute>
       },
       {
-        path: "/dynamic-pricing",
-        element:<PrivateRoute allowedRoles={[10]}> <DynamicPricing></DynamicPricing></PrivateRoute>
+        path: "/pro-subscription",
+        element: <PrivateRoute allowedRoles={[10]}> <ProSubscription></ProSubscription> </PrivateRoute>
+      },
+      {
+        path: "/limit-subscription",
+        element: <PrivateRoute allowedRoles={[10]}> <LimitSubscription></LimitSubscription> </PrivateRoute>
+      },
+      {
+        path: "/tuition-percentage",
+        element: <PrivateRoute allowedRoles={[10]}> <TuitionPercentage></TuitionPercentage> </PrivateRoute>
       },
     ],
   },
@@ -180,6 +200,11 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router} />
+
+    <AuthProvider>
+      
+      <RouterProvider router={router} />
+
+    </AuthProvider>
   </StrictMode>,
 );

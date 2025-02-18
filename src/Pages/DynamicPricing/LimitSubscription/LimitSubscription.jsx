@@ -15,12 +15,14 @@ import {
 } from '@mui/material';
 import { FaCheck, FaTimes, FaUserEdit } from 'react-icons/fa';
 import { MdDelete } from 'react-icons/md';
-import { decryptData } from '../../EncryptedPage';
-import BASE_URL from '../../Api/baseUrl';
+
+import BASE_URL from '../../../Api/baseUrl';
 import ToggleButton from 'react-toggle-button';
+import moment from 'moment';
+import { decryptData } from '../../../EncryptedPage';
 
 
-const DynamicPricing = () => {
+const LimitSubscription = () => {
 
 
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -38,9 +40,9 @@ const DynamicPricing = () => {
         { field: 'id', headerName: 'ID', flex: 0.5 },
         { field: 'packageCreatedUser', headerName: 'Admin', flex: 1 },
         { field: 'package', headerName: 'Package', flex: 1 },
-        { field: 'presentAmount', headerName: 'Present Amount', flex: 1 },
-        { field: 'packageType', headerName: 'Package Type', flex: 1 },
-        { field: 'createdAt', headerName: 'Created At', flex: 1 },
+        { field: 'presentAmount', headerName: 'Present Amount', minWidth: 70, maxWidth: 70 },
+        { field: 'packageType', headerName: 'Package Type', minWidth: 70, maxWidth: 70 },
+        { field: 'formattedJoinDate', headerName: 'Created At', minWidth: 160 },
         { field: 'discountPercentage', headerName: 'Discount', flex: 1 },
         { field: 'discountAmount', headerName: 'Discount Amount', flex: 1 },
         {
@@ -75,7 +77,7 @@ const DynamicPricing = () => {
                         {/* Toggle Button */}
                         <ToggleButton
                             inactiveLabel={<FaTimes />}
-                            
+
                             activeLabel={<FaCheck />}
                             value={isRowActive}
                             onToggle={() => {
@@ -152,14 +154,15 @@ const DynamicPricing = () => {
                     id: item.id,
                     packageCreatedUser: item.package_created_user,
                     package: item.package,
-                    presentAmount: item.present_amount,
+                    presentAmount: Number(Number(item.present_amount).toFixed(0)),
                     discountPercentage: item.discount_percentage,
-                    discountAmount: item.discount_amount,
+                    discountAmount: Number(Number(item.discount_amount).toFixed(0)),
                     packageDescription: item.package_description,
                     packageType: item.package_type,
                     advancePercentage: item.advance_percentage,
                     latePercentage: item.late_percentage,
                     createdAt: item.created_at,
+                    formattedJoinDate: moment(item.created_at).format('DD/MM/YYYY hh:mm a') || '',
                     updatedAt: item.updated_at,
                     isActive: item.is_active
                 })));
@@ -538,12 +541,12 @@ const DynamicPricing = () => {
                         {/* Right side input */}
                         <div className="col-span-1">
 
-                            <Typography className=" mb-2 text-gray-800 leading-relaxed">
-                                use
-                                <span className="bg-slate-300 px-2  text-center rounded mx-2 inline-block text-blue-600">
+                            <Typography className="mb-4 text-gray-800 leading-relaxed text-lg">
+                                Use
+                                <span className="bg-slate-200 px-3 py-1 rounded-lg mx-2 inline-block text-blue-600 font-semibold">
                                     .
                                 </span>
-                                to add multiple lines....
+                                to add multiple lines...
                             </Typography>
 
                             <TextField
@@ -587,4 +590,4 @@ const DynamicPricing = () => {
     );
 };
 
-export default DynamicPricing;
+export default LimitSubscription;

@@ -24,7 +24,7 @@ const LoginPage = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
-  const [showPassword, setShowPassword] = useState(false); // পাসওয়ার্ড দেখানোর জন্য state
+  const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -60,23 +60,25 @@ const LoginPage = () => {
 
     try {
       const response = await fetch(
-        `${BASE_URL}/api/account/admin/login/`, 
-        
-         {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          gmail: gmail,
-          password: password,
-        }),
-      });
+        `${BASE_URL}/api/account/admin/login/`,
+
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            gmail: gmail,
+            password: password,
+          }),
+        });
 
       const data = await response.json();
 
-      if (response.ok) {
 
+      if (response.ok) {
+        
+console.log(data.token)
         const encryptedUser = encryptData({
           user_id: data.user_id,
           user_type: data.user_type,

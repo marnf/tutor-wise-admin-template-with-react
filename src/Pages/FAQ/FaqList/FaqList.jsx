@@ -298,15 +298,15 @@ const FaqList = () => {
             sx={{
               "& .MuiOutlinedInput-root": {
                 "&:hover .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "gray", // হোভার ইফেক্ট সরানো
+                  borderColor: "gray", 
                 },
                 "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "#1976d2", // ফোকাস অবস্থায় নীল বর্ডার
-                  boxShadow: "0 0 5px rgba(25, 118, 210, 0.5)", // হালকা নীল শেডো
+                  borderColor: "#1976d2", 
+                  boxShadow: "0 0 5px rgba(25, 118, 210, 0.5)", 
                 },
               },
               "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: "gray", // ডিফল্ট ধূসর বর্ডার
+                borderColor: "gray",
               },
             }}
           />
@@ -322,15 +322,15 @@ const FaqList = () => {
             sx={{
               "& .MuiOutlinedInput-root": {
                 "&:hover .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "gray", // হোভার ইফেক্ট সরানো
+                  borderColor: "gray", 
                 },
                 "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "#1976d2", // ফোকাস অবস্থায় নীল বর্ডার
-                  boxShadow: "0 0 5px rgba(25, 118, 210, 0.5)", // হালকা নীল শেডো
+                  borderColor: "#1976d2", 
+                  boxShadow: "0 0 5px rgba(25, 118, 210, 0.5)",
                 },
               },
               "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: "gray", // ডিফল্ট ধূসর বর্ডার
+                borderColor: "gray",
               },
             }}
           />

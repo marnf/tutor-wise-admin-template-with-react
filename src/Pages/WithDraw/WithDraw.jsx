@@ -28,12 +28,14 @@ const columns = [
     { field: "withdrawAmount", headerName: "Amount", minWidth: 60 },
     { field: "formattedJoinDate", headerName: "Created Date", minWidth: 160, },
     { field: "digitalBank", headerName: "Digital Banking", minWidth: 60 },
-    { field: "paidDate", headerName: "Pain Date", minWidth: 70 },
+    { field: "paidDate", headerName: "Paid Date", minWidth: 70 },
     {
         field: "isPaid",
         headerName: "Paid Status",
         minWidth: 100,
         renderCell: (params) => {
+            console.log("isPaid Value:", params.value); // Check what value is coming
+
             return (
                 <Box className="items-center flex justify-center">
                     <Button
@@ -51,13 +53,18 @@ const columns = [
                                 boxShadow: "none",
                             },
                         }}
-                        onClick={() => params.row.handleStatus(params.row)}
+                        onClick={() => {
+                            if (!params.value) {
+                                params.row.handleStatus(params.row);
+                            }
+                        }}
                     >
-                        {params.value === true ? "Paid" : "Pending"}
+                        {params.value ? "Paid" : "Pending"}
                     </Button>
                 </Box>
             );
-        },
+        }
+
     },
 
     { field: "paymentBy", headerName: "Payment By", minWidth: 70 },
@@ -94,7 +101,8 @@ const WithDraw = () => {
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
-    const [statusModalData,setStatusModalData]=useState([]);
+    const [statusModalData, setStatusModalData] = useState([]);
+    const [refreshTable, setRefreshTable] = useState(false)
 
     const [dateRange, setDateRange] = useState([
         {
@@ -104,57 +112,10 @@ const WithDraw = () => {
         },
     ]);
 
-    // useEffect(() => {
-    //     setLoading(true);
-
-    //     const encryptedUser = localStorage.getitem("user");
-
-    //     let user;
-    //     if (encryptedUser) {
-    //         try {
-    //             user = decryptData(encryptedUser);
-    //         } catch (error) {
-    //             console.error("Error decrypting user data:", error);
-    //         }
-    //     }
-    //     const token = user?.token;
-    //     console.log(token);
-
-    //     // Fetch with Authorization header
-    //     fetch(`${BASE_URL}/api/admin/withdraw-list/`, {
-    //         method: "GET",
-    //         headers: {
-    //             "Authorization": `Token ${token}`, // Add the token here
-    //             "Content-Type": "application/json", // Optional, based on your API needs
-    //         },
-    //     })
-    //         .then((res) => res.json())
-    //         .then((data) => {
-    //             const formattedData = data.map((item) => ({
-    //                 id: item.id,
-    //                 customized_user_id: item.customized_user_id,
-    //                 name: item.name,
-    //                 amount: item.amount,
-    //                 email: item.email,
-    //                 user_type: item.user_type,
-    //                 transaction_id: item.transaction_id,
-    //                 package: item.package,
-    //                 digital_bank_name: item.digital_bank_name,
-    //                 created_at: item.created_at,
-    //                 formatted_created_at: moment(item.created_at).format('DD/MM/YYYY hh:mm a') || '',
-    //                 phone: item.phone,
-    //                 handleViewModal: handleOpenViewModal,
-    //             }));
-    //             setRows(formattedData);
-    //             setFilteredRows(formattedData);
-    //             setLoading(false);
-    //         })
-    //         .catch((error) => {
-    //             console.error("Error fetching data:", error);
-    //             setLoading(false);
-    //         });
-
-    // }, []);
+   
+    const handleRefreshTable = () => {
+        setRefreshTable((prev) => !prev)
+    }
 
 
     useEffect(() => {
@@ -183,19 +144,24 @@ const WithDraw = () => {
         })
             .then((res) => res.json())
             .then((data) => {
+                console.log(data)
                 const formattedData = data.map((item) => ({
                     id: item.id,
                     referrerId: item.referrer_id,
-                    withdrawAmount: item.with_draw_amount,
-                    paidDate: item.paid_date ? moment(item.paid_date).format('DD/MM/YYYY hh:mm a') : "Not Paid",
+                    withdrawAmount: Number(item.with_draw_amount).toFixed(0),
                     digitalBank: item.digital_bank,
                     phone: item.phone,
-                    isPaid: item.is_paid ? "true" : "false",
-                    createdAt: moment(item.created_at).format('DD/MM/YYYY hh:mm a'),
+                    isPaid: Boolean(item.is_paid),
                     paymentBy: item.payment_by || "N/A",
+
+                    paidDate: item.paid_date ? moment(item.paid_date).format('DD/MM/YYYY hh:mm a') : "Not Paid",
+                    createdAt: moment(item.created_at).format('YYYY-MM-DD'),
                     formattedJoinDate: moment(item.created_at).format('DD/MM/YYYY hh:mm a') || '',
+
                     handleViewModal: handleOpenViewModal,
                     handleStatus: handleOpenStatusModal,
+
+
 
                 }));
                 setRows(formattedData);
@@ -207,7 +173,7 @@ const WithDraw = () => {
                 setLoading(false);
             });
 
-    }, []);
+    }, [refreshTable]);
 
 
 
@@ -234,21 +200,21 @@ const WithDraw = () => {
     };
 
     const handleConfirm = async () => {
-         const encryptedUser = localStorage.getItem("user");
-        
-                    let user;
-                    if (encryptedUser) {
-                        try {
-                            user = decryptData(encryptedUser);
-                        } catch (error) {
-                            console.error("Error decrypting user data:", error);
-                        }
-                    }
-                    const token = user?.token;
-                   
+        const encryptedUser = localStorage.getItem("user");
+
+        let user;
+        if (encryptedUser) {
+            try {
+                user = decryptData(encryptedUser);
+            } catch (error) {
+                console.error("Error decrypting user data:", error);
+            }
+        }
+        const token = user?.token;
+
         try {
             // API call to post data
-            const response = await fetch(`${BASE_URL}api/admin/accept-withdraw-payment/${statusModalData.id}/`, {
+            const response = await fetch(`${BASE_URL}/api/admin/accept-withdraw-payment/${statusModalData.id}/`, {
                 method: "POST",
                 headers: {
                     "Authorization": `Token ${token}`,
@@ -305,7 +271,7 @@ const WithDraw = () => {
         console.log("Start Date:", startDate, "End Date:", endDate);
 
         const filteredData = rows.filter((row) => {
-            const rowDate = new Date(row.created_at).getTime(); // Use raw `created_at`
+            const rowDate = new Date(row.createdAt).getTime(); // Use raw `created_at`
             console.log("Row Date:", rowDate); // Debug
             return rowDate >= startDate && rowDate <= endDate;
         });
@@ -344,15 +310,27 @@ const WithDraw = () => {
                                     ranges={dateRange}
                                     direction="horizontal"
                                 />
-                                <Button
-                                    variant="contained"
-                                    color="success"
-                                    size="small"
-                                    onClick={handleDateFilter}
-                                    sx={{ marginTop: "10px" }}
-                                >
-                                    Apply Filter
-                                </Button>
+                                <div className="flex items-center gap-3">
+                                    <Button
+                                        variant="contained"
+                                        color="success"
+                                        size="small"
+                                        onClick={handleDateFilter}
+                                        sx={{ marginTop: "10px" }}
+                                    >
+                                        Apply Filter
+                                    </Button>
+
+                                    <Button
+                                        variant="contained"
+                                        color="error"
+                                        size="small"
+                                        onClick={handleRefreshTable}
+                                        sx={{ marginTop: "10px" }}
+                                    >
+                                        Reset
+                                    </Button>
+                                </div>
 
                             </div>
 
@@ -582,3 +560,71 @@ const WithDraw = () => {
 };
 
 export default WithDraw;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ // useEffect(() => {
+    //     setLoading(true);
+
+    //     const encryptedUser = localStorage.getitem("user");
+
+    //     let user;
+    //     if (encryptedUser) {
+    //         try {
+    //             user = decryptData(encryptedUser);
+    //         } catch (error) {
+    //             console.error("Error decrypting user data:", error);
+    //         }
+    //     }
+    //     const token = user?.token;
+    //     console.log(token);
+
+    //     // Fetch with Authorization header
+    //     fetch(`${BASE_URL}/api/admin/withdraw-list/`, {
+    //         method: "GET",
+    //         headers: {
+    //             "Authorization": `Token ${token}`, // Add the token here
+    //             "Content-Type": "application/json", // Optional, based on your API needs
+    //         },
+    //     })
+    //         .then((res) => res.json())
+    //         .then((data) => {
+    //             const formattedData = data.map((item) => ({
+    //                 id: item.id,
+    //                 customized_user_id: item.customized_user_id,
+    //                 name: item.name,
+    //                 amount: item.amount,
+    //                 email: item.email,
+    //                 user_type: item.user_type,
+    //                 transaction_id: item.transaction_id,
+    //                 package: item.package,
+    //                 digital_bank_name: item.digital_bank_name,
+    //                 created_at: item.created_at,
+    //                 formatted_created_at: moment(item.created_at).format('DD/MM/YYYY hh:mm a') || '',
+    //                 phone: item.phone,
+    //                 handleViewModal: handleOpenViewModal,
+    //             }));
+    //             setRows(formattedData);
+    //             setFilteredRows(formattedData);
+    //             setLoading(false);
+    //         })
+    //         .catch((error) => {
+    //             console.error("Error fetching data:", error);
+    //             setLoading(false);
+    //         });
+
+    // }, []);
+
+

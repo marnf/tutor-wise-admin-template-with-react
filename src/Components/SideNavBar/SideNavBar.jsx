@@ -6,7 +6,7 @@ import logo from '../../../public/images/TutorwiseLogo.png';
 import { MdMessage, MdPriceChange, MdSpaceDashboard } from "react-icons/md";
 import { PiHandWithdrawLight, PiUserListFill } from "react-icons/pi";
 import { PiStudentFill } from "react-icons/pi";
-import { FaChalkboardTeacher, FaUserTie } from "react-icons/fa";
+import { FaChalkboardTeacher, FaUserCheck, FaUserTie } from "react-icons/fa";
 import { SiGitconnected } from "react-icons/si";
 import { MdOutlinePostAdd } from "react-icons/md";
 import { MdAirplanemodeInactive } from "react-icons/md";
@@ -31,6 +31,12 @@ const menuItems = [
     key: '/userlist',
     icon: <PiUserListFill size={25} />,
     label: <Link to="/userlist">User List</Link>,
+    role: 1,
+  },
+  {
+    key: '/create-user',
+    icon: <FaUserCheck size={25} />,
+    label: <Link to="/create-user">Create User</Link>,
     role: 1,
   },
   {
@@ -105,13 +111,6 @@ const menuItems = [
   },
 
 
-
-  {
-    key: '/dynamic-pricing',
-    icon: <MdPriceChange size={25} />,
-    label: <Link to="/dynamic-pricing">Dynamic pricing</Link>,
-    role: 10,
-  },
   {
     key: '/send-message',
     icon: <MdMessage size={25} />,
@@ -120,7 +119,7 @@ const menuItems = [
   },
   {
     key: '/withdraw',
-    icon: <PiHandWithdrawLight  size={25} />,
+    icon: <PiHandWithdrawLight size={25} />,
     label: <Link to="/withdraw">Withdraw</Link>,
     role: 9,
   },
@@ -141,6 +140,18 @@ const menuItems = [
       { key: '/payment', label: <Link to="/payment">Limit Payment</Link>, role: 6, },
     ],
   },
+  {
+    key: 'subscription',
+    icon: <MdPriceChange size={25} />,
+    label: 'Subscriptions',
+    role: 6,
+    children: [
+      { key: '/pro-subscription', label: <Link to="/pro-subscription">Pro Subscription</Link>, role: 6, },
+      { key: '/limit-subscription', label: <Link to="/limit-subscription">Limit Subscription</Link>, role: 6, },
+      { key: '/tuition-percentage', label: <Link to="/tuition-percentage">Tuition Percentage</Link>, role: 6, },
+    ],
+  },
+
   {
     key: 'institution',
     icon: <BiSolidSchool size={25} />,
