@@ -34,6 +34,7 @@ import { DateRangePicker } from "react-date-range";
 import moment from 'moment';
 import BASE_URL from "../../../Api/baseUrl";
 import { decryptData } from "../../../EncryptedPage";
+import axiosInstance from "../../../Api/apiClient";
 
 
 // Dummy subject options
@@ -72,16 +73,16 @@ const columns = [
         headerName: "Pending",
         maxWidth: 70, minWidth: 70,
         renderCell: (params) => (
-            <Checkbox checked={params.value === true}  />
+            <Checkbox checked={params.value === true} />
         )
-        
+
     },
     {
         field: "isApproved",
         headerName: "Approved",
         maxWidth: 70, minWidth: 70,
         renderCell: (params) => (
-            <Checkbox checked={params.value === true}  />
+            <Checkbox checked={params.value === true} />
         )
     },
     {
@@ -89,7 +90,7 @@ const columns = [
         headerName: "Accepted",
         maxWidth: 70, minWidth: 70,
         renderCell: (params) => (
-            <Checkbox checked={params.value === true}  />
+            <Checkbox checked={params.value === true} />
         )
     },
     {
@@ -97,14 +98,14 @@ const columns = [
         headerName: "Paid",
         maxWidth: 70, minWidth: 70,
         renderCell: (params) => (
-            <Checkbox checked={params.value === true}  />
+            <Checkbox checked={params.value === true} />
         )
     },
     // { field: "totalEarnings", headerName: "Total Earnings", minWidth: 130 },
     // { field: "referrerEarnings", headerName: "Referrer Earnings", minWidth: 130 },
     // { field: "referrer", headerName: "Referrer", minWidth: 150 },
-    // { field: "appliedTutorId", headerName: "Applied Tutor ID", minWidth: 130 },
-    // { field: "appliedTuitionPostId", headerName: "Applied Tuition Post ID", minWidth: 160 },
+    // { field: "applied_tutor_post_id", headerName: "Applied Tutor ID", minWidth: 130 },
+    // { field: "applied_student_id", headerName: "Applied Tuition Post ID", minWidth: 160 },
     // { field: "dueForAdvance", headerName: "Due for Advance", minWidth: 130 },
     // { field: "dueForLate", headerName: "Due for Late", minWidth: 130 },
 
@@ -203,15 +204,22 @@ const TutorPostStatus = () => {
     ]);
     const [refreshTable, setRefreshTable] = useState(false)
 
+
+    const [tutorPostData, setTutorPostData] = useState(null);
+    const [studentData, setStudentData] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+
+
     useEffect(() => {
         setLoading(true);
         fetch(`${BASE_URL}/api/admin/apply-tutor-post-list-status/`)
             .then((res) => res.json())
             .then((data) => {
+                console.log(data)
                 const formattedData = data.map((item) => ({
                     id: item.id,
-                    appliedTutorId: item.applied_tutor_id || "N/A",
-                    appliedTuitionPostId: item.applied_tuition_post_id || "N/A",
+                    applied_tutor_post_id: item.applied_tutor_post_id || "N/A",
+                    applied_student_id: item.applied_student_id || "N/A",
                     paymentOption: item.payment_option || "N/A",
                     paymentType: item.payment_type || "N/A",
                     dueForAdvance: item.due_for_advance || "0.00",
@@ -289,6 +297,7 @@ const TutorPostStatus = () => {
 
     const handleOpenViewModal = (row) => {
         setOpenViewModal(true)
+        console.log(row)
         setView(row)
     }
 
@@ -372,6 +381,39 @@ const TutorPostStatus = () => {
     const handleCloseDeleteModal = () => {
         setOpenDeleteModal(false);
     };
+
+
+
+
+
+    useEffect(() => {
+        if (view?.applied_tutor_post_id && view?.applied_student_id) {
+            // Fetch Tutor Data
+            setIsLoading(true)
+            axiosInstance.get(`/api/admin/single-tutor-post/${view.applied_tutor_post_id}/`)
+                .then(response => {
+                    setTutorPostData(response.data[0]);
+                    console.log(response.data);
+                    setIsLoading(false)
+                })
+                .catch(error => {
+                    console.error("Error fetching tutor data:", error);
+                });
+
+            // Fetch Tuition Post Data
+            setIsLoading(true)
+            axiosInstance.get(`/api/admin/single-student-profile/${view.applied_student_id}/`)
+                .then(response => {
+                    setStudentData(response.data);
+                    console.log(response);
+                    setIsLoading(false)
+                })
+                .catch(error => {
+                    console.error("Error fetching tuition post data:", error);
+                });
+        }
+    }, [view?.applied_tutor_post_id, view?.applied_student_id]);
+
 
 
 
@@ -695,10 +737,10 @@ const TutorPostStatus = () => {
                     >
                         <Box>
                             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                                Applied Tutor ID: {view?.appliedTutorId || "No Data"}
+                                Tutor Post ID: {view?.applied_tutor_post_id || ""}
                             </Typography>
                             <Typography variant="body2" sx={{ color: "#555" }}>
-                                Tuition Post ID: {view?.appliedTuitionPostId || "No Data"}
+                                Applied Student ID: {view?.applied_student_id || ""}
                             </Typography>
                         </Box>
                         <Box>

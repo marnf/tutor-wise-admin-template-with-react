@@ -6,6 +6,9 @@ import { BsFillCalendarDateFill } from "react-icons/bs";
 import { DateRangePicker } from "react-date-range";
 import moment from "moment";
 import BASE_URL from "../../Api/baseUrl";
+import { RiQrCodeLine } from "react-icons/ri";
+import { RxCross1 } from "react-icons/rx";
+
 
 // Columns definition for DataGrid
 const columns = [
@@ -34,16 +37,16 @@ const columns = [
         renderCell: (params) => {
             const district = params.row.district || 'N/A';
             const division = params.row.division || 'N/A';
-            return `${district}, ${division}`; 
+            return `${district}, ${division}`;
         },
     },
-    { field: "gender", headerName: "Gender", minWidth: 60, maxWidth:60 },
+    { field: "gender", headerName: "Gender", minWidth: 60, maxWidth: 60 },
     // { field: "nidcard_number", headerName: "NID Number", minWidth: 150 },
-    { field: "formattedJoinDate", headerName: "Created Date", minWidth: 160, maxWidth:160 },
+    { field: "formattedJoinDate", headerName: "Created Date", minWidth: 160, maxWidth: 160 },
     {
         field: "actions",
         headerName: "Actions",
-        minWidth: 70,
+        minWidth: 90,
         flex: 0.1,
         renderCell: (params) => (
             <Box display="flex" justifyContent="center" className="mt-3">
@@ -51,8 +54,15 @@ const columns = [
                     title="View"
                     size={28}
                     color="#f0523a"
-                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer mx-1"
                     onClick={() => params.row.handleViewModal(params)}
+                />
+                <RiQrCodeLine
+                    title="View"
+                    size={28}
+                    color="#f0523a"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer mx-1"
+                    onClick={() => params.row.handleQrCodeModal(params)}
                 />
             </Box>
         ),
@@ -67,6 +77,7 @@ const Referrer = () => {
     const [filteredRows, setFilteredRows] = useState([]);
     const [loading, setLoading] = useState(false);
     const [view, setView] = useState([]);
+    const [ForQrCode, setForQrCode] = useState([]);
     const [openViewModal, setOpenViewModal] = useState(false);
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [dateRange, setDateRange] = useState([
@@ -77,6 +88,14 @@ const Referrer = () => {
         },
     ]);
     const [refreshTable, setRefreshTable] = useState(false)
+    const [openQrCodeModal, setOpenQrCodeModal] = useState(false);
+
+
+    const [shopName, setShopName] = useState("");
+    const [qrCode, setQrCode] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const email = "user@example.com";
+
 
 
     // Fetch data from the API
@@ -134,7 +153,8 @@ const Referrer = () => {
                     university_start_date: item.university_start_date,
                     university_ending_date: item.university_ending_date,
                     university_ongoing: item.university_ongoing,
-                    handleViewModal: (params) => handleOpenViewModal(item)
+                    handleViewModal: (params) => handleOpenViewModal(item),
+                    handleQrCodeModal: (params) => handleOpenQrCodeModal(item)
                 }));
 
                 setRows(formattedData);
@@ -163,10 +183,23 @@ const Referrer = () => {
         console.log(item)
         setOpenViewModal(true)
 
-
     }
+
+    const handleOpenQrCodeModal = (item) => {
+        setForQrCode(item);
+        setShopName("");
+        setQrCode("");
+        console.log(item);
+        setOpenQrCodeModal(true);
+    };
+
+
+
     const handleCloseViewModal = () => {
         setOpenViewModal(false)
+    }
+    const handleCloseQrCodeModal = () => {
+        setOpenQrCodeModal(false)
     }
 
     const handleDateFilter = () => {
@@ -189,6 +222,65 @@ const Referrer = () => {
     const resetFilters = () => {
         setRefreshTable((prev) => !prev);
     }
+
+
+
+
+
+
+    const generateQRCode = async () => {
+        if (!shopName) {
+            alert("Please enter Referrer ID /Shop Name.");
+            return;
+        }
+
+        setIsLoading(true);
+
+
+
+        const payload = {
+            url: "https://tutorwise.com.bd/create-post",
+            referrer_phone: ForQrCode.phone,
+            referrer_shop_name: shopName,
+        };
+
+        try {
+            const response = await fetch(
+                `${BASE_URL}/api/admin/referrer-qr-code-generator/`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(payload),
+                }
+            );
+
+            if (response.ok) {
+                const data = await response.json();
+                setQrCode(data.qr_code);
+            } else {
+                alert("Failed to generate QR code. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("An error occurred. Please check the console for details.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const downloadQRCode = () => {
+        if (qrCode) {
+            const link = document.createElement("a");
+            const sanitizedShopName = shopName.replace(/\s+/g, "_"); // Replace spaces with underscores
+            link.href = `data:image/png;base64,${qrCode}`;
+            link.download = `${sanitizedShopName}.png`;
+            link.click();
+        }
+    };
+
+
 
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
@@ -421,9 +513,107 @@ const Referrer = () => {
 
 
 
+            {/* <Dialog open={openQrCodeModal} onClose={handleCloseQrCodeModal} fullWidth maxWidth="sm">
+                <DialogContent>
+                    <div className="flex flex-col items-center p-6 space-y-4 font-sans">
+                        <h1 className="text-2xl font-semibold text-gray-800">QR Code Generator</h1>
+
+                        <input
+                            type="text"
+                            placeholder="Enter Referrer/Shop Name"
+                            value={shopName}
+                            onChange={(e) => setShopName(e.target.value)}
+                            className="p-3 w-80 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-300 text-center"
+                        />
+
+                        <button
+                            onClick={generateQRCode}
+                            disabled={isLoading}
+                            className="px-6 py-2 font-medium text-white bg-green-500 rounded-lg shadow hover:bg-green-600 transition disabled:bg-gray-400"
+                        >
+                            {isLoading ? "Generating..." : "Generate QR Code"}
+                        </button>
+
+                        {qrCode && (
+                            <div className="flex flex-col items-center space-y-4">
+                                <div className="border-2 border-gray-300 p-3 rounded-lg shadow-lg">
+                                    <img
+                                        src={`data:image/png;base64,${qrCode}`}
+                                        alt="QR Code"
+                                        className="w-40 h-40"
+                                    />
+                                </div>
+
+                                <button
+                                    onClick={downloadQRCode}
+                                    className="px-6 py-2 font-medium text-white bg-red-500 rounded-lg shadow hover:bg-red-600 transition"
+                                >
+                                    Download QR Code
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog> */}
+
+            <Dialog open={openQrCodeModal} onClose={handleCloseQrCodeModal} fullWidth maxWidth="sm">
+                <DialogContent>
+                    {/* Modal Container */}
+                    <div className="flex flex-col items-center p-6 space-y-4 font-sans relative">
+                        {/* Close Button */}
+                        <button
+                            onClick={handleCloseQrCodeModal}
+                            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition"
+                        >
+                           <RxCross1 />
+                        </button>
+
+                        <h1 className="text-2xl font-semibold text-gray-800">QR Code Generator</h1>
+
+                        <input
+                            type="text"
+                            placeholder="Enter Referrer Name /Shop Name"
+                            value={shopName}
+                            onChange={(e) => setShopName(e.target.value)}
+                            className="p-3 w-80 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-300 text-center"
+                        />
+
+                        <button
+                            onClick={generateQRCode}
+                            disabled={isLoading}
+                            className="px-6 py-2 font-medium text-white bg-green-500 rounded-lg shadow hover:bg-green-600 transition disabled:bg-gray-400"
+                        >
+                            {isLoading ? "Generating..." : "Generate QR Code"}
+                        </button>
+
+                        {qrCode && (
+                            <div className="flex flex-col items-center space-y-4">
+                                <div className="border-2 border-gray-300 p-3 rounded-lg shadow-lg">
+                                    <img
+                                        src={`data:image/png;base64,${qrCode}`}
+                                        alt="QR Code"
+                                        className="w-40 h-40"
+                                    />
+                                </div>
+
+                                <button
+                                    onClick={downloadQRCode}
+                                    className="px-6 py-2 font-medium text-white bg-red-500 rounded-lg shadow hover:bg-red-600 transition"
+                                >
+                                    Download QR Code
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
+
 
         </Box>
     );
 };
 
 export default Referrer;
+
+
+

@@ -10,7 +10,7 @@ const CreateUser = () => {
     const navigate = useNavigate();
 
     // State for form inputs
-    const [accountType, setAccountType] = useState("Student");
+    const [accountType, setAccountType] = useState("student");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -35,6 +35,10 @@ const CreateUser = () => {
         severity: "success", // or "error"
         message: "",
     });
+
+    // State for email/phone code options
+    const [code_gmail, setCodeGmail] = useState(0);
+    const [code_phone, setCodePhone] = useState(0);
 
     // Toggle password visibility
     const togglePasswordVisibility = () => {
@@ -82,7 +86,7 @@ const CreateUser = () => {
             return;
         }
 
-        console.log(accountType, phoneNumber, username, password);
+        console.log(accountType, phoneNumber, username, password, code_gmail, code_phone);
 
         // API call to create user
         try {
@@ -91,6 +95,8 @@ const CreateUser = () => {
                 phone: phoneNumber,
                 username: username,
                 password: password,
+                code_gmail: code_gmail,
+                code_phone: code_phone,
             });
 
             if (response.data.success) {
@@ -127,15 +133,15 @@ const CreateUser = () => {
                         Registration
                     </h2>
                     <p className="text-sm text-center text-gray-600 mb-6">
-                        Register now as a Student, Tutor, Referrer, or Media.
+                        Register now as a Student, Tutor, Referrer and Media.
                     </p>
 
                     {/* Tab Buttons */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 mb-6 p-1.5 bg-gray-100 rounded-lg">
+                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 mb-6  bg-gray-200 rounded-lg border border-gray">
                         <button
                             className={`flex-1 py-2.5 px-4 text-sm font-medium rounded-md transition-all duration-300 ${accountType === "student"
-                                    ? "bg-teal-500 text-white shadow-md"
-                                    : "bg-transparent text-gray-600 hover:bg-gray-200"
+                                ? "bg-DefaultColor text-white shadow-md"
+                                : "bg-transparent text-gray-600 hover:bg-gray-200"
                                 }`}
                             onClick={() => setAccountType("student")}
                         >
@@ -146,8 +152,8 @@ const CreateUser = () => {
                         </button>
                         <button
                             className={`flex-1 py-2.5 px-4 text-sm font-medium rounded-md transition-all duration-300 ${accountType === "tutor"
-                                    ? "bg-blue-500 text-white shadow-md"
-                                    : "bg-transparent text-gray-600 hover:bg-gray-200"
+                                ? "bg-DefaultColor text-white shadow-md"
+                                : "bg-transparent text-gray-600 hover:bg-gray-200"
                                 }`}
                             onClick={() => setAccountType("tutor")}
                         >
@@ -158,8 +164,8 @@ const CreateUser = () => {
                         </button>
                         <button
                             className={`flex-1 py-2.5 px-4 text-sm font-medium rounded-md transition-all duration-300 ${accountType === "referrer"
-                                    ? "bg-orange-500 text-white shadow-md"
-                                    : "bg-transparent text-gray-600 hover:bg-gray-200"
+                                ? "bg-DefaultColor text-white shadow-md"
+                                : "bg-transparent text-gray-600 hover:bg-gray-200"
                                 }`}
                             onClick={() => setAccountType("referrer")}
                         >
@@ -170,8 +176,8 @@ const CreateUser = () => {
                         </button>
                         <button
                             className={`flex-1 py-2.5 px-4 text-sm font-medium rounded-md transition-all duration-300 ${accountType === "Media"
-                                    ? "bg-purple-500 text-white shadow-md"
-                                    : "bg-transparent text-gray-600 hover:bg-gray-200"
+                                ? "bg-DefaultColor text-white shadow-md"
+                                : "bg-transparent text-gray-600 hover:bg-gray-200"
                                 }`}
                             onClick={() => setAccountType("Media")}
                         >
@@ -186,9 +192,9 @@ const CreateUser = () => {
                     <div className="w-full space-y-4">
                         <div>
                             <input
-                                type="text"
+                                type="number"
                                 placeholder="Mobile Number"
-                                className="border border-gray-300 rounded-lg py-2.5 px-4 w-full focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                                className="border border-gray-300 rounded-lg py-2.5 px-4 w-full focus:outline-none focus:ring-2 focus:ring-DefaultSecondColor focus:border-transparent required "
                                 value={phoneNumber}
                                 onChange={(e) => setPhoneNumber(e.target.value)}
                             />
@@ -199,12 +205,14 @@ const CreateUser = () => {
 
                         <div>
                             <input
-                                type="text"
+                                type="email"
                                 placeholder="Email Address"
-                                className="border border-gray-300 rounded-lg py-2.5 px-4 w-full focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                                className="border border-gray-300 rounded-lg py-2.5 px-4 w-full focus:outline-none focus:ring-2 focus:ring-DefaultSecondColor focus:border-transparent"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
+                                required
                             />
+
                             {errors.username && (
                                 <p className="text-red-500 text-xs mt-1">{errors.username}</p>
                             )}
@@ -215,14 +223,14 @@ const CreateUser = () => {
                             <input
                                 type={passwordVisible ? "text" : "password"}
                                 placeholder="Create Password"
-                                className="border border-gray-300 rounded-lg py-2.5 px-4 w-full focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                                className="border border-gray-300 rounded-lg py-2.5 px-4 w-full focus:outline-none focus:ring-2 focus:ring-DefaultSecondColor focus:border-transparent "
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
                             <button
                                 type="button"
                                 onClick={togglePasswordVisibility}
-                                className="absolute inset-y-0 right-0 flex items-center px-4 text-gray-500 hover:text-gray-700"
+                                className="absolute inset-y-0 right-0 flex items-center px-4 text-gray-500 hover:text-gray-700 "
                             >
                                 {passwordVisible ? <FaEye /> : <FaEyeSlash />}
                             </button>
@@ -236,7 +244,7 @@ const CreateUser = () => {
                             <input
                                 type={passwordReTypeVisible ? "text" : "password"}
                                 placeholder="Re-Type Password"
-                                className="border border-gray-300 rounded-lg py-2.5 px-4 w-full focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                                className="border border-gray-300 rounded-lg py-2.5 px-4 w-full focus:outline-none focus:ring-2 focus:ring-DefaultSecondColor focus:border-transparent"
                                 value={ReTypepassword}
                                 onChange={(e) => setReTypepassword(e.target.value)}
                             />
@@ -253,10 +261,33 @@ const CreateUser = () => {
                         </div>
                     </div>
 
+                    {/* Checkbox for Gmail and Phone */}
+                    <div className="flex flex-col items-start space-y-4 my-3">
+                        <div className="flex items-center">
+                            <input
+                                type="checkbox"
+                                checked={code_gmail === 1}
+                                onChange={() => setCodeGmail(code_gmail === 1 ? 0 : 1)}
+                                className="h-4 w-4 text-DefaultColor focus:ring-DefaultColor rounded-sm"
+                            />
+
+                            <span className="ml-2 text-sm">Send username and password via gmail</span>
+                        </div>
+                        <div className="flex items-center">
+                            <input
+                                type="checkbox"
+                                checked={code_phone === 1}
+                                onChange={() => setCodePhone(code_phone === 1 ? 0 : 1)}
+                                className="h-4 w-4"
+                            />
+                            <span className="ml-2 text-sm">Send username and password via Phone</span>
+                        </div>
+                    </div>
+
                     {/* Create Account Button */}
                     <button
                         onClick={handleSignUp}
-                        className="w-full bg-teal-500 hover:bg-teal-600 text-white py-3 px-6 mt-6 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg"
+                        className="w-full  bg-DefaultColor text-white py-3 px-6 mt-6 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg"
                     >
                         Create Account
                     </button>
@@ -268,6 +299,10 @@ const CreateUser = () => {
                 open={snackbar.open}
                 autoHideDuration={6000}
                 onClose={handleCloseSnackbar}
+                anchorOrigin={{
+                    vertical: 'top',   
+                    horizontal: 'center'
+                }}
             >
                 <Alert
                     onClose={handleCloseSnackbar}
@@ -277,6 +312,7 @@ const CreateUser = () => {
                     {snackbar.message}
                 </Alert>
             </Snackbar>
+
         </div>
     );
 };

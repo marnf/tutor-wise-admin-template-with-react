@@ -186,12 +186,12 @@ const FaqList = () => {
         } else {
           setSnackbar({ open: true, message: "Failed to update FAQ.", severity: "error" });
         }
-        setShowEditModal(false); // Edit modal বন্ধ করা
+        setShowEditModal(false); 
       })
       .catch((error) => {
         console.error("Error updating FAQ:", error);
         setSnackbar({ open: true, message: "An error occurred.", severity: "error" });
-        setShowEditModal(false); // Edit modal বন্ধ করা
+        setShowEditModal(false); 
       });
   };
 
