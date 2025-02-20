@@ -5,6 +5,7 @@ import {
     Box,
     Button,
     Checkbox,
+    CircularProgress,
     Dialog,
     DialogActions,
     DialogContent,
@@ -392,7 +393,7 @@ const TutorPostStatus = () => {
             setIsLoading(true)
             axiosInstance.get(`/api/admin/single-tutor-post/${view.applied_tutor_post_id}/`)
                 .then(response => {
-                    setTutorPostData(response.data[0]);
+                    setTutorPostData(response.data);
                     console.log(response.data);
                     setIsLoading(false)
                 })
@@ -404,8 +405,8 @@ const TutorPostStatus = () => {
             setIsLoading(true)
             axiosInstance.get(`/api/admin/single-student-profile/${view.applied_student_id}/`)
                 .then(response => {
-                    setStudentData(response.data);
-                    console.log(response);
+                    setStudentData(response.data[0]);
+                    console.log(response.data[0]);
                     setIsLoading(false)
                 })
                 .catch(error => {
@@ -715,6 +716,9 @@ const TutorPostStatus = () => {
             </Dialog>
 
 
+
+
+
             <Dialog open={openViewModal} onClose={handleCloseViewModal} maxWidth="md">
                 <Box
                     sx={{
@@ -756,39 +760,150 @@ const TutorPostStatus = () => {
 
                     {/* Body Section */}
                     <Box sx={{ marginTop: 3 }}>
-                        <Box
-                            sx={{
-                                display: "grid",
-                                gridTemplateColumns: "1fr 1fr",
-                                gap: 2,
-                            }}
-                        >
-                            <Typography variant="body1">
-                                <strong>Payment Option:</strong> {view?.paymentOption || "No Data"}
-                            </Typography>
-                            <Typography variant="body1">
-                                <strong>Payment Type:</strong> {view?.paymentType || "No Data"}
-                            </Typography>
-                            <Typography variant="body1">
-                                <strong>Due for Advance:</strong>{" "}
-                                {view?.dueForAdvance !== null ? `${view.dueForAdvance}` : "No Data"}
-                            </Typography>
-                            <Typography variant="body1">
-                                <strong>Due for Late:</strong>{" "}
-                                {view?.dueForLate !== null ? `${view.dueForLate}` : "No Data"}
-                            </Typography>
-                            <Typography variant="body1">
-                                <strong>Total Earnings:</strong>{" "}
-                                {view?.totalEarnings ? `${view.totalEarnings}` : "No Data"}
-                            </Typography>
-                            <Typography variant="body1">
-                                <strong>Referrer Earnings:</strong>{" "}
-                                {view?.referrerEarnings ? `${view.referrerEarnings}` : "No Data"}
-                            </Typography>
-                            <Typography variant="body1">
-                                <strong>Referrer:</strong> {view?.referrer || "No Data"}
-                            </Typography>
-                        </Box>
+                        {/* Loading State */}
+                        {isLoading ? (
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    height: "200px",
+                                }}
+                            >
+                                <CircularProgress />
+                            </Box>
+                        ) : (
+                            <Box
+                                sx={{
+                                    display: "grid",
+                                    gridTemplateColumns: "1fr 1fr 1fr",
+                                    gap: 4,
+                                }}
+                            >
+                                {/* Tuition Post Data Section */}
+                                <Box sx={{ border: "1px solid #ddd", padding: 2, borderRadius: 2 }}>
+                                    <Typography variant="h6" sx={{ fontWeight: "bold", marginBottom: 2 }}>
+                                        Tutor post details
+                                    </Typography>
+                                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                                        <Typography variant="body1">
+                                            <strong>Budget Amount:</strong> {tutorPostData?.budget_amount || "No Data"}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            <strong>Created At:</strong>{" "}
+                                            {tutorPostData?.created_at
+                                                ? new Date(tutorPostData.created_at).toLocaleString()
+                                                : "No Data"}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            <strong>Curriculum:</strong> {tutorPostData?.curriculum || "No Data"}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            <strong>Customized User ID:</strong>{" "}
+                                            {tutorPostData?.customized_user_id || "No Data"}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            <strong>Days Per Week:</strong> {tutorPostData?.days_per_week || "No Data"}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            <strong>Educational Level:</strong>{" "}
+                                            {tutorPostData?.educational_level_choices || "No Data"}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            <strong>Gender:</strong> {tutorPostData?.gender || "No Data"}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            <strong>Job Title:</strong> {tutorPostData?.job_title || "No Data"}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            <strong>Lesson Type:</strong> {tutorPostData?.lesson_type || "No Data"}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            <strong>Subjects:</strong>{" "}
+                                            {tutorPostData?.subject ? tutorPostData.subject.join(", ") : "No Data"}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            <strong>Tuition Start Date:</strong>{" "}
+                                            {tutorPostData?.tuition_start_date || "No Data"}
+                                        </Typography>
+                                    </Box>
+                                </Box>
+
+                                {/* main data */}
+                                <Box sx={{ border: "1px solid #ddd", padding: 2, borderRadius: 2 }}>
+                                    <Typography variant="h6" sx={{ fontWeight: "bold", marginBottom: 2 }}>
+                                        Additional Data
+                                    </Typography>
+                                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                                        <Typography variant="body1">
+                                            <strong>Payment Option:</strong> {view?.paymentOption || "No Data"}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            <strong>Payment Type:</strong> {view?.paymentType || "No Data"}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            <strong>Due for Advance:</strong>{" "}
+                                            {view?.dueForAdvance !== null ? `${view.dueForAdvance}` : "No Data"}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            <strong>Due for Late:</strong>{" "}
+                                            {view?.dueForLate !== null ? `${view.dueForLate}` : "No Data"}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            <strong>Total Earnings:</strong>{" "}
+                                            {view?.totalEarnings ? `${view.totalEarnings}` : "No Data"}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            <strong>Referrer Earnings:</strong>{" "}
+                                            {view?.referrerEarnings ? `${view.referrerEarnings}` : "No Data"}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            <strong>Referrer:</strong> {view?.referrer || "No Data"}
+                                        </Typography>
+
+                                    </Box>
+                                </Box>
+
+
+
+                                {/* Tutor Data Section */}
+                                <Box sx={{ border: "1px solid #ddd", padding: 2, borderRadius: 2 }}>
+                                    <Typography variant="h6" sx={{ fontWeight: "bold", marginBottom: 2 }}>
+                                        Tutor Details
+                                    </Typography>
+                                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                                       
+                                      
+                                        <Typography variant="body1">
+                                            <strong>Customized ID:</strong> {studentData?.customized_id || "No Data"}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            <strong>District:</strong> {studentData?.district || "No Data"}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            <strong>Division:</strong> {studentData?.division || "No Data"}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            <strong>Full Name:</strong> {studentData?.full_name || "No Data"}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            <strong>Gender:</strong> {studentData?.gender || "No Data"}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            <strong>phone:</strong> {studentData?.phone || "No Data"}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            <strong>gmail:</strong> {studentData?.gmail || "No gmail"}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            <strong>Created Date:</strong> {studentData?.created_at || "No gmail"}
+                                        </Typography>
+                                       
+                                    </Box>
+                                </Box>
+                            </Box>
+                        )}
+
                     </Box>
 
                     {/* Footer Section */}
@@ -845,6 +960,8 @@ const TutorPostStatus = () => {
                     </Box>
                 </Box>
             </Dialog>
+
+
 
 
 

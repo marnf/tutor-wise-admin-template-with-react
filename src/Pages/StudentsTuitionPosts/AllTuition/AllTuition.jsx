@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
     Alert,
     Autocomplete,
@@ -20,6 +20,7 @@ import {
     Snackbar,
     TextareaAutosize,
     TextField,
+    Menu,
     Typography,
 } from "@mui/material";
 import { SiGitconnected } from "react-icons/si";
@@ -34,6 +35,12 @@ import { DateRangePicker } from "react-date-range";
 import moment from 'moment';
 import BASE_URL from "../../../Api/baseUrl";
 import { decryptData } from "../../../EncryptedPage";
+import { IoMdDownload } from "react-icons/io";
+
+import html2canvas from "html2canvas";
+import { jsPDF } from "jspdf";
+import { Document, Packer, Paragraph, TextRun } from "docx";
+// import { Document, Packer, Paragraph, TextRun } from "docx";
 
 
 // Dummy subject options
@@ -66,10 +73,10 @@ const columns = [
     { field: "userId", headerName: "ID", minWidth: 130 },
     { field: "name", headerName: "Name", minWidth: 150 },
     { field: "referrer", headerName: "Referrer Id", minWidth: 130, maxWidth: 130 },
-    { field: "budget", headerName: "Budget", minWidth: 60, maxWidth:60 },
+    { field: "budget", headerName: "Budget", minWidth: 60, maxWidth: 60 },
     { field: "gender", headerName: "Gender", minWidth: 60, maxWidth: 60 },
     { field: "subject", headerName: "Subject", minWidth: 180 },
-    { field: "formattedJoinDate", headerName: "Joining Date", minWidth: 160 },
+    { field: "formattedJoinDate", headerName: "Post Date", minWidth: 160 },
 
 
     // { field: "subject", headerName: "Subject", minWidth: 150 },
@@ -108,11 +115,22 @@ const columns = [
                 />
 
 
+                <IoMdDownload title="View"
+                    size={29}
+                    color="#f0523a"
+                    className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
+                    onClick={() => params.row.handleDownloadModal(params.row)}
+                />
+
+
                 <BiSolidUserDetail title="View"
                     size={29}
                     color="#f0523a"
                     className="transition ease-in-out delay-250 hover:-translate-y-1 hover:scale-110 cursor-pointer"
-                    onClick={() => params.row.handleViewModal(params.row)} />
+                    onClick={() => params.row.handleViewModal(params.row)}
+                />
+
+
                 {/* 
                 <MdDelete
                     title="Delete"
@@ -163,6 +181,7 @@ const AllTuition = () => {
     const [loading, setLoading] = useState(false);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [openViewModal, setOpenViewModal] = useState(false);
+    const [openDownloadModal, setOpenDownloadModal] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [snackbarSeverity, setSnackbarSeverity] = useState("success");
     const [showDatePicker, setShowDatePicker] = useState(false);
@@ -174,6 +193,9 @@ const AllTuition = () => {
         },
     ]);
     const [refreshTable, setRefreshTable] = useState(false)
+
+    const modalRef = useRef(null);
+
 
     useEffect(() => {
         setLoading(true);
@@ -206,6 +228,8 @@ const AllTuition = () => {
                     handleEdit: handleEditRequest,
                     handleDelete: handleDeleteRequest,
                     handleViewModal: handleOpenViewModal,
+                    handleDownloadModal: handleOpenDownloadModal,
+
                 }));
 
                 setRows(formattedData);
@@ -219,13 +243,24 @@ const AllTuition = () => {
     }, [refreshTable]);
 
 
-    useEffect(() => {
-        const result = rows.filter((row) =>
-            Object.values(row).join(" ").toLowerCase().includes(searchQuery.toLowerCase())
-        );
-        setFilteredRows(result);
-    }, [searchQuery, rows]);
+    // useEffect(() => {
+    //     const result = rows.filter((row) =>
+    //         Object.values(row).join(" ").toLowerCase().includes(searchQuery.toLowerCase())
+    //     );
+    //     setFilteredRows(result);
+    // }, [searchQuery, rows]);
 
+
+    useEffect(() => {
+        const debounceSearch = setTimeout(() => {
+            const result = rows.filter((row) =>
+                Object.values(row).join(" ").toLowerCase().includes(searchQuery.toLowerCase())
+            );
+            setFilteredRows(result);
+        }, 500);
+
+        return () => clearTimeout(debounceSearch);
+    }, [searchQuery, rows]);
 
 
     const handleDateFilter = () => {
@@ -268,8 +303,17 @@ const AllTuition = () => {
         setView(row)
     }
 
+    const handleOpenDownloadModal = (row) => {
+        setOpenDownloadModal(true)
+        setView(row)
+    }
+
     const handleCloseViewModal = () => {
         setOpenViewModal(false)
+    }
+
+    const handleCloseDownloadModal = () => {
+        setOpenDownloadModal(false)
     }
 
 
@@ -342,12 +386,247 @@ const AllTuition = () => {
 
     const handleClose = () => {
         setOpen(false);
+
     };
 
 
     const handleCloseDeleteModal = () => {
         setOpenDeleteModal(false);
     };
+
+
+
+
+
+
+
+    const handleDownloadImage = async () => {
+        if (modalRef.current) {
+            const canvas = await html2canvas(modalRef.current, {
+                backgroundColor: null, // Transparent Background
+                scale: 3, // Increase scale for higher resolution
+                useCORS: true, // Fix potential CORS issues
+                logging: true, // Useful for debugging
+            });
+            const image = canvas.toDataURL("image/png");
+
+            const link = document.createElement("a");
+            link.href = image;
+            link.download = "modal-content.png";
+            link.click();
+        }
+        handleClose(); // Close dropdown after selection
+    };
+
+    // Handle PDF download
+
+    // const handleDownloadPDF = async () => {
+    //     if (modalRef.current) {
+    //         const canvas = await html2canvas(modalRef.current, {
+    //             backgroundColor: null,
+    //             scale: 3,
+    //             useCORS: true,
+    //         });
+    //         const imgData = canvas.toDataURL("image/png");
+
+    //         const doc = new jsPDF();
+    //         const imgWidth = 210; // A4 page width in mm
+    //         const imgHeight = (canvas.height * imgWidth) / canvas.width; // Maintain aspect ratio
+
+    //         // Add image with calculated height
+    //         doc.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
+    //         doc.save("modal-content.pdf");
+    //     }
+    //     handleClose(); // Close dropdown after selection
+    // };
+
+
+    // Handle DOC (Word) download
+    const handleDownloadDOC = async () => {
+        try {
+            if (modalRef.current) {
+                // Create a new DOCX document with formatted content
+                const doc = new Document({
+                    sections: [
+                        {
+                            properties: {},
+                            children: [
+                                new Paragraph({
+                                    children: [
+                                        new TextRun({
+                                            text: "আসসালামু আলাইকুম।",
+                                            font: "Arial Unicode MS", 
+                                        }),
+                                    ],
+                                }),
+                                new Paragraph({
+                                    children: [
+                                        new TextRun({
+                                            text: "TutorWise এর পক্ষ থেকে শুভেচ্ছা।",
+                                            font: "Arial Unicode MS", 
+                                        }),
+                                    ],
+                                }),
+                                new Paragraph({
+                                    children: [
+                                        new TextRun({
+                                            text: "টিউটর আবশ্যক",
+                                            font: "Arial Unicode MS", 
+                                        }),
+                                    ],
+                                }),
+                                new Paragraph({
+                                    children: [
+                                        new TextRun({
+                                            text: "     • লোকেশন: " + (view?.district || '') + " " + (view?.division || ''),
+                                            font: "Arial Unicode MS", 
+                                        }),
+                                    ],
+                                }),
+                                new Paragraph({
+                                    children: [
+                                        new TextRun({
+                                            text: "     • সাবজেক্ট: " + (view?.subject || ''),
+                                            font: "Arial Unicode MS", 
+                                        }),
+                                    ],
+                                }),
+                                new Paragraph({
+                                    children: [
+                                        new TextRun({
+                                            text: "     • মিডিয়াম: " + (view?.medium || ''),
+                                            font: "Arial Unicode MS", 
+                                        }),
+                                    ],
+                                }),
+                                new Paragraph({
+                                    children: [
+                                        new TextRun({
+                                            text: "     • ক্লাস: " + (view?.educationalLevel || ''),
+                                            font: "Arial Unicode MS", 
+                                        }),
+                                    ],
+                                }),
+                                new Paragraph({
+                                    children: [
+                                        new TextRun({
+                                            text: "     • শিক্ষার্থী: " + (view?.studentName || ''),
+                                            font: "Arial Unicode MS", 
+                                        }),
+                                    ],
+                                }),
+                                new Paragraph({
+                                    children: [
+                                        new TextRun({
+                                            text: "     • টিউটর: " + (view?.tutorName || ''),
+                                            font: "Arial Unicode MS", 
+                                        }),
+                                    ],
+                                }),
+                                new Paragraph({
+                                    children: [
+                                        new TextRun({
+                                            text: "     • শুরুর তারিখ: " + (view?.tuitionStartDate || ''),
+                                            font: "Arial Unicode MS", 
+                                        }),
+                                    ],
+                                }),
+                                new Paragraph({
+                                    children: [
+                                        new TextRun({
+                                            text: "     • সপ্তাহে: " + (view?.daysPerWeek || '') + " দিন",
+                                            font: "Arial Unicode MS", 
+                                        }),
+                                    ],
+                                }),
+                                new Paragraph({
+                                    children: [
+                                        new TextRun({
+                                            text: "     • বেতন : " + (view?.budget || '') + " /মাস",
+                                            font: "Arial Unicode MS", 
+                                        }),
+                                    ],
+                                }),
+                                new Paragraph({
+                                    children: [
+                                        new TextRun({
+                                            text: "     • পড়াতে হবে: " + (view?.curriculum || ''),
+                                            font: "Arial Unicode MS", 
+                                        }),
+                                    ],
+                                }),
+                               
+                                new Paragraph({
+                                    children: [
+                                        new TextRun({
+                                            text: "এই টিউশনি পেতে এখনই ভিজিট করুন: www.tutorwise.com.bd",
+                                            font: "Arial Unicode MS", 
+                                        }),
+                                    ],
+                                }),
+                                new Paragraph({
+                                    children: [
+                                        new TextRun({
+                                            text: "Phone/WhatsApp: 01897-621279",
+                                            font: "Arial Unicode MS", 
+                                        }),
+                                    ],
+                                }),
+                                new Paragraph({
+                                    children: [
+                                        new TextRun({
+                                            text: "Facebook Page: https://www.facebook.com/tutorwise.com.bd",
+                                            font: "Arial Unicode MS", 
+                                        }),
+                                    ],
+                                }),
+                                new Paragraph({
+                                    children: [
+                                        new TextRun({
+                                            text: "Youtube: https://www.youtube.com/@tutorwise",
+                                            font: "Arial Unicode MS", 
+                                        }),
+                                    ],
+                                }),
+                                new Paragraph({
+                                    children: [
+                                        new TextRun({
+                                            text: "Email: tutorwise.com.bd@gmail.com",
+                                            font: "Arial Unicode MS", 
+                                        }),
+                                    ],
+                                }),
+                            ],
+                        },
+                    ],
+                });
+
+                // Convert the document to a base64 string
+                const base64String = await Packer.toBase64String(doc);
+
+                // Convert the base64 string to a Blob
+                const blob = new Blob([new Uint8Array(atob(base64String).split("").map(char => char.charCodeAt(0)))], {
+                    type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                });
+
+                // Create a download link and trigger the download
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = "modal-content.docx";
+                link.click();
+            }
+        } catch (error) {
+            console.error("Error creating DOCX:", error);
+        }
+
+        handleClose(); // Close the dropdown after download
+    };
+
+
+
+
+
+
 
 
 
@@ -775,6 +1054,131 @@ const AllTuition = () => {
                             Close
                         </Button>
                     </Box>
+                </Box>
+            </Dialog>
+
+
+            <Dialog open={openDownloadModal} onClose={handleCloseDownloadModal} maxWidth="md">
+                <Box
+                    sx={{
+                        padding: 4,
+                        backgroundColor: "#ffffff",
+                        margin: "auto",
+                    }}
+                    ref={modalRef} // Attach ref to modal content
+                >
+                    {/* Header Section */}
+                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingBottom: 2, borderBottom: "1px solid #ddd" }}>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                            <Box>
+                                <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                                    {view?.name || "No Name"}
+                                </Typography>
+                                <Typography variant="body2" sx={{ color: "#555" }}>
+                                    {view?.email || "No Email"}
+                                </Typography>
+                                <Box sx={{ display: 'flex', gap: 2 }}>
+                                    <FormControlLabel
+                                        control={<Checkbox checked={view?.startImmediate || false} disabled />}
+                                        label="Start Immediate"
+                                    />
+                                    <FormControlLabel
+                                        control={<Checkbox checked={view?.is_active || false} disabled />}
+                                        label="Active"
+                                    />
+                                </Box>
+                            </Box>
+                        </Box>
+                        <Box>
+                            <Typography variant="body2" sx={{ textAlign: "right", color: "#777" }}>
+                                <strong>ID:</strong> {view?.userId || "No ID"}
+                            </Typography>
+                            <Typography variant="body2">
+                                {view?.createdAt ? new Date(view.createdAt).toLocaleString() : "No Created Date"}
+                            </Typography>
+                        </Box>
+                    </Box>
+
+                    {/* Body Section */}
+                    <Box sx={{ marginTop: 3 }}>
+                        <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+                            <Typography variant="body1"><strong>Phone:</strong> {view?.phone || "No Phone"}</Typography>
+                            <Typography variant="body1"><strong>Gender:</strong> {view?.gender || "No Gender"}</Typography>
+                            <Typography variant="body1"><strong>Division:</strong>{view?.district || "No District"} {view?.division || "No Division"}</Typography>
+                            <Typography variant="body1"><strong>Educational Level:</strong> {view?.educationalLevel || "No Data"}</Typography>
+                            <Typography variant="body1"><strong>Lesson Type:</strong> {view?.lessonType || "No Data"}</Typography>
+                            <Typography variant="body1"><strong>Subject:</strong> {view?.subject || "No Subject"}</Typography>
+                            <Typography variant="body1"><strong>Budget:</strong> {view?.budget ? `${view.budget} ` : "No Budget"}</Typography>
+                            <Typography variant="body1"><strong>Days Per Week:</strong> {view?.daysPerWeek || "No Data"}</Typography>
+                            <Typography variant="body1"><strong>Tuition Start Date: <br /></strong> {view?.tuitionStartDate || "No Date"}</Typography>
+                            <Typography variant="body1"><strong>Curriculum: <br /></strong> {view?.curriculum || "No Curriculum"}</Typography>
+                            <Typography variant="body1"><strong>Job Title: <br /> </strong> {view?.jobTitle || "No jobTitle"}</Typography>
+                            <Typography variant="body1"><strong>Study Material:  <br /></strong> {view?.study_material || "No study material"}</Typography>
+                        </Box>
+                    </Box>
+                </Box>
+
+                <Box className="flex items-center justify-end mt-5 m-2 gap-5">
+                    <Button
+                        variant="contained"
+                        sx={{
+                            backgroundColor: "#007bff",
+                            color: "#fff",
+                            fontWeight: "bold",
+                            padding: "0.5rem 2rem",
+                            "&:hover": {
+                                backgroundColor: "#0056b3",
+                            },
+                        }}
+                        onClick={handleCloseDownloadModal}
+                    >
+                        Close
+                    </Button>
+
+                    <Button
+                        variant="contained"
+                        sx={{
+                            backgroundColor: "#007bff",
+                            color: "#fff",
+                            fontWeight: "bold",
+                            padding: "0.5rem 2rem",
+                            "&:hover": {
+                                backgroundColor: "#0056b3",
+                            },
+                        }}
+                        onClick={handleDownloadImage} // Open dropdown
+                    >
+                        Download Image
+                    </Button>
+
+                    <Button
+                        variant="contained"
+                        sx={{
+                            backgroundColor: "#007bff",
+                            color: "#fff",
+                            fontWeight: "bold",
+                            padding: "0.5rem 2rem",
+                            "&:hover": {
+                                backgroundColor: "#0056b3",
+                            },
+                        }}
+                        onClick={handleDownloadDOC} // Open dropdown
+                    >
+                        Download Docx
+                    </Button>
+
+                    {/* <Menu
+                        anchorEl={types}
+                        open={buttonOpen}
+                        onClose={handleClose}
+                        sx={{
+                            marginTop: 1,
+                        }}
+                    >
+                        <MenuItem onClick={handleDownloadImage}>Download Image (PNG)</MenuItem>
+                        <MenuItem onClick={handleDownloadPDF}>Download PDF</MenuItem>
+                        <MenuItem onClick={handleDownloadDOC}>Download DOC</MenuItem>
+                    </Menu> */}
                 </Box>
             </Dialog>
 
