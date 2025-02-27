@@ -22,6 +22,8 @@ import {
     TextField,
     Menu,
     Typography,
+    InputAdornment,
+    CircularProgress,
 } from "@mui/material";
 import { SiGitconnected } from "react-icons/si";
 import { DataGrid } from "@mui/x-data-grid";
@@ -37,10 +39,23 @@ import BASE_URL from "../../../Api/baseUrl";
 import { decryptData } from "../../../EncryptedPage";
 import { IoMdDownload } from "react-icons/io";
 
+import domtoimage from "dom-to-image";
+
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import { Document, Packer, Paragraph, TextRun } from "docx";
 // import { Document, Packer, Paragraph, TextRun } from "docx";
+import mirpurImage from "../../../../public/images/Mirpurr_Tutor_Poster.jpg"
+import Banasree from "../../../../public/images/Banasree_Tutor_Poster.jpg"
+import Basila from "../../../../public/images/Basila_Tutor_Poster.jpg"
+import Dhanmondi from "../../../../public/images/Dhanmondi_Tutor_Poster.jpg"
+import Gulshan from "../../../../public/images/Gulshan_Tutor_Poster.jpg"
+import Hatirjhil from "../../../../public/images/Hatirjheel_Tutor_Poster.jpg"
+import Mohammadpur from "../../../../public/images/Mohammadpur_Tutor_Poster.jpg"
+import Purandhaka from "../../../../public/images/PuranDhaka_Tutor_Poster.jpg"
+import Rampura from "../../../../public/images/Rampura_Tutor_Poster.jpg"
+import Shantinagar from "../../../../public/images/Shantinagar_Tutor_Poster.jpg"
+import Uttara from "../../../../public/images/Uttara_Tutor_Poste1r.jpg"
 
 
 // Dummy subject options
@@ -193,15 +208,18 @@ const AllTuition = () => {
         },
     ]);
     const [refreshTable, setRefreshTable] = useState(false)
+    const [singleLoading, setSingleLoading] = useState(false);
 
     const modalRef = useRef(null);
 
-
+    // console.log(view);
     useEffect(() => {
         setLoading(true);
         fetch(`${BASE_URL}/api/admin/tuition/list/`)
+
             .then((res) => res.json())
             .then((data) => {
+
                 const formattedData = data.map((item) => ({
                     id: item.id,
                     userId: item.student_customized_id,
@@ -304,8 +322,9 @@ const AllTuition = () => {
     }
 
     const handleOpenDownloadModal = (row) => {
+        handleFetchSingleStudentData(row.id)
         setOpenDownloadModal(true)
-        setView(row)
+
     }
 
     const handleCloseViewModal = () => {
@@ -315,6 +334,20 @@ const AllTuition = () => {
     const handleCloseDownloadModal = () => {
         setOpenDownloadModal(false)
     }
+
+
+    const handleFetchSingleStudentData = (id) => {
+        setSingleLoading(true);
+        fetch(`${BASE_URL}/api/admin/single-tuition-post/${id}/?lang=bn`)
+            .then((res) => res.json())
+            .then((data) => {
+                setSingleLoading(false);
+                console.log(data);
+                setView(data);
+
+            })
+    }
+
 
 
 
@@ -400,48 +433,42 @@ const AllTuition = () => {
 
 
 
+
+    // const handleDownloadImage = async () => {
+    //     if (modalRef.current) {
+    //         const image = await domtoimage.toPng(modalRef.current, {
+    //             bgcolor: "#ffffff",
+    //             quality: 1,
+    //         });
+
+    //         const link = document.createElement("a");
+    //         link.href = image;
+    //         link.download = "modal-content.png";
+    //         link.click();
+    //     }
+    //     handleClose();
+    // };
+
+
     const handleDownloadImage = async () => {
         if (modalRef.current) {
-            const canvas = await html2canvas(modalRef.current, {
-                backgroundColor: null, // Transparent Background
-                scale: 3, // Increase scale for higher resolution
-                useCORS: true, // Fix potential CORS issues
-                logging: true, // Useful for debugging
+            const image = await domtoimage.toPng(modalRef.current, {
+                bgcolor: "#ffffff", // Background color
+                quality: 1, // Maximum quality
+                width: modalRef.current.clientWidth * 0, // Increase resolution
+                height: modalRef.current.clientHeight * 0,
             });
-            const image = canvas.toDataURL("image/png");
 
             const link = document.createElement("a");
             link.href = image;
             link.download = "modal-content.png";
             link.click();
         }
-        handleClose(); // Close dropdown after selection
+        handleClose();
     };
 
-    // Handle PDF download
-
-    // const handleDownloadPDF = async () => {
-    //     if (modalRef.current) {
-    //         const canvas = await html2canvas(modalRef.current, {
-    //             backgroundColor: null,
-    //             scale: 3,
-    //             useCORS: true,
-    //         });
-    //         const imgData = canvas.toDataURL("image/png");
-
-    //         const doc = new jsPDF();
-    //         const imgWidth = 210; // A4 page width in mm
-    //         const imgHeight = (canvas.height * imgWidth) / canvas.width; // Maintain aspect ratio
-
-    //         // Add image with calculated height
-    //         doc.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
-    //         doc.save("modal-content.pdf");
-    //     }
-    //     handleClose(); // Close dropdown after selection
-    // };
 
 
-    // Handle DOC (Word) download
     const handleDownloadDOC = async () => {
         try {
             if (modalRef.current) {
@@ -455,7 +482,7 @@ const AllTuition = () => {
                                     children: [
                                         new TextRun({
                                             text: "আসসালামু আলাইকুম।",
-                                            font: "Arial Unicode MS", 
+                                            font: "Arial Unicode MS",
                                         }),
                                     ],
                                 }),
@@ -463,7 +490,7 @@ const AllTuition = () => {
                                     children: [
                                         new TextRun({
                                             text: "TutorWise এর পক্ষ থেকে শুভেচ্ছা।",
-                                            font: "Arial Unicode MS", 
+                                            font: "Arial Unicode MS",
                                         }),
                                     ],
                                 }),
@@ -471,7 +498,7 @@ const AllTuition = () => {
                                     children: [
                                         new TextRun({
                                             text: "টিউটর আবশ্যক",
-                                            font: "Arial Unicode MS", 
+                                            font: "Arial Unicode MS",
                                         }),
                                     ],
                                 }),
@@ -479,7 +506,7 @@ const AllTuition = () => {
                                     children: [
                                         new TextRun({
                                             text: "     • লোকেশন: " + (view?.district || '') + " " + (view?.division || ''),
-                                            font: "Arial Unicode MS", 
+                                            font: "Arial Unicode MS",
                                         }),
                                     ],
                                 }),
@@ -487,7 +514,7 @@ const AllTuition = () => {
                                     children: [
                                         new TextRun({
                                             text: "     • সাবজেক্ট: " + (view?.subject || ''),
-                                            font: "Arial Unicode MS", 
+                                            font: "Arial Unicode MS",
                                         }),
                                     ],
                                 }),
@@ -495,7 +522,7 @@ const AllTuition = () => {
                                     children: [
                                         new TextRun({
                                             text: "     • মিডিয়াম: " + (view?.medium || ''),
-                                            font: "Arial Unicode MS", 
+                                            font: "Arial Unicode MS",
                                         }),
                                     ],
                                 }),
@@ -503,7 +530,7 @@ const AllTuition = () => {
                                     children: [
                                         new TextRun({
                                             text: "     • ক্লাস: " + (view?.educationalLevel || ''),
-                                            font: "Arial Unicode MS", 
+                                            font: "Arial Unicode MS",
                                         }),
                                     ],
                                 }),
@@ -511,7 +538,7 @@ const AllTuition = () => {
                                     children: [
                                         new TextRun({
                                             text: "     • শিক্ষার্থী: " + (view?.studentName || ''),
-                                            font: "Arial Unicode MS", 
+                                            font: "Arial Unicode MS",
                                         }),
                                     ],
                                 }),
@@ -519,7 +546,7 @@ const AllTuition = () => {
                                     children: [
                                         new TextRun({
                                             text: "     • টিউটর: " + (view?.tutorName || ''),
-                                            font: "Arial Unicode MS", 
+                                            font: "Arial Unicode MS",
                                         }),
                                     ],
                                 }),
@@ -527,15 +554,15 @@ const AllTuition = () => {
                                     children: [
                                         new TextRun({
                                             text: "     • শুরুর তারিখ: " + (view?.tuitionStartDate || ''),
-                                            font: "Arial Unicode MS", 
+                                            font: "Arial Unicode MS",
                                         }),
                                     ],
                                 }),
                                 new Paragraph({
                                     children: [
                                         new TextRun({
-                                            text: "     • সপ্তাহে: " + (view?.daysPerWeek || '') + " দিন",
-                                            font: "Arial Unicode MS", 
+                                            text: "     • সপ্তাহে: " + (view?.days_per_week || '') + " দিন",
+                                            font: "Arial Unicode MS",
                                         }),
                                     ],
                                 }),
@@ -543,7 +570,7 @@ const AllTuition = () => {
                                     children: [
                                         new TextRun({
                                             text: "     • বেতন : " + (view?.budget || '') + " /মাস",
-                                            font: "Arial Unicode MS", 
+                                            font: "Arial Unicode MS",
                                         }),
                                     ],
                                 }),
@@ -551,16 +578,16 @@ const AllTuition = () => {
                                     children: [
                                         new TextRun({
                                             text: "     • পড়াতে হবে: " + (view?.curriculum || ''),
-                                            font: "Arial Unicode MS", 
+                                            font: "Arial Unicode MS",
                                         }),
                                     ],
                                 }),
-                               
+
                                 new Paragraph({
                                     children: [
                                         new TextRun({
                                             text: "এই টিউশনি পেতে এখনই ভিজিট করুন: www.tutorwise.com.bd",
-                                            font: "Arial Unicode MS", 
+                                            font: "Arial Unicode MS",
                                         }),
                                     ],
                                 }),
@@ -568,7 +595,7 @@ const AllTuition = () => {
                                     children: [
                                         new TextRun({
                                             text: "Phone/WhatsApp: 01897-621279",
-                                            font: "Arial Unicode MS", 
+                                            font: "Arial Unicode MS",
                                         }),
                                     ],
                                 }),
@@ -576,7 +603,7 @@ const AllTuition = () => {
                                     children: [
                                         new TextRun({
                                             text: "Facebook Page: https://www.facebook.com/tutorwise.com.bd",
-                                            font: "Arial Unicode MS", 
+                                            font: "Arial Unicode MS",
                                         }),
                                     ],
                                 }),
@@ -584,7 +611,7 @@ const AllTuition = () => {
                                     children: [
                                         new TextRun({
                                             text: "Youtube: https://www.youtube.com/@tutorwise",
-                                            font: "Arial Unicode MS", 
+                                            font: "Arial Unicode MS",
                                         }),
                                     ],
                                 }),
@@ -592,7 +619,7 @@ const AllTuition = () => {
                                     children: [
                                         new TextRun({
                                             text: "Email: tutorwise.com.bd@gmail.com",
-                                            font: "Arial Unicode MS", 
+                                            font: "Arial Unicode MS",
                                         }),
                                     ],
                                 }),
@@ -624,6 +651,137 @@ const AllTuition = () => {
 
 
 
+
+    const handleOpenInNewTab = () => {
+        try {
+            if (modalRef.current) {
+                // Format the budget value with a comma for thousands
+                const formattedBudget = view?.budget ? parseInt(view.budget).toLocaleString() : '';
+
+                // Create the HTML content
+                const content = `
+                    <html>
+                        <head>
+                            <title>TutorWise Details</title>
+                            <style>
+                                body {
+                                    font-family: Arial, sans-serif;
+                                    margin: 20px;
+                                }
+                                #contentToCopy p {
+                                    margin: 0; /* Remove default margin for <p> tags */
+                                    padding: 0; /* Remove default padding */
+                                    line-height: 1.5; /* Adjust line height for better readability */
+                                }
+                                button {
+                                    margin-top: 20px;
+                                    padding: 10px 20px;
+                                    font-size: 16px;
+                                    cursor: pointer;
+                                    background-color: #007bff;
+                                    color: white;
+                                    border: none;
+                                    border-radius: 5px;
+                                }
+                                button:hover {
+                                    background-color: #0056b3;
+                                }
+                                .copy-message {
+                                    position: fixed;
+                                    top: 20px;
+                                    right: 20px;
+                                    background-color: #4CAF50;
+                                    color: white;
+                                    padding: 10px 20px;
+                                    border-radius: 5px;
+                                    font-size: 14px;
+                                    z-index: 1000;
+                                    display: none;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <!-- Container for the text to be copied -->
+                            <div id="contentToCopy">
+                               <div>আসসালামু আলাইকুম।</div>
+                                    <div>TutorWise এর পক্ষ থেকে শুভেচ্ছা।</div>
+                                    <p>টিউটর আবশ্যক</p>
+                                    <div>     • লোকেশন: ${view?.district || ''} ${view?.division || ''}</div>
+                                    <div>     • সাবজেক্ট: ${view?.subject || ''}</div>
+                                    <div>     • মিডিয়াম: ${view?.medium || ''}</div>
+                                    <div>     • ক্লাস: ${view?.educationalLevel || ''}</div>
+                                    <div>     • শিক্ষার্থী: ${view?.studentName || ''}</div>
+                                    <div>     • টিউটর: ${view?.tutorName || ''}</div>
+                                    <div>     • শুরুর তারিখ: ${view?.tuitionStartDate || ''}</div>
+                                    <div>     • সপ্তাহে: ${view?.days_per_week || ''} দিন</div>
+                                    <div>     • বেতন : ${formattedBudget} /মাস</div>
+                                    <div>     • সময়: ${view?.time || ''}</div>
+
+                                <div>এই টিউশনি পেতে এখনই ভিজিট করুন: <a href="www.tutorwise.com.bd">www.tutorwise.com.bd</a></div>
+                                <div>Phone/WhatsApp: 01897-621279</div>
+                                <div>Facebook Page: <a href="https://www.facebook.com/tutorwise.com.bd">https://www.facebook.com/tutorwise.com.bd</a></div>
+                                <div>Youtube: <a href="https://www.youtube.com/@tutorwise">https://www.youtube.com/@tutorwise</a></div>
+                                <div>Email: <a href="mailto:tutorwise.com.bd@gmail.com">tutorwise.com.bd@gmail.com</a></div>
+                            </div>
+    
+                            <!-- Copy Button -->
+                            <button onclick="copyAllText()">Copy Text</button>
+    
+                            <!-- Copy Message -->
+                            <div id="copyMessage" class="copy-message">Text copied!</div>
+    
+                            <script>
+                                function copyAllText() {
+                                    // Get the text content from the specific container
+                                    const contentToCopy = document.getElementById('contentToCopy').innerText;
+    
+                                    // Create a temporary textarea element
+                                    const tempTextarea = document.createElement('textarea');
+                                    tempTextarea.value = contentToCopy;
+                                    document.body.appendChild(tempTextarea);
+    
+                                    // Select the text in the textarea
+                                    tempTextarea.select();
+                                    tempTextarea.setSelectionRange(0, 99999); // For mobile devices
+    
+                                    // Copy the text using the older execCommand method
+                                    try {
+                                        const success = document.execCommand('copy');
+                                        if (success) {
+                                            // Show the copy message
+                                            const copyMessage = document.getElementById('copyMessage');
+                                            copyMessage.style.display = 'block';
+    
+                                            // Hide the message after 0.5 seconds
+                                            setTimeout(() => {
+                                                copyMessage.style.display = 'none';
+                                            }, 500);
+                                        } else {
+                                            console.error("Failed to copy text using execCommand.");
+                                        }
+                                    } catch (err) {
+                                        console.error("Failed to copy text: ", err);
+                                    } finally {
+                                        // Remove the temporary textarea
+                                        document.body.removeChild(tempTextarea);
+                                    }
+                                }
+                            </script>
+                        </body>
+                    </html>
+                `;
+
+                // Open a new window or tab with the HTML content
+                const newWindow = window.open();
+                newWindow.document.write(content);
+                newWindow.document.close();
+            }
+        } catch (error) {
+            console.error("Error opening content in new tab:", error);
+        }
+
+        handleClose(); // Close the dropdown after opening the new tab
+    };
 
 
 
@@ -1058,71 +1216,384 @@ const AllTuition = () => {
             </Dialog>
 
 
-            <Dialog open={openDownloadModal} onClose={handleCloseDownloadModal} maxWidth="md">
-                <Box
-                    sx={{
-                        padding: 4,
-                        backgroundColor: "#ffffff",
-                        margin: "auto",
-                    }}
-                    ref={modalRef} // Attach ref to modal content
-                >
-                    {/* Header Section */}
-                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingBottom: 2, borderBottom: "1px solid #ddd" }}>
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                            <Box>
-                                <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                                    {view?.name || "No Name"}
-                                </Typography>
-                                <Typography variant="body2" sx={{ color: "#555" }}>
-                                    {view?.email || "No Email"}
-                                </Typography>
-                                <Box sx={{ display: 'flex', gap: 2 }}>
-                                    <FormControlLabel
-                                        control={<Checkbox checked={view?.startImmediate || false} disabled />}
-                                        label="Start Immediate"
-                                    />
-                                    <FormControlLabel
-                                        control={<Checkbox checked={view?.is_active || false} disabled />}
-                                        label="Active"
-                                    />
+            <Dialog open={openDownloadModal} onClose={handleCloseDownloadModal} maxWidth={false}  >
+
+                {
+                    singleLoading ? (
+                        <div className="container mx-auto flex justify-center my-2">
+                            <CircularProgress />
+                        </div>
+                    ) :
+                        (
+
+                            <Box ref={modalRef}
+                                sx={{
+                                    padding: 1,
+                                    width: "100%", // Full width
+                                    height: "100%", // Full height
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    position: "relative",
+
+                                    maxWidth: "1800px",
+                                    width: "100%",
+                                }}
+                            >
+                                {/* Background Image Div */}
+                                <Box
+                                    sx={{
+                                        width: "100%",
+                                        height: "600px",
+
+                                        backgroundImage:
+                                            view?.district === "Mirpur"
+                                                ? `url(${mirpurImage})`
+                                                : view?.district === "Mohammadpur"
+                                                    ? `url(${Mohammadpur})`
+                                                    : view?.district === "Rampura"
+                                                        ? `url(${Rampura})`
+                                                        : `url(${Rampura})`,
+
+
+
+                                        backgroundSize: "cover",
+                                        backgroundPosition: "center",
+                                        backgroundRepeat: "no-repeat",
+                                        position: "relative",
+                                    }}
+                                >
+                                    {/* Form Box */}
+                                    <Box
+                                        sx={{
+                                            position: "absolute",
+                                            top: "50%",
+                                            left: "50%",
+                                            transform: "translate(-50%, -50%)",
+
+                                            width: "100%",
+                                            maxWidth: "90%",
+                                        }}
+                                    >
+                                        <Grid item xs={6} className="flex items-center">
+                                            <Grid item xs={6} className="flex items-center">
+                                                <Typography className="text-start text-white" sx={{ fontWeight: "600", fontSize: "1.1rem", minWidth: "80px" }}>
+                                                    টিউশন ID :
+                                                </Typography>
+                                                <Typography className="text-white" sx={{ fontWeight: "600", fontSize: "1.1rem", minWidth: "80px" }}>
+                                                    TW{view?.id || ""}
+                                                </Typography>
+                                            </Grid>
+
+
+
+                                        </Grid>
+
+                                        <Grid spacing={2}
+                                            sx={{
+                                                border: "2px solid white",
+
+                                            }}
+                                        >
+
+
+                                            {/* Blue-colored div wrapping the first two rows */}
+                                            <div style={{ backgroundColor: '#021E36', width: '100%', padding: '8px', margin: "auto" }}>
+
+                                                {/* Medium, Class, and Student Gender */}
+                                                <Grid container spacing={1}>
+                                                    <Grid item className="flex items-center gap-2" xs={6}>
+                                                        <Typography className="text-start text-white" sx={{ fontWeight: "600", fontSize: "1.1rem", minWidth: "80px" }}>
+                                                            মিডিয়াম
+                                                        </Typography>
+                                                        <TextField
+                                                            sx={{
+                                                                '& .MuiOutlinedInput-root': {
+                                                                    borderRadius: 0,
+                                                                    height: '24px',
+                                                                },
+                                                                '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                    border: 'none',
+                                                                },
+                                                            }}
+                                                            className="bg-white"
+                                                            size="small"
+                                                            variant="outlined"
+                                                            fullWidth
+                                                            value={view?.curriculum || ""}
+                                                        />
+                                                    </Grid>
+                                                    <Grid item className="flex items-center gap-2" xs={6}>
+                                                        <Typography className="text-start text-white" sx={{ fontWeight: "600", fontSize: "1.1rem", minWidth: "40px" }}>
+                                                            ক্লাস
+                                                        </Typography>
+                                                        <TextField
+                                                            sx={{
+                                                                '& .MuiOutlinedInput-root': {
+                                                                    borderRadius: 0,
+                                                                    height: '24px',
+                                                                },
+                                                                '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                    border: 'none',
+                                                                },
+                                                            }}
+                                                            className="bg-white"
+                                                            size="small"
+                                                            variant="outlined"
+                                                            fullWidth
+                                                            value={view?.educational_level_choices || ""}
+                                                        />
+                                                    </Grid>
+                                                    <Grid item className="flex items-center gap-2" xs={6}>
+                                                        <Typography className="text-start text-white" sx={{ fontWeight: "600", fontSize: "1.1rem", minWidth: "80px" }}>
+                                                            লোকেশন
+                                                        </Typography>
+                                                        <TextField
+                                                            sx={{
+                                                                '& .MuiOutlinedInput-root': {
+                                                                    borderRadius: 0,
+                                                                    height: '24px',
+                                                                },
+                                                                '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                    border: 'none',
+                                                                },
+                                                            }}
+                                                            size="small"
+                                                            className="bg-white"
+                                                            variant="outlined"
+                                                            fullWidth
+                                                            value={view?.district || ""}
+                                                        />
+                                                    </Grid>
+                                                    <Grid item className="flex items-center gap-2" xs={6}>
+                                                        <Typography className="text-start mt-2 text-white" sx={{ fontWeight: "600", fontSize: "1.1rem", minWidth: "80px" }}>
+                                                            শিক্ষার্থী জেন্ডার
+                                                        </Typography>
+                                                        <TextField
+                                                            sx={{
+                                                                '& .MuiOutlinedInput-root': {
+                                                                    borderRadius: 0,
+                                                                    height: '24px',
+                                                                },
+                                                                '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                    border: 'none',
+                                                                },
+                                                            }}
+                                                            className="bg-white"
+                                                            size="small"
+                                                            variant="outlined"
+                                                            fullWidth
+                                                            value={view?.gender || ""}
+                                                        />
+                                                    </Grid>
+
+                                                </Grid>
+
+                                                {/* Location and Subject */}
+                                                <Grid container className="mb-1" >
+                                                    <Grid item className="flex items-center gap-2" xs={12}>
+                                                        <Typography className="text-start text-white" sx={{ fontWeight: "600", fontSize: "1.1rem", minWidth: "80px" }}>
+                                                            সাবজেক্ট
+                                                        </Typography>
+                                                        <TextField
+                                                            sx={{
+                                                                '& .MuiOutlinedInput-root': {
+                                                                    borderRadius: 0,
+                                                                    height: '24px',
+                                                                },
+                                                                '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                    border: 'none',
+                                                                },
+                                                            }}
+                                                            className="bg-white"
+                                                            size="small"
+                                                            variant="outlined"
+                                                            fullWidth
+
+                                                            value={view?.subject || ""}
+                                                        />
+                                                    </Grid>
+
+                                                </Grid>
+
+                                            </div>
+
+                                            {/* Rest of the form (Tutor Gender, Start Date, etc.) */}
+                                            <Grid sx={{
+                                                paddingLeft: 2,
+                                                paddingRight: 2,
+                                                paddingBottom: 2,
+                                                paddingTop: 1,
+                                            }}
+                                                container spacing={2}>
+                                                <Grid item xs={6} className="flex items-center">
+                                                    <Typography className="text-start text-white" sx={{ fontWeight: "600", fontSize: "1.1rem", minWidth: "80px" }}>
+                                                        টিউটর  জেন্ডার
+                                                    </Typography>
+                                                    <TextField
+                                                        sx={{
+                                                            '& .MuiOutlinedInput-root': {
+                                                                borderRadius: 0,
+                                                                height: '24px',
+                                                            },
+                                                            '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                border: 'none',
+                                                            },
+                                                        }}
+                                                        className="bg-white"
+                                                        size="small"
+                                                        variant="outlined"
+                                                        fullWidth
+                                                        value={view?.gender || ""}
+                                                    />
+                                                </Grid>
+                                                <Grid item xs={6} className="flex items-center">
+                                                    <Typography className="text-start text-white" sx={{ fontWeight: "600", fontSize: "1.1rem", minWidth: "80px" }}>
+                                                        শুরুর <br />তারিখ
+                                                    </Typography>
+                                                    <TextField
+                                                        sx={{
+                                                            '& .MuiOutlinedInput-root': {
+                                                                borderRadius: 0,
+                                                                height: '24px',
+                                                            },
+                                                            '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                border: 'none',
+                                                            },
+                                                        }}
+                                                        className="bg-white"
+                                                        size="small"
+                                                        variant="outlined"
+                                                        fullWidth
+                                                        value={view?.tuition_start_date || ""}
+                                                    />
+                                                </Grid>
+                                                <Grid item xs={6} className="flex items-center">
+                                                    <Typography className="text-start text-white" sx={{ fontWeight: "600", fontSize: "1.1rem", minWidth: "80px" }}>
+                                                        সপ্তাহে
+                                                    </Typography>
+                                                    <TextField
+                                                        sx={{
+                                                            '& .MuiOutlinedInput-root': {
+                                                                borderRadius: 0,
+                                                                height: '24px',
+                                                            },
+                                                            '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                border: 'none',
+                                                            },
+                                                        }}
+                                                        className="bg-white"
+                                                        size="small"
+                                                        variant="outlined"
+                                                        fullWidth
+                                                        value={view?.days_per_week || ""}
+                                                        InputProps={{
+                                                            endAdornment: (
+                                                                <InputAdornment className="mt-1" position="end">
+                                                                    <Typography sx={{ color: 'black', fontWeight: '400' }}>/ দিন</Typography>
+                                                                </InputAdornment>
+                                                            ),
+                                                        }}
+                                                    />
+
+                                                </Grid>
+                                                <Grid item xs={6} className="flex items-center">
+                                                    <Typography className="text-start text-white" sx={{ fontWeight: "600", fontSize: "1.1rem", minWidth: "80px" }}>
+                                                        বেতন
+                                                    </Typography>
+                                                    <TextField
+                                                        sx={{
+                                                            '& .MuiOutlinedInput-root': {
+                                                                borderRadius: 0,
+                                                                height: '24px',
+                                                            },
+                                                            '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                border: 'none',
+                                                            },
+                                                        }}
+                                                        className="bg-white"
+                                                        size="small"
+                                                        variant="outlined"
+                                                        fullWidth
+                                                        value={
+                                                            view?.budget_amount
+                                                                ? view.budget_amount === "পলিসিতে কন্ট্রিবিউশন শুরু হবে।"
+                                                                    ? "নেগোশিয়েবল"
+                                                                    : parseInt(view.budget_amount).toLocaleString()
+                                                                : ""
+                                                        }
+
+
+                                                        InputProps={{
+                                                            endAdornment: (
+                                                                <InputAdornment className="mt-1" position="end">
+                                                                    <Typography sx={{ color: 'black', fontWeight: '400' }}>/ মাস</Typography>
+                                                                </InputAdornment>
+                                                            ),
+                                                        }}
+
+                                                    />
+                                                </Grid>
+                                                <Grid item xs={6} className="flex items-center">
+                                                    <Typography className="text-start text-white" sx={{ fontWeight: "600", fontSize: "1.1rem", minWidth: "80px" }}>
+                                                        মাধ্যম
+                                                    </Typography>
+                                                    <TextField
+                                                        sx={{
+                                                            '& .MuiOutlinedInput-root': {
+                                                                borderRadius: 0,
+                                                                height: '24px',
+                                                            },
+                                                            '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                border: 'none',
+                                                            },
+                                                        }}
+                                                        className="bg-white"
+                                                        size="small"
+                                                        variant="outlined"
+                                                        fullWidth
+                                                        value={view?.curriculum || ""}
+                                                    />
+                                                </Grid>
+                                                <Grid item xs={6} className="flex items-center">
+                                                    <Typography className="text-start text-white" sx={{ fontWeight: "600", fontSize: "1.1rem", minWidth: "80px" }}>
+                                                        অন্যান্য
+                                                    </Typography>
+                                                    <TextField
+                                                        sx={{
+                                                            '& .MuiOutlinedInput-root': {
+                                                                borderRadius: 0,
+                                                                height: '24px',
+                                                            },
+                                                            '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                border: 'none',
+                                                            },
+                                                        }}
+                                                        className="bg-white"
+                                                        size="small"
+                                                        variant="outlined"
+                                                        fullWidth
+                                                        value={view?.additionalNotes || ""}
+                                                    />
+                                                </Grid>
+                                            </Grid>
+                                        </Grid>
+                                    </Box>
                                 </Box>
                             </Box>
-                        </Box>
-                        <Box>
-                            <Typography variant="body2" sx={{ textAlign: "right", color: "#777" }}>
-                                <strong>ID:</strong> {view?.userId || "No ID"}
-                            </Typography>
-                            <Typography variant="body2">
-                                {view?.createdAt ? new Date(view.createdAt).toLocaleString() : "No Created Date"}
-                            </Typography>
-                        </Box>
-                    </Box>
 
-                    {/* Body Section */}
-                    <Box sx={{ marginTop: 3 }}>
-                        <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
-                            <Typography variant="body1"><strong>Phone:</strong> {view?.phone || "No Phone"}</Typography>
-                            <Typography variant="body1"><strong>Gender:</strong> {view?.gender || "No Gender"}</Typography>
-                            <Typography variant="body1"><strong>Division:</strong>{view?.district || "No District"} {view?.division || "No Division"}</Typography>
-                            <Typography variant="body1"><strong>Educational Level:</strong> {view?.educationalLevel || "No Data"}</Typography>
-                            <Typography variant="body1"><strong>Lesson Type:</strong> {view?.lessonType || "No Data"}</Typography>
-                            <Typography variant="body1"><strong>Subject:</strong> {view?.subject || "No Subject"}</Typography>
-                            <Typography variant="body1"><strong>Budget:</strong> {view?.budget ? `${view.budget} ` : "No Budget"}</Typography>
-                            <Typography variant="body1"><strong>Days Per Week:</strong> {view?.daysPerWeek || "No Data"}</Typography>
-                            <Typography variant="body1"><strong>Tuition Start Date: <br /></strong> {view?.tuitionStartDate || "No Date"}</Typography>
-                            <Typography variant="body1"><strong>Curriculum: <br /></strong> {view?.curriculum || "No Curriculum"}</Typography>
-                            <Typography variant="body1"><strong>Job Title: <br /> </strong> {view?.jobTitle || "No jobTitle"}</Typography>
-                            <Typography variant="body1"><strong>Study Material:  <br /></strong> {view?.study_material || "No study material"}</Typography>
-                        </Box>
-                    </Box>
-                </Box>
+                        )
+                }
+
+
+
+
 
                 <Box className="flex items-center justify-end mt-5 m-2 gap-5">
                     <Button
                         variant="contained"
                         sx={{
-                            backgroundColor: "#007bff",
+                            backgroundColor: "#021E36",
                             color: "#fff",
                             fontWeight: "bold",
                             padding: "0.5rem 2rem",
@@ -1138,7 +1609,7 @@ const AllTuition = () => {
                     <Button
                         variant="contained"
                         sx={{
-                            backgroundColor: "#007bff",
+                            backgroundColor: "#021E36",
                             color: "#fff",
                             fontWeight: "bold",
                             padding: "0.5rem 2rem",
@@ -1146,7 +1617,7 @@ const AllTuition = () => {
                                 backgroundColor: "#0056b3",
                             },
                         }}
-                        onClick={handleDownloadImage} // Open dropdown
+                        onClick={handleDownloadImage}
                     >
                         Download Image
                     </Button>
@@ -1154,7 +1625,7 @@ const AllTuition = () => {
                     <Button
                         variant="contained"
                         sx={{
-                            backgroundColor: "#007bff",
+                            backgroundColor: "#021E36",
                             color: "#fff",
                             fontWeight: "bold",
                             padding: "0.5rem 2rem",
@@ -1162,23 +1633,10 @@ const AllTuition = () => {
                                 backgroundColor: "#0056b3",
                             },
                         }}
-                        onClick={handleDownloadDOC} // Open dropdown
+                        onClick={handleOpenInNewTab}
                     >
                         Download Docx
                     </Button>
-
-                    {/* <Menu
-                        anchorEl={types}
-                        open={buttonOpen}
-                        onClose={handleClose}
-                        sx={{
-                            marginTop: 1,
-                        }}
-                    >
-                        <MenuItem onClick={handleDownloadImage}>Download Image (PNG)</MenuItem>
-                        <MenuItem onClick={handleDownloadPDF}>Download PDF</MenuItem>
-                        <MenuItem onClick={handleDownloadDOC}>Download DOC</MenuItem>
-                    </Menu> */}
                 </Box>
             </Dialog>
 
@@ -1208,7 +1666,7 @@ const AllTuition = () => {
                 </Alert>
             </Snackbar>
 
-        </Box>
+        </Box >
     );
 };
 
