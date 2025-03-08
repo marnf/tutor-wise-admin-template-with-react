@@ -86,11 +86,30 @@ const isSuperAdmin = user?.user_type === "super_admin";
 
 const columns = [
     { field: "userId", headerName: "ID", minWidth: 130 },
+    {
+        field: "location",
+        headerName: "Location",
+        minWidth: 200,
+        renderCell: (params) => {
+            const address = params.row.address || "N/A";
+            const district = params.row.district || "N/A";
+            const division = params.row.division || "N/A";
+
+            return (
+                <div >
+                    <div>Address:{address}, District:{district}, Division:{division}, </div>
+                    
+                </div>
+            );
+        }
+    },
+
     { field: "name", headerName: "Name", minWidth: 150 },
-    { field: "referrer", headerName: "Referrer Id", minWidth: 130, maxWidth: 130 },
     { field: "budget", headerName: "Budget", minWidth: 60, maxWidth: 60 },
+    { field: "days_per_week", headerName: "D/W", minWidth: 50, maxWidth: 50 },
     { field: "gender", headerName: "Gender", minWidth: 60, maxWidth: 60 },
     { field: "subject", headerName: "Subject", minWidth: 180 },
+    // { field: "referrer", headerName: "Referrer Id", minWidth: 130, maxWidth: 130 },
     { field: "formattedJoinDate", headerName: "Post Date", minWidth: 160 },
 
 
@@ -98,8 +117,6 @@ const columns = [
     // { field: "class_name", headerName: "Class", minWidth: 120 },
     // { field: "lesson_type", headerName: "Lesson Type", minWidth: 100 },
     // { field: "details", headerName: "Details", minWidth: 200 },
-    // { field: "location", headerName: "Location", minWidth: 200 },
-    // { field: "days_per_week", headerName: "Days/Week", minWidth: 60 },
     // { field: "start_immediate", headerName: "Start Immediately", minWidth: 60 },
     // { field: "additional_comment", headerName: "Additional Comment", minWidth: 200 },
     {
@@ -234,10 +251,11 @@ const AllTuition = () => {
                     startImmediate: item.start_immediate ? "Yes" : "No",
                     subject: item.subject.join(", "),
                     budget: Number(Number(item.budget_amount).toFixed(0)),
-                    daysPerWeek: item.days_per_week,
+                    days_per_week: item.days_per_week,
                     gender: item.gender,
                     division: item.division || "N/A",
                     district: item.district || "N/A",
+                    address: item.address || "N/A",
                     tuitionStartDate: moment(item.tuition_start_date).format("YYYY-MM-DD"),
                     curriculum: item.curriculum,
                     createdAt: moment(item.created_at).format("YYYY-MM-DD"),
@@ -249,6 +267,7 @@ const AllTuition = () => {
                     handleDownloadModal: handleOpenDownloadModal,
 
                 }));
+                console.log(data)
 
                 setRows(formattedData);
                 setFilteredRows(formattedData);

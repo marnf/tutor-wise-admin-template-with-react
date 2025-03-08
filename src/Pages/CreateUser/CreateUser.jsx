@@ -16,6 +16,10 @@ const CreateUser = () => {
     const [password, setPassword] = useState("");
     const [ReTypepassword, setReTypepassword] = useState("");
 
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+
     // State for password visibility
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [passwordReTypeVisible, setPasswordReTypeVisible] = useState(false);
@@ -29,12 +33,7 @@ const CreateUser = () => {
         apiError: "",
     });
 
-    // State for Snackbar
-    const [snackbar, setSnackbar] = useState({
-        open: false,
-        severity: "success", // or "error"
-        message: "",
-    });
+
 
     // State for email/phone code options
     const [code_gmail, setCodeGmail] = useState(0);
@@ -49,13 +48,32 @@ const CreateUser = () => {
         setPasswordReTypeVisible(!passwordReTypeVisible);
     };
 
-    // Handle Snackbar close
     const handleCloseSnackbar = (event, reason) => {
         if (reason === "clickaway") {
             return;
         }
-        setSnackbar({ ...snackbar, open: false });
+        setOpenSnackbar(false);
     };
+
+    const handleCloseErrorSnackbar = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setOpenErrorSnackbar(false);
+    };
+
+    // Success and Error message functions
+    const showSuccessMessage = (message) => {
+        setSnackbarMessage(message);
+        setOpenSnackbar(true);
+    };
+
+    const showErrorMessage = (message) => {
+        setSnackbarMessage(message);
+        setOpenErrorSnackbar(true);
+    };
+
+
 
     // Handle form submission
     const handleSignUp = async () => {
@@ -99,28 +117,15 @@ const CreateUser = () => {
                 code_phone: code_phone,
             });
 
-            if (response.data.success) {
-                setSnackbar({
-                    open: true,
-                    severity: "success",
-                    message: "Registration successful! Redirecting to login...",
-                });
-                setTimeout(() => {
-                    navigate("/login"); // Redirect to login page after successful registration
-                }, 2000); // Redirect after 2 seconds
-            } else {
-                setSnackbar({
-                    open: true,
-                    severity: "error",
-                    message: response.data.message || "Registration failed. Please try again.",
-                });
+            const message = response.data.message;
+
+            if (response.status === 200) {
+                showSuccessMessage(message);
             }
         } catch (error) {
-            setSnackbar({
-                open: true,
-                severity: "error",
-                message: "An error occurred during registration. Please try again.",
-            });
+            console.error(error.response.data.error);
+
+            showErrorMessage(error.response.data.error);
         }
     };
 
@@ -294,22 +299,26 @@ const CreateUser = () => {
                 </div>
             </div>
 
-            {/* Snackbar for Success/Error Messages */}
+            {/* Snackbar component */}
             <Snackbar
-                open={snackbar.open}
-                autoHideDuration={6000}
-                onClose={handleCloseSnackbar}
-                anchorOrigin={{
-                    vertical: 'top',   
-                    horizontal: 'center'
-                }}
+                open={openSnackbar}
+                autoHideDuration={2000}  // Auto close after 2 seconds
+                onClose={handleCloseSnackbar}  // Handle close
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             >
-                <Alert
-                    onClose={handleCloseSnackbar}
-                    severity={snackbar.severity}
-                    sx={{ width: "100%" }}
-                >
-                    {snackbar.message}
+                <Alert onClose={handleCloseSnackbar} severity="success">
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
+
+            <Snackbar
+                open={openErrorSnackbar}
+                autoHideDuration={2000}  // Auto close after 2 seconds
+                onClose={handleCloseErrorSnackbar}  // Handle close
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert onClose={handleCloseErrorSnackbar} severity="error">
+                    {snackbarMessage}
                 </Alert>
             </Snackbar>
 

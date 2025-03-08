@@ -6,6 +6,8 @@ import { BsFillCalendarDateFill } from "react-icons/bs";
 import { DateRangePicker } from "react-date-range";
 import BASE_URL from "../../../Api/baseUrl";
 import moment from "moment";
+import { Pagination } from "antd";
+
 
 // Columns definition for DataGrid
 const columns = [
@@ -21,10 +23,10 @@ const columns = [
     },
     { field: "full_name", headerName: "Name", flex: 1, minWidth: 130 },
 
-    { field: "subject", headerName: "Subject", minWidth: 100 ,flex: 1, },
-    { field: "gender", headerName: "Gender", minWidth: 60 ,maxWidth:60 },
-    { field: "days_per_week", headerName: "Days/Week", minWidth: 40 ,maxWidth:40 },
-    { field: "charge_per_month", headerName: "Charge", minWidth: 60 ,maxWidth:60 },
+    { field: "subject", headerName: "Subject", minWidth: 100, flex: 1, },
+    { field: "gender", headerName: "Gender", minWidth: 60, maxWidth: 60 },
+    { field: "days_per_week", headerName: "Days/Week", minWidth: 40, maxWidth: 40 },
+    { field: "charge_per_month", headerName: "Charge", minWidth: 60, maxWidth: 60 },
     { field: "formattedJoinDate", headerName: "Phone", minWidth: 160 },
     {
         field: "actions",
@@ -62,35 +64,57 @@ const Protutor = () => {
     ]);
 
 
+    const [page, setPage] = React.useState(0);
+    const [pageSize, setPageSize] = React.useState(2);
+    const [totalCount, setTotalCount] = React.useState(0);
+
+
     // Fetch data from the API
     useEffect(() => {
-        setLoading(true)
-     
-        fetch(`${BASE_URL}/api/admin/pro-tutor-list/`)
+        setLoading(true);
+        const offset = page * pageSize; // Pagination Calculation
+
+        fetch(`${BASE_URL}/api/admin/pro-tutor-list/?limit=${pageSize}&offset=${offset}`)
             .then((res) => res.json())
             .then((data) => {
-                
-                const formattedData = data.map((item) => ({
-                    id: item.tutor_personal_info.customized_user_id,
-                    profile_picture: item.tutor_personal_info.profile_picture ? `${BASE_URL}${item.tutor_personal_info.profile_picture}` : null,
-                    full_name: item.tutor_personal_info.full_name,
-                    division: item.tutor_personal_info.division,
-                    location: `${item.tutor_personal_info.district}, ${item.tutor_personal_info.location}`,
-                    subject: item.tutor_tuition_info.subject.split(',').map(sub => sub.trim()), 
-                    gender: item.tutor_personal_info.gender,
-                    days_per_week: item.tutor_tuition_info.days_per_week,
-                    charge_per_month: item.tutor_tuition_info.charge_per_month,
-                    phone: item.tutor_personal_info.phone,
-                    start_date: item?.tutor_personal_info?.pro_tutor_start_date,
-                    formattedJoinDate:moment(item?.tutor_personal_info?.pro_tutor_start_date).format('DD/MM/YYYY hh:mm a') || '',
-                    handleViewModal: (params) => handleOpenViewModal(item)
-                }));
+                console.log(data);
+
+                const formattedData = data.results.map((item) => {
+                    const id = item.tutor_personal_info.customized_user_id || item.tutor_personal_info.id; // Fallback to another unique field if customized_user_id is missing
+                    const location = `${item.tutor_personal_info.district || 'Unknown'}, ${item.tutor_personal_info.location || 'Unknown'}`; // Fallback to 'Unknown' if district or location is missing
+
+                    return {
+                        id, // Ensure each row has a unique id
+                        profile_picture: item.tutor_personal_info.profile_picture ? `${BASE_URL}${item.tutor_personal_info.profile_picture}` : null,
+                        full_name: item.tutor_personal_info.full_name,
+                        division: item.tutor_personal_info.division,
+                        location, // Use the fallback value for location
+                        subject: item.tutor_tuition_info.subject.split(',').map(sub => sub.trim()),
+                        gender: item.tutor_personal_info.gender,
+                        days_per_week: item.tutor_tuition_info.days_per_week,
+                        charge_per_month: item.tutor_tuition_info.charge_per_month,
+                        phone: item.tutor_personal_info.phone,
+                        start_date: item?.tutor_personal_info?.pro_tutor_start_date,
+                        formattedJoinDate: moment(item?.tutor_personal_info?.pro_tutor_start_date).format('DD/MM/YYYY hh:mm a') || '',
+                        handleViewModal: (params) => handleOpenViewModal(item),
+                    };
+                });
+
                 setRows(formattedData);
                 setFilteredRows(formattedData);
-                setLoading(false)
+                setTotalCount(data.count);
+                setLoading(false);
+
+                console.log("API Response:", data); // Check full response
+                console.log("API Rows:", data.results.length);
+                console.log("Total Count from API:", data.count);
+                console.log("Current Page:", page);
+                console.log("Offset Calculation:", page * pageSize);
+
             })
             .catch((error) => console.error("Error fetching data:", error));
-    }, []);
+    }, [page, pageSize]);
+
 
     // Filter data based on search query
     useEffect(() => {
@@ -99,7 +123,6 @@ const Protutor = () => {
         );
         setFilteredRows(result);
     }, [searchQuery, rows]);
-
 
 
     const handleOpenViewModal = (item) => {
@@ -129,6 +152,20 @@ const Protutor = () => {
         setFilteredRows(filteredData);
         setShowDatePicker(false); // Close the date picker after filtering
     };
+
+
+
+    const handlePageChange = (page) => {
+        setPage(page - 1); // Adjusting for zero-indexed pagination
+    };
+
+    const handlePageSizeChange = (current, size) => {
+        setPageSize(size);
+        setPage(0); // Reset to first page when page size changes
+    };
+
+
+
 
     return (
         <Box sx={{ height: "80vh", width: "100%", padding: 2 }}>
@@ -196,38 +233,48 @@ const Protutor = () => {
                         }} />
                 </Box>
             ) : (
+               
+                <div>
                 <DataGrid
-                    rows={filteredRows}
-                    columns={columns.map((col) => ({
-                        ...col,
-                        minWidth: col.minWidth || 150, // Minimum width for each column (adjust as needed)
-                    }))}
-                    pageSize={10}
-                    rowsPerPageOptions={[5, 10, 20]}
-                    disableSelectionOnClick
+                  rows={rows}
+                  columns={columns}
+                  pageSize={pageSize}
+                  paginationMode="server"
+                  rowCount={totalCount}
+                  hideFooter
+                  sx={{
+                    "& .MuiDataGrid-columnHeader": {
+                      backgroundColor: "#f0f0f0",
+                      fontWeight: "bold",
+                      borderBottom: "2px solid #1976d2",
+                    },
+                    "& .MuiDataGrid-cell": {
+                      border: "1px solid #e0e0e0",
+                      whiteSpace: "normal",
+                      wordWrap: "break-word",
+                    },
+                    "& .MuiDataGrid-cell:focus": {
+                      outline: "none",
+                    },
+                    "& .MuiDataGrid-virtualScroller": {
+                      overflowX: "auto",
+                    },
+                    minHeight: 400, // Set a minimum height for the grid
+                  }}
+                />
+                <Pagination
+                  current={page + 1} // Display the current page
+                  pageSize={pageSize}
+                  total={totalCount}
+                  onChange={handlePageChange}
+                  onShowSizeChange={handlePageSizeChange}
+                  showSizeChanger
+                  pageSizeOptions={["2", "5", "10", "20"]} // Custom size options
+                  style={{ marginTop: "16px", textAlign: "center" }}
+                />
+              </div>
 
-                    sx={{
-                        "& .MuiDataGrid-columnHeader": {
-                            backgroundColor: "#f0f0f0",
-                            fontWeight: "bold",
-                            borderBottom: "2px solid #1976d2", // Column header's bottom border
-                        },
-                        "& .MuiDataGrid-cell": {
-                            border: "1px solid #e0e0e0", // Border for each cell
-                            whiteSpace: "normal", // Allow text to wrap in cells
-                            wordWrap: "break-word", // Break long words if necessary
-                        },
-                        "& .MuiDataGrid-cell:focus": {
-                            outline: "none", // Remove default outline on focus
-                        },
-                        "& .MuiDataGrid-virtualScroller": {
-                            overflowX: "auto", // Ensure horizontal scroll for table content
-                        },
-                        "& .MuiDataGrid-columnHeader:focus-within": {
-                            outline: "none", // Remove outline when child element inside column header is focused
-                        },
-                    }}
-                />)}
+            )}
 
 
 

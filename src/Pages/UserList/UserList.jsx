@@ -72,7 +72,7 @@ const columns = [
                     onClick={() => params.row.handleEdit(params.row)}
                 />
 
-              
+
 
                 <BiSolidUserDetail title="View"
                     size={29}
@@ -129,9 +129,7 @@ const UserList = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [openCreateRoleModal, setOpenCreateRoleModal] = useState(false);
-    const [openSnackbar, setOpenSnackbar] = useState(false);
-    const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
+
     const [snackbarErrorMessage, setSnackbarErrorMessage] = useState('');
     const [selectedOptions, setSelectedOptions] = useState('')
     const [view, setView] = useState([]);
@@ -146,6 +144,39 @@ const UserList = () => {
         },
     ]);
     const [refreshTable, setRefreshTable] = useState(false)
+
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+
+    const [initialRoles, setInitialRoles] = useState([]);
+
+
+    const handleCloseSnackbar = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setOpenSnackbar(false);
+    };
+
+    const handleCloseErrorSnackbar = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setOpenErrorSnackbar(false);
+    };
+
+    // Success and Error message functions
+    const showSuccessMessage = (message) => {
+        setSnackbarMessage(message);
+        setOpenSnackbar(true);
+    };
+
+    const showErrorMessage = (message) => {
+        setSnackbarMessage(message);
+        setOpenErrorSnackbar(true);
+    };
+
 
 
     // Function to generate random password
@@ -309,6 +340,7 @@ const UserList = () => {
             rolesName: row.rolesName ? row.rolesName.split(", ") : []
         });
         setOpenModal(true);
+        console.log(row)
     };
 
     // create user
@@ -329,13 +361,6 @@ const UserList = () => {
         setOpenCreateRoleModal(false);
     };
 
-    const handleCloseSnackbar = () => {
-        setOpenErrorSnackbar(false);
-    };
-
-    const handleCloseErrorSnackbar = () => {
-        setOpenErrorSnackbar(false);
-    };
 
     // Close Modal
     const handleCloseModal = () => {
@@ -353,12 +378,45 @@ const UserList = () => {
     };
 
     // handle create role modal
+    // const handleCreateRoleSubmit = (event) => {
+    //     event.preventDefault();
+
+    //     const formData = new FormData(event.target);
+    //     const jsonData = Object.fromEntries(formData.entries());
+    //     console.log(jsonData)
+
+    //     fetch(`${BASE_URL}/api/admin/create-role/`, {
+    //         method: "POST",
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //         },
+    //         body: JSON.stringify(jsonData),
+    //     })
+    //         .then((response) => {
+    //             if (response.ok) {
+    //                 setSnackbarMessage("Role created successfully!");
+    //                 setOpenSnackbar(true);
+    //                 setOpenCreateRoleModal(false)
+    //                 fetchRoles();
+
+    //             } else {
+    //                 setSnackbarMessage("failed!");
+    //                 setOpenErrorSnackbar(true);
+    //                 setOpenCreateRoleModal(false)
+    //             }
+    //         })
+    //         .catch((error) => {
+    //             console.error("Error submitting form:", error);
+
+    //         });
+    // }
+
     const handleCreateRoleSubmit = (event) => {
         event.preventDefault();
 
         const formData = new FormData(event.target);
         const jsonData = Object.fromEntries(formData.entries());
-        console.log(jsonData)
+        console.log(jsonData);
 
         fetch(`${BASE_URL}/api/admin/create-role/`, {
             method: "POST",
@@ -368,23 +426,22 @@ const UserList = () => {
             body: JSON.stringify(jsonData),
         })
             .then((response) => {
+                console.log(response)
                 if (response.ok) {
-                    setSnackbarMessage("Role created successfully!");
-                    setOpenSnackbar(true);
-                    setOpenCreateRoleModal(false)
+                    showSuccessMessage("Role created successfully!");
+                    setOpenCreateRoleModal(false);
                     fetchRoles();
-
                 } else {
-                    setSnackbarMessage("failed!");
-                    setOpenErrorSnackbar(true);
-                    setOpenCreateRoleModal(false)
+                    showErrorMessage("Failed to create role!");
+                    setOpenCreateRoleModal(false);
                 }
             })
             .catch((error) => {
                 console.error("Error submitting form:", error);
-
+                showErrorMessage("An error occurred while creating the role!");
+                setOpenCreateRoleModal(false);
             });
-    }
+    };
 
 
     // Handle Create User Form Submission
@@ -429,6 +486,8 @@ const UserList = () => {
                     const errorMessage = errorData.message || errorData.error || "Unknown error occurred!";
                     setSnackbarMessage(errorMessage);
                     setOpenErrorSnackbar(true);
+                    handleCloseCreateModal()
+
                     return;
                 }
                 return response.json();
@@ -440,20 +499,20 @@ const UserList = () => {
                     setOpenCreateModal(false);
                     setSnackbarMessage("User created successfully!");
                     setOpenSnackbar(true);
+                    handleCloseCreateModal()
+                    setRefreshTable((prev) => !prev);
                 }
             })
             .catch((error) => {
                 console.error("Network or server error:", error);
                 setSnackbarMessage("Oops! Network error occurred.");
                 setOpenErrorSnackbar(true);
+                handleCloseCreateModal()
             });
 
 
 
     };
-
-
-
 
 
     // Confirm Delete User
@@ -489,23 +548,33 @@ const UserList = () => {
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        const roleIds = currentRow?.role_ids?.map((role) => {
-            if (typeof role === "string") {
-                // Find the corresponding id from originalRolesOptions
+        // Use currentRow.role_ids if available, otherwise fallback to initialRoles
+        const roleIds = currentRow?.role_ids?.length > 0
+            ? currentRow.role_ids.map((role) => {
+                if (typeof role === "string") {
+                    const matchedOption = originalRolesOptions.find((option) => option.label === role);
+                    return matchedOption ? matchedOption.value : role;
+                }
+                return role; // Already an ID
+            })
+            : initialRoles.map((role) => {
                 const matchedOption = originalRolesOptions.find((option) => option.label === role);
-                return matchedOption ? matchedOption.value : role; // Return id if found, else return the role as is
-            }
-            return role; // Already an ID
-        }) || [];
+                return matchedOption ? matchedOption.value : role;
+            });
 
         // Prepare the updated data
         const updatedData = {
             username: currentRow.username,
             phone: currentRow.phone,
             user_type: currentRow.userType,
-            roles: roleIds,
-            password: editPassword || "",
+            roles: roleIds, // This will always have the correct roles
         };
+
+        // Conditionally add password to updatedData only if it has a value
+        if (editPassword) {
+            updatedData.password = editPassword;
+        }
+
 
         const encryptedUser = localStorage.getItem("user");
 
@@ -518,40 +587,34 @@ const UserList = () => {
             }
         }
         const token = user?.token;
-        console.log(token)
 
+        console.log(updatedData);
 
-        console.log(updatedData)
-
-        // API PUT Request to update user
+        // API PATCH Request to update user
         fetch(`${BASE_URL}/api/admin/edit-users-list/${currentRow.id}/`, {
-
-            method: 'PUT',
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Token ${token}`,
-
             },
             body: JSON.stringify(updatedData),
         })
             .then(() => {
-                // Update the user in the rows state
-                // setRows(rows.map(row => row.id === currentRow.id ? { ...row, ...updatedData } : row));
-                // setFilteredRows(filteredRows.map(row => row.id === currentRow.id ? { ...row, ...updatedData } : row));
-
-                // setSnackbarMessage("data submitted successfully!");
-                // setOpenSnackbar(true);
-                setOpenModal(false)
-                // window.location.reload();
+                setOpenModal(false);
+                setRefreshTable((prev) => !prev);
             })
             .catch((error) => {
-
-                setSnackbarErrorMessage("failed to submit!");
+                setSnackbarErrorMessage("Failed to submit!");
                 setOpenErrorSnackbar(true);
-                setOpenModal(false)
-
-            })
+                setOpenModal(false);
+            });
     };
+
+    useEffect(() => {
+        if (currentRow?.rolesName) {
+            setInitialRoles(currentRow.rolesName);
+        }
+    }, [currentRow]);
 
     return (
 
@@ -559,10 +622,6 @@ const UserList = () => {
         <Box sx={{ height: "80vh", width: "100%" }}>
 
             <div className="flex justify-between items-center mb-1">
-
-
-
-
 
                 <div className="flex flex-col justify-end gap-2">
 
@@ -631,25 +690,58 @@ const UserList = () => {
                 </div>
 
 
-                <div className="flex items-center gap-2 -mb-2">
-                    <button className=" bg-green-600 hover:bg-green-700 text-white transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-110 duration-300 my-2 p-1 px-2 rounded flex items-center border"
-                        onClick={handleCreateUser}>
-                        <div className="flex justify-center items-center gap-1">
-                            <GoPlus size={20} />
-                            <p className="text-sm">Create User</p>
-                        </div>
-                    </button>
+                <div>
+                    {isSuperAdmin ? (
+                       
+                        <div className="flex items-center gap-2 -mb-2">
+                            <button
+                                className=" bg-green-600 hover:bg-green-700 text-white transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-110 duration-300 my-2 p-1 px-2 rounded flex items-center border"
+                                onClick={handleCreateUser}
+                            >
+                                <div className="flex justify-center items-center gap-1">
+                                    <GoPlus size={20} />
+                                    <p className="text-sm">Create User</p>
+                                </div>
+                            </button>
 
-
-                    <button className=" bg-blue-500 hover:bg-blue-700 text-white transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-110 duration-300 my-2 p-1 px-2 rounded flex items-center border"
-                        onClick={handleCreateRole}
-                    >
-                        <div className="flex justify-center items-center gap-1">
-                            <GoPlus size={20} />
-                            <p className="text-sm"> Create Role</p>
+                            <button
+                                className=" bg-blue-500 hover:bg-blue-700 text-white transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-110 duration-300 my-2 p-1 px-2 rounded flex items-center border"
+                                onClick={handleCreateRole}
+                            >
+                                <div className="flex justify-center items-center gap-1">
+                                    <GoPlus size={20} />
+                                    <p className="text-sm">Create Role</p>
+                                </div>
+                            </button>
                         </div>
-                    </button>
+                    ) : (
+                        // যদি isSuperAdmin মিথ্যা থাকে, তাহলে বাটনগুলো ডিসেবল অবস্থায় থাকবে
+                        <div className="flex items-center gap-2 -mb-2">
+                            <button
+                                className=" bg-green-600 text-white transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-110 duration-300 my-2 p-1 px-2 rounded flex items-center border"
+                                onClick={handleCreateUser}
+                                disabled
+                            >
+                                <div className="flex justify-center items-center gap-1">
+                                    <GoPlus size={20} />
+                                    <p className="text-sm">Create User</p>
+                                </div>
+                            </button>
+
+                            <button
+                                className=" bg-blue-500 text-white transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-110 duration-300 my-2 p-1 px-2 rounded flex items-center border"
+                                onClick={handleCreateRole}
+                                disabled
+                            >
+                                <div className="flex justify-center items-center gap-1">
+                                    <GoPlus size={20} />
+                                    <p className="text-sm">Create Role</p>
+                                </div>
+                            </button>
+                        </div>
+                    )}
                 </div>
+
 
             </div>
 
@@ -978,6 +1070,7 @@ const UserList = () => {
                                 <label htmlFor="phone" className="form-label">Phone:</label>
                                 <input
                                     type="number"
+                                    placeholder="edit phone number"
                                     id="phone"
                                     className="form-control"
                                     style={{ height: '40px' }}
@@ -990,7 +1083,9 @@ const UserList = () => {
                                 }`}>
                                 <div className="col-md-4 w-75 input-group">
                                     <label htmlFor="password" className="form-label">Password:</label>
-                                    <div className="flex flex-row" style={{ position: 'relative', width: '100%' }}>
+
+                                    {/* don't delete it */}
+                                    {/* <div className="flex flex-row" style={{ position: 'relative', width: '100%' }}>
                                         <input
                                             type={showPassword ? "text" : "password"}
                                             value={editPassword}
@@ -1022,7 +1117,41 @@ const UserList = () => {
                                         >
                                             {showPassword ? <FaEyeSlash size={15} /> : <FaEye size={15} />}
                                         </div>
+                                    </div> */}
+
+                                    <div className="flex flex-row" style={{ position: 'relative', width: '100%' }}>
+                                        <input
+                                            type={showPassword ? "text" : "password"}
+                                            value={editPassword}
+                                            placeholder="Change password"
+                                            id="EditPassword"
+                                            style={{
+                                                height: '40px',
+                                                padding: '5px 10px',
+                                                fontSize: '14px',
+                                                flexGrow: 1,
+                                                paddingRight: '40px',
+                                            }}
+                                            className="form-control"
+                                            onChange={(e) => setEditPassword(e.target.value)}  // Update the state with entered password
+                                        />
+                                        <div
+                                            className="cursor-pointer mt-1"
+                                            onClick={togglePasswordVisibility}
+                                            style={{
+                                                position: 'absolute',
+                                                right: '10px',
+                                                top: '50%',
+                                                transform: 'translateY(-50%)',
+                                                background: 'transparent',
+                                                border: 'none',
+                                            }}
+                                        >
+                                            {showPassword ? <FaEyeSlash size={15} /> : <FaEye size={15} />}
+                                        </div>
                                     </div>
+
+
                                 </div>
                                 <div className="input-group-prepend w-25" id="basic-addon1">
                                     <Button
@@ -1189,8 +1318,8 @@ const UserList = () => {
             {/* Snackbar component */}
             <Snackbar
                 open={openSnackbar}
-                autoHideDuration={2000}
-                onClose={handleCloseSnackbar}
+                autoHideDuration={2000}  // Auto close after 2 seconds
+                onClose={handleCloseSnackbar}  // Handle close
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             >
                 <Alert onClose={handleCloseSnackbar} severity="success">
@@ -1200,8 +1329,8 @@ const UserList = () => {
 
             <Snackbar
                 open={openErrorSnackbar}
-                autoHideDuration={2000}
-                onClose={handleCloseErrorSnackbar}
+                autoHideDuration={2000}  // Auto close after 2 seconds
+                onClose={handleCloseErrorSnackbar}  // Handle close
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             >
                 <Alert onClose={handleCloseErrorSnackbar} severity="error">
@@ -1224,3 +1353,9 @@ const modalStyle = {
 };
 
 export default UserList;
+
+
+
+
+
+

@@ -227,6 +227,7 @@ const WithDraw = () => {
                 console.log("Status updated via API.");
                 setSnackbarMessage("Status updated successfully!");
                 setOpenSnackbar(true);
+                setRefreshTable(prev =>!prev)
             } else {
                 // If API call fails
                 console.error("Failed to update status.");
@@ -438,7 +439,7 @@ const WithDraw = () => {
                                     variant="h6"
                                     sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}
                                 >
-                                    {view.referrer_id || 'N/A'}
+                                    {view.referrerId || 'N/A'}
                                 </Typography>
                                 <Typography variant="body1">
                                     {view.is_paid ? "Paid" : "Pending"}
@@ -472,7 +473,7 @@ const WithDraw = () => {
                             {/* Left Column */}
                             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
                                 <Typography variant="body1">
-                                    <strong>Withdraw Amount:</strong> {view.with_draw_amount || 'N/A'}
+                                    <strong>Withdraw Amount:</strong> {view.withdrawAmount || 'N/A'}
                                 </Typography>
                                 <Divider />
                                 <Typography variant="body1">
@@ -483,15 +484,15 @@ const WithDraw = () => {
                             {/* Right Column */}
                             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
                                 <Typography variant="body1">
-                                    <strong>Paid Date:</strong> {view.paid_date || 'Not Paid'}
+                                    <strong>Paid Date:</strong> {view.paidDate || 'Not Paid'}
                                 </Typography>
                                 <Divider />
                                 <Typography variant="body1">
-                                    <strong>Digital Bank:</strong> {view.digital_bank || 'N/A'}
+                                    <strong>Digital Bank:</strong> {view.digitalBank || 'N/A'}
                                 </Typography>
                                 <Divider />
                                 <Typography variant="body1">
-                                    <strong>Payment By:</strong> {view.payment_by || 'N/A'}
+                                    <strong>Payment By:</strong> {view.paymentBy || 'N/A'}
                                 </Typography>
                             </Box>
                         </Box>
